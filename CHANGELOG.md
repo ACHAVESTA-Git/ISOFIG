@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.0 · 2026-10-15
+
+- Accessibility, from an audit of 37 lessons: `say` stays quiet until the reader touches the figure, waits for 1.5 s of silence and never talks over a preset note; changing a control announces the readout once.
+- With reduced motion a preset shows its effect at once (8 s already simulated) instead of waiting for Play.
+- Engraved text on accent or state faces uses `--isofig-ink-on-color`; the checked choice uses `--isofig-on-accent`; the focus ring uses `--isofig-focus`.
+- The visible title is `aria-hidden` (the SVG `<title>` already names the figure); the preset note is always in the accessibility tree.
+
 ## 0.6.1 · 2026-10-15
 
 - Faces at the same depth keep a stable order and coordinates drop float noise before rounding, so identical parts always produce identical markup (and share one `<use>`).
