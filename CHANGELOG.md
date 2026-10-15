@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 · 2026-10-15
+
+- Presets: buttons that set several params at once with a note for the reader (the "break it on purpose" path).
+- Discrete controls: `kind: "toggle"` (a switch) and `kind: "choice"` (chips), besides the slider.
+- State tones: a model can paint a group `ok`, `warn` or `fail` (`--isofig-ok/warn/fail`).
+- `say`: one-off announcements for screen readers when something happens.
+
 ## 0.1.0 · 2026-10-15
 
 - Core: isometric camera, prisms and cylinders with bevels, four-tone shading, topological paint order, compact SVG.

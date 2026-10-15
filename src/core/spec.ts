@@ -105,6 +105,19 @@ export interface ParamSpec {
   unit?: Text;
   /** Unidad para lectores de pantalla («peticiones por segundo»); por defecto, `unit`. */
   spoken?: Text;
+  /** `range` (por defecto), `toggle` (0 o 1) o `choice` (el valor es el índice en `options`). */
+  kind?: "range" | "toggle" | "choice";
+  options?: Text[];
+}
+
+/** Un botón que fija varios parámetros de golpe: la forma de romper la figura a propósito. */
+export interface PresetSpec {
+  label: Text;
+  values: Record<string, number>;
+  /** Qué mirar después de pulsarlo; se anuncia a los lectores de pantalla. */
+  note: Text;
+  /** Vuelve a empezar el modelo con los valores nuevos. */
+  reset?: boolean;
 }
 
 /** Enlace declarativo parámetro → grupo, para figuras sin modelo propio. */
@@ -132,6 +145,7 @@ export interface FigureSpec {
   params?: ParamSpec[];
   bind?: BindSpec[];
   readout?: Text;
+  presets?: PresetSpec[];
   /** Nombre con el que la página registra el modelo en el runtime. */
   model?: string;
   autoplay?: boolean;

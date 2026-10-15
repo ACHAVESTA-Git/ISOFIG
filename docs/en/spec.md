@@ -78,6 +78,22 @@ params: [{ id: "rate", label: { es: "Tráfico", en: "Traffic" }, min: 0.5, max: 
 
 Each parameter is a native `input[type=range]`: keyboard, screen reader and `aria-valuetext` with the unit.
 
+## Discrete controls and presets
+
+```ts
+params: [
+  { id: "breaker", label: "Breaker", kind: "toggle", min: 0, max: 1, value: 1 },
+  { id: "algo", label: "Algorithm", kind: "choice", options: ["round robin", "least connections"], min: 0, max: 1, value: 0 },
+],
+presets: [
+  { label: "Slow dependency", values: { latency: 3000 }, note: "Watch only its compartment fill up.", reset: true },
+],
+```
+
+- `toggle` is 0 or 1; `choice` is the index of the chosen option.
+- `presets` are "Try to break it" buttons: they set params, show `note` and announce it to screen readers.
+- A model can tint a group with `s: "ok" | "warn" | "fail"` and announce an event with `say`.
+
 ## bind
 
 For figures that only respond to the controls:

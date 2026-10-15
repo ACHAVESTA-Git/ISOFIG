@@ -95,3 +95,21 @@ test("un id con caracteres raros es un error, y los tonos desconocidos caen a mi
   assert.match(r.html, /<g class="mid">/);
   assert.doesNotMatch(r.html, /onload="y/);
 });
+
+test("los desvíos, interruptores y selectores salen como controles nativos", () => {
+  const r = renderFigure({
+    id: "panel",
+    title: "t",
+    params: [
+      { id: "on", label: "Encendido", kind: "toggle", min: 0, max: 1, value: 1 },
+      { id: "modo", label: "Modo", kind: "choice", options: ["uno", "dos"], min: 0, max: 1, value: 1 },
+    ],
+    presets: [{ label: "Corta", values: { on: 0 }, note: "Se apaga todo." }],
+    parts: [{ id: "a", kind: "box", at: [0, 0, 0], size: [4, 4, 4] }],
+  }, { lang: "es" });
+  assert.match(r.html, /type="checkbox" role="switch" data-param="on" checked/);
+  assert.match(r.html, /type="radio" name="panel-modo" value="1" data-param="modo" checked/);
+  assert.match(r.html, /data-preset="0">Corta</);
+  assert.match(r.html, /class="isofig-note" aria-live="polite"/);
+  assert.deepEqual(r.data.presets, [{ values: { on: 0 }, note: "Se apaga todo." }]);
+});

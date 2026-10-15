@@ -78,6 +78,22 @@ params: [{ id: "rate", label: { es: "Tráfico", en: "Traffic" }, min: 0.5, max: 
 
 Cada parámetro es un `input[type=range]` nativo: teclado, lector de pantalla y `aria-valuetext` con la unidad.
 
+## Controles discretos y desvíos
+
+```ts
+params: [
+  { id: "breaker", label: "Breaker", kind: "toggle", min: 0, max: 1, value: 1 },
+  { id: "algo", label: "Algoritmo", kind: "choice", options: ["round robin", "menos conexiones"], min: 0, max: 1, value: 0 },
+],
+presets: [
+  { label: "Dependencia lenta", values: { latencia: 3000 }, note: "Mira cómo se llena solo su compartimento.", reset: true },
+],
+```
+
+- `toggle` vale 0 o 1; `choice` vale el índice de la opción elegida.
+- `presets` son botones «Prueba a romperlo»: fijan parámetros, muestran `note` y la anuncian a los lectores de pantalla.
+- El modelo puede teñir un grupo con `s: "ok" | "warn" | "fail"` y anunciar un evento con `say`.
+
 ## bind
 
 Para figuras que solo responden a los controles:

@@ -12,6 +12,9 @@
   --isofig-shade: #9a9a90;
   --isofig-halo: #1d1e1c14;
   --isofig-chip: #ebeae3;
+  --isofig-ok: #2fb58b;
+  --isofig-warn: #d9a23a;
+  --isofig-fail: #d4583f;
   --isofig-radius: 18px;
   --isofig-font: ui-sans-serif, system-ui, sans-serif;
   --isofig-mono: ui-monospace, "SF Mono", Menlo, monospace;
@@ -19,6 +22,9 @@
 
 @media (prefers-color-scheme: dark) {
   :where(:root:not([data-theme="light"])) .isofig {
+    --isofig-ok: #5fd6ae;
+    --isofig-warn: #e8b85a;
+    --isofig-fail: #f07a5f;
     --isofig-paper: #121312;
     --isofig-card: #171816;
     --isofig-ink: #eceee8;
@@ -36,6 +42,9 @@
 }
 
 :where(:root[data-theme="dark"]) .isofig {
+    --isofig-ok: #5fd6ae;
+    --isofig-warn: #e8b85a;
+    --isofig-fail: #f07a5f;
   --isofig-paper: #121312;
   --isofig-card: #171816;
   --isofig-ink: #eceee8;
@@ -127,6 +136,9 @@
 .isofig-art .d { stroke-width: 1.3; }
 .isofig-art .lit :is(.e, .l, .lb, .d) { stroke: color-mix(in oklab, var(--isofig-accent), var(--isofig-edge) 45%); }
 .isofig-art .h { fill: var(--isofig-halo); }
+.isofig-art [data-state="ok"] { --c: var(--isofig-ok); }
+.isofig-art [data-state="warn"] { --c: var(--isofig-warn); }
+.isofig-art [data-state="fail"] { --c: var(--isofig-fail); }
 .isofig-art .tx {
   fill: var(--isofig-ink);
   font-family: var(--isofig-mono);
@@ -186,4 +198,74 @@
   margin-top: 8px;
   font-size: 0.85rem;
   color: var(--isofig-ink-soft);
+}
+
+.isofig-toggle,
+.isofig-choice {
+  cursor: pointer;
+}
+.isofig-toggle input {
+  accent-color: var(--isofig-accent);
+  width: 18px;
+  height: 18px;
+}
+.isofig-choice {
+  margin: 0;
+  border: 0;
+  flex-wrap: wrap;
+}
+.isofig-choice legend {
+  float: left;
+  margin-right: 4px;
+  padding: 0;
+}
+.isofig-choice label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.isofig-choice input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.isofig-choice label:has(input:checked) {
+  background: var(--isofig-accent);
+  color: var(--isofig-card);
+}
+.isofig-choice label:has(input:focus-visible) {
+  outline: 2px solid var(--isofig-accent);
+  outline-offset: 2px;
+}
+
+.isofig-presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--isofig-ink-soft);
+}
+.isofig-preset {
+  background: color-mix(in oklab, var(--isofig-fail) 16%, var(--isofig-chip));
+}
+
+.isofig-note {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  color: var(--isofig-ink);
+}
+.isofig-note:empty {
+  display: none;
+}
+
+.isofig-say {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

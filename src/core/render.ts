@@ -21,7 +21,8 @@ export interface RuntimeData {
   tau: number;
   basis: number[];
   spins: Record<string, number[]>;
-  params: { id: string; value: number; unit: string; spoken: string }[];
+  params: { id: string; value: number; unit: string; spoken: string; options?: string[] }[];
+  presets?: { values: Record<string, number>; note: string; reset?: boolean }[];
   bind: FigureSpec["bind"];
   readout: string;
   lang: string;
@@ -37,9 +38,9 @@ export interface Rendered {
   errors: string[];
 }
 
-const LABELS: Record<string, { play: string; pause: string; fig: string }> = {
-  es: { play: "Reproducir", pause: "Pausar", fig: "Fig." },
-  en: { play: "Play", pause: "Pause", fig: "Fig." },
+const LABELS: Record<string, { play: string; pause: string; fig: string; presets: string }> = {
+  es: { play: "Reproducir", pause: "Pausar", fig: "Fig.", presets: "Prueba a romperlo" },
+  en: { play: "Play", pause: "Pause", fig: "Fig.", presets: "Try to break it" },
 };
 
 const TONES = ["lo", "mid", "hi", "lit"];
@@ -142,7 +143,9 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
     value: num(p.value),
     unit: textOf(p.unit, lang),
     spoken: textOf(p.spoken, lang) || textOf(p.unit, lang),
+    ...(p.kind === "choice" ? { options: (p.options ?? []).map((o) => textOf(o, lang)) } : {}),
   }));
+  const presets = (spec.presets ?? []).map((p) => ({ values: p.values, note: textOf(p.note, lang), ...(p.reset ? { reset: true } : {}) }));
   const template = textOf(spec.readout, lang);
   const readout = params.reduce((s, p) => s.replaceAll(`{${p.id}}`, String(p.value)), template);
   const spins: Record<string, number[]> = {};
@@ -164,6 +167,7 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
     bind: spec.bind,
     readout: template,
     lang,
+    ...(presets.length ? { presets } : {}),
   };
 
   const play = data.autoplay || spec.model
@@ -171,15 +175,37 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
     : "";
   const controls = (spec.params ?? [])
     .map((p, i) => {
+      const label = esc(textOf(p.label, lang));
+      if (p.kind === "toggle") {
+        return (
+          `<label class="isofig-param isofig-toggle"><input type="checkbox" role="switch" data-param="${esc(p.id)}"${num(p.value) ? " checked" : ""}>` +
+          `<span>${label}</span></label>`
+        );
+      }
+      if (p.kind === "choice") {
+        const opts = params[i].options ?? [];
+        return (
+          `<fieldset class="isofig-param isofig-choice"><legend>${label}</legend>` +
+          opts
+            .map((o, k) => `<label><input type="radio" name="${esc(id)}-${esc(p.id)}" value="${k}" data-param="${esc(p.id)}"${k === num(p.value) ? " checked" : ""}><span>${esc(o)}</span></label>`)
+            .join("") +
+          `</fieldset>`
+        );
+      }
       const { unit, spoken } = params[i];
       const value = fmt.format(num(p.value));
       return (
-        `<label class="isofig-param"><span>${esc(textOf(p.label, lang))}</span>` +
+        `<label class="isofig-param"><span>${label}</span>` +
         `<input type="range" data-param="${esc(p.id)}" min="${num(p.min)}" max="${num(p.max)}" step="${num(p.step ?? 1)}" value="${num(p.value)}" aria-valuetext="${esc(`${value} ${spoken}`.trim())}">` +
         `<span class="isofig-value" aria-hidden="true">${esc(`${value} ${unit}`.trim())}</span></label>`
       );
     })
     .join("");
+  const presetChips = presets.length
+    ? `<div class="isofig-presets" role="group" aria-label="${labels.presets}"><span aria-hidden="true">${labels.presets}:</span>` +
+      (spec.presets ?? []).map((p, k) => `<button type="button" class="isofig-chip isofig-preset" data-preset="${k}">${esc(textOf(p.label, lang))}</button>`).join("") +
+      `</div>`
+    : "";
   const n = options.n !== undefined ? `<span class="isofig-n">${labels.fig} ${esc(String(options.n))}</span>` : "";
   const html =
     `<figure class="isofig" data-isofig="${esc(id)}"><div class="isofig-card">` +
@@ -187,7 +213,9 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
     svg +
     `<div class="isofig-bottom"><span class="isofig-hint">${esc(textOf(spec.hint, lang))}</span>` +
     `<span class="isofig-readout">${esc(readout)}</span></div></div>` +
-    (play || controls ? `<div class="isofig-controls" hidden>${play}${controls}</div>` : "") +
+    (play || controls || presetChips ? `<div class="isofig-controls" hidden>${play}${controls}${presetChips}</div>` : "") +
+    (presetChips ? `<p class="isofig-note" aria-live="polite"></p>` : "") +
+    `<span class="isofig-say" aria-live="polite"></span>` +
     (caption ? `<figcaption>${esc(caption)}</figcaption>` : "") +
     `<script type="application/json" class="isofig-data">${JSON.stringify(data).replace(/</g, "\\u003c")}</script></figure>`;
 
