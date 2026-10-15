@@ -110,6 +110,8 @@ export interface ParamSpec {
    * que suma 1 cada vez que se pulsa; el modelo compara el contador para saber que pasó («borrar un pod»).
    */
   kind?: "range" | "toggle" | "choice" | "action";
+  /** El modelo lo recibe con su valor, pero no se muestra el control. */
+  hidden?: boolean;
   options?: Text[];
 }
 

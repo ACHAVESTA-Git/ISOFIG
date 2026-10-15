@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1 · 2026-10-15
+
+- `hidden` on a param keeps its value for the model and skips its control.
+- The preview bundles `export { x as default }`.
+
 ## 0.4.0 · 2026-10-15
 
 - `kind: "action"`: a button the model counts, for one-off events such as deleting a pod.
