@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.0 · 2026-10-15
+
+- Orbit: `isofig/orbit` lets the reader drag a figure (or use the turn buttons) to see it from another angle. The scene is redrawn in the browser with its own projection, shading and paint order, and the runtime keeps animating it (`retarget`).
+- `orbitOnDemand(el, load)` in the runtime loads the orbit only when needed: prefetch on hover or focus, enable on press. The orbit module is 5.7 KB gzip plus the spec; reading the page costs nothing extra.
+- `renderFigure(spec, { orbit: true })` adds the turn buttons and the drag hint; `drawScene` is the browser-safe part of the core.
+- `--format page --orbit` previews it.
+
 ## 0.7.0 · 2026-10-15
 
 - Accessibility, from an audit of 37 lessons: `say` stays quiet until the reader touches the figure, waits for 1.5 s of silence and never talks over a preset note; changing a control announces the readout once.
