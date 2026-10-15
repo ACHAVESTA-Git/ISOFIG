@@ -1,7 +1,7 @@
 import type { Vec2 } from "./math.ts";
 
 /** Medio píxel del viewBox: a 1× no se nota y ahorra ~40 % del SVG frente a décimas. */
-const halves = (n: number): number => Math.round(n * 2);
+const halves = (n: number): number => Math.round(Math.round(n * 2e6) / 1e6);
 
 function num(t: number): string {
   const sign = t < 0 ? "-" : "";
