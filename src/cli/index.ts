@@ -46,35 +46,45 @@ const IMPORT = /^import\s+([\s\S]*?)\s+from\s+["']([^"']+)["'];?[ \t]*$/gm;
  * puede importar `./medidas.ts` desde `file://`. Los imports de paquetes (solo tipos) desaparecen al quitar tipos.
  */
 function bundle(entry: string): string {
-  const done = new Set<string>();
+  const names = new Map<string, string>();
   const out: string[] = [];
-  const visit = (file: string, defaultName: string) => {
-    if (done.has(file)) return;
-    done.add(file);
+  const visit = (file: string): string => {
+    const known = names.get(file);
+    if (known) return known;
+    const self = `__m${names.size}`;
+    names.set(file, self);
     let code = sourceOf(file);
     code = code.replace(IMPORT, (_all, what: string, from: string) => {
       if (!from.startsWith(".")) return "";
-      const target = resolve(dirname(file), /\.[cm]?[jt]s$/.test(from) ? from : `${from}.ts`);
-      const name = what.trim().startsWith("{") ? "" : what.split(",")[0].trim();
-      visit(target, name);
-      return "";
+      const target = visit(resolve(dirname(file), /\.[cm]?[jt]s$/.test(from) ? from : `${from}.ts`));
+      const [def, named] = what.trim().startsWith("{") ? ["", what] : [what.split(",")[0].trim(), what.slice(what.indexOf("{"))];
+      const lines = [];
+      if (def) lines.push(`const ${def} = ${target}.default;`);
+      if (named.includes("{")) lines.push(`const ${named.replace(/\s+as\s+/g, ": ")} = ${target};`);
+      return lines.join("\n");
     });
-    const local = defaultName || `__default${done.size}`;
+    const exported: string[] = [];
     code = code
-      .replace(/^export\s*\{([^}]*)\};?[ \t]*$/gm, (_all, list: string) =>
-        list
-          .split(",")
-          .map((s) => s.trim().match(/^(\w+)\s+as\s+default$/))
-          .filter((m): m is RegExpMatchArray => m !== null)
-          .map((m) => `const ${local} = ${m[1]};`)
-          .join("\n"),
-      )
-      .replace(/^export default /m, `const ${local} = `)
-      .replace(/^export /gm, "");
-    out.push(code);
+      .replace(/^export\s*\{([^}]*)\};?[ \t]*$/gm, (_all, list: string) => {
+        for (const s of list.split(",").map((x) => x.trim()).filter(Boolean)) {
+          const [local, as] = s.split(/\s+as\s+/);
+          exported.push(as ? `${as}: ${local}` : local);
+        }
+        return "";
+      })
+      .replace(/^export default /m, () => {
+        exported.push("default: __default");
+        return "const __default = ";
+      })
+      .replace(/^export\s+(const|let|var|function|class)\s+(\w+)/gm, (_all, kind: string, name: string) => {
+        exported.push(name);
+        return `${kind} ${name}`;
+      });
+    out.push(`const ${self} = (() => {\n${code}\nreturn { ${exported.join(", ")} };\n})();`);
+    return self;
   };
-  visit(entry, "__model");
-  return out.join("\n");
+  const root = visit(entry);
+  return `${out.join("\n")}\nconst __model = ${root}.default;`;
 }
 
 function page(html: string, modelFile: string | undefined, name: string | undefined, theme: string): string {
