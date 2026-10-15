@@ -1,14 +1,14 @@
 import type { Vec2 } from "./math.ts";
 
-const tenths = (n: number): number => Math.round(n * 10);
+/** Medio píxel del viewBox: a 1× no se nota y ahorra ~40 % del SVG frente a décimas. */
+const halves = (n: number): number => Math.round(n * 2);
 
 function num(t: number): string {
   const sign = t < 0 ? "-" : "";
   const a = Math.abs(t);
-  const i = Math.floor(a / 10);
-  const d = a % 10;
-  if (d === 0) return sign + String(i);
-  return sign + (i === 0 ? "" : String(i)) + "." + d;
+  const i = Math.floor(a / 2);
+  if (a % 2 === 0) return sign + String(i);
+  return sign + (i === 0 ? "" : String(i)) + ".5";
 }
 
 function join(tokens: string[]): string {
@@ -24,7 +24,7 @@ function join(tokens: string[]): string {
 
 /**
  * Polígonos o polilíneas en un solo atributo `d`: el primer punto absoluto, todo lo demás relativo y en
- * décimas. Las diferencias se toman entre valores ya redondeados, así no se acumula error.
+ * medios píxeles. Las diferencias se toman entre valores ya redondeados, así no se acumula error.
  */
 export function pathOf(polys: Vec2[][], closed: boolean): string {
   let out = "";
@@ -33,7 +33,7 @@ export function pathOf(polys: Vec2[][], closed: boolean): string {
   let first = true;
   for (const poly of polys) {
     if (poly.length === 0) continue;
-    const pts = poly.map(([x, y]) => [tenths(x), tenths(y)]);
+    const pts = poly.map(([x, y]) => [halves(x), halves(y)]);
     const [sx, sy] = pts[0];
     out += first ? "M" + join([num(sx), num(sy)]) : "m" + join([num(sx - cx), num(sy - cy)]);
     first = false;
@@ -62,7 +62,7 @@ export function pathOf(polys: Vec2[][], closed: boolean): string {
 
 /** Puntos como segmentos de largo cero; el trazo redondeado los vuelve círculos. */
 export function dotsOf(points: Vec2[]): string {
-  return points.map(([x, y]) => "M" + join([num(tenths(x)), num(tenths(y))]) + "h0").join("");
+  return points.map(([x, y]) => "M" + join([num(halves(x)), num(halves(y))]) + "h0").join("");
 }
 
 export const escapeHtml = (s: string): string =>

@@ -15,10 +15,10 @@ test("la cámara pone más cerca lo que está hacia el lector y arriba lo que su
   assert.ok(project(c, [0, 0, 10])[1] < project(c, [0, 0, 0])[1]);
 });
 
-test("pathOf escribe relativo, en décimas y sin espacios de sobra", () => {
+test("pathOf escribe relativo, en medios píxeles y sin espacios de sobra", () => {
   assert.equal(pathOf([[[10, 20], [12.5, 20], [12.5, 18]]], true), "M10 20l2.5 0 0-2z");
   assert.equal(pathOf([[[0, 0], [0.5, 0.5]]], false), "M0 0l.5.5");
-  assert.equal(dotsOf([[1, 2], [3.25, 4]]), "M1 2h0M3.3 4h0");
+  assert.equal(dotsOf([[1, 2], [3.3, 4]]), "M1 2h0M3.5 4h0");
 });
 
 test("una caja muestra tapa y dos lados, con bordes de silueta y de pliegue", () => {
