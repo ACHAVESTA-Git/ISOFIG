@@ -115,6 +115,14 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
   const fmt = new Intl.NumberFormat(d.lang);
   el.querySelector(".isofig-controls")?.removeAttribute("hidden");
   const params: Params = Object.fromEntries(d.params.map((p) => [p.id, p.value]));
+  // Si el runtime monta tarde (carga diferida), el lector pudo mover un control antes: manda lo que muestra la página.
+  el.querySelectorAll<HTMLInputElement>("input[data-param]").forEach((input) => {
+    const id = input.dataset["param"]!;
+    if (input.type === "checkbox") params[id] = input.checked ? 1 : 0;
+    else if (input.type === "radio") {
+      if (input.checked) params[id] = Number(input.value);
+    } else params[id] = Number(input.value);
+  });
   const groups = new Map<string, Group>();
   // Al girar la figura (isofig/orbit) el SVG se redibuja: se vuelven a buscar las piezas y conservan su estado.
   const collect = () => {

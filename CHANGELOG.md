@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.1 · 2026-10-15
+
+- On mount the runtime reads the current value of every control, so a reader who moved one before a lazy mount keeps it.
+
 ## 0.8.0 · 2026-10-15
 
 - Orbit: `isofig/orbit` lets the reader drag a figure (or use the turn buttons) to see it from another angle. The scene is redrawn in the browser with its own projection, shading and paint order, and the runtime keeps animating it (`retarget`).
