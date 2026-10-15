@@ -60,7 +60,17 @@ function bundle(entry: string): string {
       return "";
     });
     const local = defaultName || `__default${done.size}`;
-    code = code.replace(/^export default /m, `const ${local} = `).replace(/^export /gm, "");
+    code = code
+      .replace(/^export\s*\{([^}]*)\};?[ \t]*$/gm, (_all, list: string) =>
+        list
+          .split(",")
+          .map((s) => s.trim().match(/^(\w+)\s+as\s+default$/))
+          .filter((m): m is RegExpMatchArray => m !== null)
+          .map((m) => `const ${local} = ${m[1]};`)
+          .join("\n"),
+      )
+      .replace(/^export default /m, `const ${local} = `)
+      .replace(/^export /gm, "");
     out.push(code);
   };
   visit(entry, "__model");
