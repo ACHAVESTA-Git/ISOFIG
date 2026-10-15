@@ -4,7 +4,7 @@ import { circle, cornerSteps, frameOf, prism, roundedRect, segmentsFor, type Mes
 import type { Part, Tone } from "./spec.ts";
 
 export type Solid = Extract<Part, { kind: "box" | "cylinder" | "prism" }>;
-export type Detail = Extract<Part, { kind: "ticks" | "dots" | "line" }>;
+export type Detail = Extract<Part, { kind: "ticks" | "dots" | "line" | "label" }>;
 
 /** Una pieza sólida con sus detalles: la unidad del orden de pintado. */
 export interface Item {
@@ -31,6 +31,8 @@ function shift(p: Part, d: Vec3): Part {
       return { ...p, plan: p.plan.map(([x, y]): Vec2 => [x + d[0], y + d[1]]), z: p.z + d[2] };
     case "ticks":
       return { ...p, from: add(p.from, d) };
+    case "label":
+      return { ...p, at: add(p.at, d) };
     case "dots":
     case "line":
       return { ...p, points: p.points.map((q) => add(q, d)) };

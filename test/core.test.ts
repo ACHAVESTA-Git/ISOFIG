@@ -59,3 +59,22 @@ test("los textos caen al inglés si falta el idioma", () => {
   const r = renderFigure(tokenBucket, { lang: "pt" });
   assert.match(r.html, /Token bucket/);
 });
+
+test("el importador de compose arma un rack por servicio, en filas según dependencias", async () => {
+  const { fromCompose } = await import("../src/core/importers/compose.ts");
+  const spec = fromCompose({
+    services: {
+      web: { ports: [{ published: "80", target: 80 }], depends_on: { api: {} }, networks: { frente: null } },
+      api: { depends_on: ["db"], networks: ["frente"], deploy: { replicas: 2 } },
+      db: { volumes: [{ type: "volume", source: "datos" }] },
+    },
+  });
+  const ids = spec.parts.map((p) => p.id);
+  assert.ok(ids.includes("svc-0-0-u0"), "db en la fila del fondo");
+  assert.ok(ids.includes("svc-1-0-u1"), "api con dos réplicas");
+  assert.ok(ids.includes("svc-2-0-port-0"), "web con su puerto");
+  assert.ok(ids.includes("vol-0"));
+  const r = renderFigure(spec, { lang: "es" });
+  assert.deepEqual(r.errors, []);
+  assert.deepEqual(r.warnings, []);
+});

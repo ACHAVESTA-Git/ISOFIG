@@ -76,7 +76,17 @@ export interface LinePart extends Omit<PartBase, "group"> {
   bold?: boolean;
 }
 
-export type Part = BoxPart | CylinderPart | PrismPart | TicksPart | DotsPart | LinePart;
+/** Texto grabado en una cara: `top` (se lee a lo largo de y), `x` o `y` (caras que miran al lector, de pie). */
+export interface LabelPart extends Omit<PartBase, "group"> {
+  kind: "label";
+  on: string;
+  at: Vec3;
+  text: Text;
+  size?: number;
+  face?: "top" | "x" | "y";
+}
+
+export type Part = BoxPart | CylinderPart | PrismPart | TicksPart | DotsPart | LinePart | LabelPart;
 
 export interface GroupSpec {
   /** Desplazamientos extremos (mundo) para que la figura quepa en cualquier pose. */

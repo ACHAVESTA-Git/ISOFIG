@@ -5,6 +5,7 @@ import { dirname, extname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 import { renderFigure } from "../core/render.ts";
+import { fromCompose } from "../core/importers/compose.ts";
 import type { FigureSpec } from "../core/spec.ts";
 
 const HELP = `isofig: isometric figures from a spec
@@ -12,6 +13,8 @@ const HELP = `isofig: isometric figures from a spec
   isofig build <spec> [-o file] [--format html|module|json|page] [--lang en] [--n 1] [--model file]
   isofig check <spec> [--lang en] [--strict]
   isofig add angular <dir>    copy the standalone Angular component into your app
+  isofig import compose <file.json|-> [-o spec.json]
+                              a figure from \`docker compose config --format json\`
 
   html    the <figure> markup (default)
   module  a TS module exporting { id, html, data }, for Angular
@@ -78,6 +81,19 @@ async function main() {
   const [command, file] = positionals;
   if (values.help || !command || !file) {
     console.log(HELP);
+    return;
+  }
+  if (command === "import") {
+    const source = positionals[2];
+    if (file !== "compose" || !source) {
+      console.log(HELP);
+      process.exit(1);
+    }
+    const raw = source === "-" ? readFileSync(0, "utf8") : readFileSync(resolve(source), "utf8");
+    const spec = fromCompose(JSON.parse(raw));
+    const json = JSON.stringify(spec, null, 2) + "\n";
+    if (values.out) writeFileSync(values.out, json);
+    else process.stdout.write(json);
     return;
   }
   if (command === "add") {
