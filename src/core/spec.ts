@@ -105,8 +105,11 @@ export interface ParamSpec {
   unit?: Text;
   /** Unidad para lectores de pantalla («peticiones por segundo»); por defecto, `unit`. */
   spoken?: Text;
-  /** `range` (por defecto), `toggle` (0 o 1) o `choice` (el valor es el índice en `options`). */
-  kind?: "range" | "toggle" | "choice";
+  /**
+   * `range` (por defecto), `toggle` (0 o 1), `choice` (el valor es el índice en `options`) o `action`: un botón
+   * que suma 1 cada vez que se pulsa; el modelo compara el contador para saber que pasó («borrar un pod»).
+   */
+  kind?: "range" | "toggle" | "choice" | "action";
   options?: Text[];
 }
 

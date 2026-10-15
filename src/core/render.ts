@@ -182,6 +182,9 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
           `<span>${label}</span></label>`
         );
       }
+      if (p.kind === "action") {
+        return `<button type="button" class="isofig-chip isofig-action" data-param="${esc(p.id)}" data-action>${label}</button>`;
+      }
       if (p.kind === "choice") {
         const opts = params[i].options ?? [];
         return (

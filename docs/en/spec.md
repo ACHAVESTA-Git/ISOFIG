@@ -91,7 +91,7 @@ presets: [
 ],
 ```
 
-- `toggle` is 0 or 1; `choice` is the index of the chosen option.
+- `toggle` is 0 or 1; `choice` is the index of the chosen option; `action` is a button that adds 1 when pressed (the model compares the counter to know something happened, e.g. "delete a pod").
 - `presets` are "Try to break it" buttons: they set params, show `note` and announce it to screen readers.
 - A model can tint a group with `s: "ok" | "warn" | "fail"` and announce an event with `say`.
 

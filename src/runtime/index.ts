@@ -197,7 +197,7 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     const p = d.params.find((q) => q.id === id);
     if (!p) return;
     const value = fmt.format(params[id]);
-    for (const input of el.querySelectorAll<HTMLInputElement>(`[data-param="${id}"]`)) {
+    for (const input of el.querySelectorAll<HTMLInputElement>(`input[data-param="${id}"]`)) {
       if (input.type === "checkbox") input.checked = params[id] !== 0;
       else if (input.type === "radio") input.checked = Number(input.value) === params[id];
       else {
@@ -217,6 +217,14 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     wake();
   };
   const onPreset = (e: Event) => {
+    const action = (e.target as HTMLElement).closest<HTMLElement>("[data-action]");
+    const id = action?.dataset["param"];
+    if (id) {
+      params[id] = (params[id] ?? 0) + 1;
+      if (!reduced) setPlaying(true);
+      wake();
+      return;
+    }
     const button = (e.target as HTMLElement).closest<HTMLElement>("[data-preset]");
     const preset = button ? d.presets?.[Number(button.dataset["preset"])] : undefined;
     if (!preset) return;

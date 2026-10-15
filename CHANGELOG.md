@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0 · 2026-10-15
+
+- `kind: "action"`: a button the model counts, for one-off events such as deleting a pod.
+- The runtime paints the first frame on mount, even before the IntersectionObserver reports.
+
 ## 0.3.0 · 2026-10-15
 
 - `--format page` bundles the model's local imports, so a model that shares measures with its spec previews.

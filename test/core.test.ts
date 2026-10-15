@@ -113,3 +113,13 @@ test("los desvíos, interruptores y selectores salen como controles nativos", ()
   assert.match(r.html, /class="isofig-note" aria-live="polite"/);
   assert.deepEqual(r.data.presets, [{ values: { on: 0 }, note: "Se apaga todo." }]);
 });
+
+test("una acción es un botón que el modelo cuenta", () => {
+  const r = renderFigure({
+    id: "acc",
+    title: "t",
+    params: [{ id: "borrar", label: "Borrar un pod", kind: "action", min: 0, max: 99, value: 0 }],
+    parts: [{ id: "a", kind: "box", at: [0, 0, 0], size: [4, 4, 4] }],
+  });
+  assert.match(r.html, /<button type="button" class="isofig-chip isofig-action" data-param="borrar" data-action>Borrar un pod<\/button>/);
+});
