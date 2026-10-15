@@ -6,7 +6,7 @@ import { paintOrder } from "./order.ts";
 import { audit } from "./audit.ts";
 import { drawMesh, SHADES } from "./shade.ts";
 import { dotsOf, escapeHtml as esc, pathOf } from "./serialize.ts";
-import { textOf, type FigureSpec } from "./spec.ts";
+import { textOf, type FigureSpec, type LabelPart } from "./spec.ts";
 
 export interface RenderOptions {
   lang?: string;
@@ -44,7 +44,22 @@ const LABELS: Record<string, { play: string; pause: string; fig: string }> = {
 
 const PLANES = { xy: [[1, 0, 0], [0, 1, 0]], xz: [[1, 0, 0], [0, 0, 1]], yz: [[0, 1, 0], [0, 0, 1]] } as const;
 
-function itemSvg(c: Camera, item: Item): string {
+const FACES: Record<NonNullable<LabelPart["face"]>, [Vec3, Vec3]> = {
+  top: [[0, 1, 0], [1, 0, 0]],
+  x: [[0, 1, 0], [0, 0, -1]],
+  y: [[-1, 0, 0], [0, 0, -1]],
+};
+
+/** El texto se escribe en coordenadas de la cara: la matriz lleva su eje de lectura y su «abajo» a pantalla. */
+function labelSvg(c: Camera, l: LabelPart, lang: string): string {
+  const [along, down] = FACES[l.face ?? "top"];
+  const k = c.scale;
+  const [e, f] = project(c, l.at);
+  const m = [k * dot(c.right, along), k * dot(c.down, along), k * dot(c.right, down), k * dot(c.down, down), e, f];
+  return `<text class="tx" font-size="${l.size ?? 6}" transform="matrix(${m.map((v) => Math.round(v * 1000) / 1000).join(" ")})">${esc(textOf(l.text, lang))}</text>`;
+}
+
+function itemSvg(c: Camera, item: Item, lang: string): string {
   const drawn = drawMesh(c, meshOf(item.solid, c));
   const lines = linesOf(item.details);
   const proj = (pts: Vec3[]) => pts.map((p) => project(c, p));
@@ -57,6 +72,7 @@ function itemSvg(c: Camera, item: Item): string {
   if (lines.fine.length) body += `<path class="l" d="${pathOf(lines.fine.map(proj), false)}"/>`;
   if (lines.bold.length) body += `<path class="lb" d="${pathOf(lines.bold.map(proj), false)}"/>`;
   if (lines.dots.length) body += `<path class="d" d="${dotsOf(proj(lines.dots))}"/>`;
+  for (const d of item.details) if (d.kind === "label") body += labelSvg(c, d, lang);
   const g = item.group ? ` data-g="${esc(item.group)}"` : "";
   const hidden = item.hidden ? ` opacity="0"` : "";
   return `<g class="${item.tone}"${g}${hidden}>${body}</g>`;
@@ -99,7 +115,7 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
   const { items, errors } = buildItems(spec.parts);
   const cam = fitCamera(spec.camera ?? {}, fitPoints(spec, items), W, H, spec.pad ?? 24);
   const { order, cycles } = paintOrder(cam, items.map((i) => i.box), items.map((i) => i.id));
-  const art = order.map((k) => itemSvg(cam, items[k])).join("");
+  const art = order.map((k) => itemSvg(cam, items[k], lang)).join("");
 
   const id = spec.id;
   const title = textOf(spec.title, lang);

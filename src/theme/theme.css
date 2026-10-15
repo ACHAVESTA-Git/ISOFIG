@@ -127,6 +127,12 @@
 .isofig-art .d { stroke-width: 1.3; }
 .isofig-art .lit :is(.e, .l, .lb, .d) { stroke: color-mix(in oklab, var(--isofig-accent), var(--isofig-edge) 45%); }
 .isofig-art .h { fill: var(--isofig-halo); }
+.isofig-art .tx {
+  fill: var(--isofig-ink);
+  font-family: var(--isofig-mono);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
 
 .isofig-controls {
   display: flex;
