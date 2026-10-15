@@ -175,6 +175,7 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
     : "";
   const controls = (spec.params ?? [])
     .map((p, i) => {
+      if (p.hidden) return "";
       const label = esc(textOf(p.label, lang));
       if (p.kind === "toggle") {
         return (

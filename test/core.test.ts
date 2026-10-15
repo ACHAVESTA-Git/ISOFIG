@@ -123,3 +123,14 @@ test("una acción es un botón que el modelo cuenta", () => {
   });
   assert.match(r.html, /<button type="button" class="isofig-chip isofig-action" data-param="borrar" data-action>Borrar un pod<\/button>/);
 });
+
+test("un parámetro oculto llega al modelo pero no se dibuja su control", () => {
+  const r = renderFigure({
+    id: "oc",
+    title: "t",
+    params: [{ id: "fijo", label: "Fijo", min: 0, max: 9, value: 4, hidden: true }],
+    parts: [{ id: "a", kind: "box", at: [0, 0, 0], size: [4, 4, 4] }],
+  });
+  assert.doesNotMatch(r.html, /data-param="fijo"/);
+  assert.equal(r.data.params[0].value, 4);
+});
