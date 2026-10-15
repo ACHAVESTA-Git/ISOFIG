@@ -94,7 +94,7 @@ const model: Model<State, { refill: number; rate: number }> = {
   view(s, _p, ctx) {
     const groups: Record<string, GroupView> = {};
     const whole = Math.floor(s.tokens);
-    for (let i = 0; i < CAP; i++) groups[`coin-${i}`] = { o: i < whole ? 1 : 0 };
+    for (let i = 0; i < CAP; i++) groups[`coin-${i}`] = { o: i < whole ? 1 : 0, snap: true };
     const frac = s.tokens - whole;
     const full = whole >= CAP;
     const target = whole * COIN_STEP - NOZZLE_DROP;

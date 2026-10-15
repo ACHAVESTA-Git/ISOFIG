@@ -61,7 +61,7 @@ const spec: FigureSpec = {
     { id: "arm-screws", kind: "dots", on: "arm", points: [[8, MAG[1], 81], [40, MAG[1] - 4, 81], [40, MAG[1] + 4, 81]] },
     { id: "nozzle", kind: "cylinder", at: [MAG[0], MAG[1], 67], r: 6, h: 8, bevel: 0.6, tone: "hi", mount: ["arm"] },
     { id: "refill", kind: "cylinder", at: [MAG[0], MAG[1], 62], r: 14, h: 3, bevel: 0.7, tone: "lit", group: "refill", hidden: true, float: true },
-    { id: "spent-{i}", kind: "cylinder", at: [MAG[0], MAG[1], 46], r: 9, h: 2.4, bevel: 0.6, tone: "lit", group: "spent-{i}", hidden: true, float: true, repeat: { count: 4, step: [0, 0, 0] } },
+    { id: "spent-{i}", kind: "cylinder", at: [MAG[0], MAG[1], 46], r: 14, h: 3, bevel: 0.7, tone: "lit", group: "spent-{i}", hidden: true, float: true, repeat: { count: 4, step: [0, 0, 0] } },
 
     { id: "rail", kind: "box", at: [RAIL_X, 14, 11], size: [8, 236, 3], radius: 1, bevel: 0.6, tone: "mid" },
     { id: "rail-groove", kind: "line", on: "rail", points: [[RAIL_X + 4, 18, 14], [RAIL_X + 4, 246, 14]] },

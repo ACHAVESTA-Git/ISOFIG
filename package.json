@@ -25,7 +25,12 @@
     "src/astro",
     "src/angular",
     "src/theme",
-    "skill"
+    "skill",
+    "docs/es",
+    "docs/en",
+    "examples/token-bucket/spec.ts",
+    "examples/token-bucket/model.ts",
+    "NOTICE.md"
   ],
   "engines": {
     "node": ">=22.18"
