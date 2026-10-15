@@ -12,6 +12,9 @@
   --isofig-shade: #9a9a90;
   --isofig-halo: #1d1e1c14;
   --isofig-chip: #ebeae3;
+  --isofig-ink-on-color: #0c1a14;
+  --isofig-on-accent: #06140d;
+  --isofig-focus: var(--isofig-accent);
   --isofig-ok: #2fb58b;
   --isofig-warn: #d9a23a;
   --isofig-fail: #d4583f;
@@ -127,6 +130,8 @@
   stroke-linejoin: round;
 }
 .isofig-art .lit { --fe: color-mix(in oklab, var(--isofig-accent), var(--isofig-edge) 45%); }
+/* Sobre una cara de color (acento o estado) el texto grabado va en tinta oscura en los dos temas. */
+.isofig-art :is(.lit, [data-state]) { --fx: var(--isofig-ink-on-color); }
 
 .isofig-art .t { fill: var(--ft); stroke: var(--ft); }
 .isofig-art .b { fill: var(--fb); stroke: var(--fb); }
@@ -173,7 +178,7 @@
 }
 .isofig-chip:focus-visible,
 .isofig-param input:focus-visible {
-  outline: 2px solid var(--isofig-accent);
+  outline: 2px solid var(--isofig-focus);
   outline-offset: 2px;
 }
 
@@ -236,10 +241,10 @@
 }
 .isofig-choice label:has(input:checked) {
   background: var(--isofig-accent);
-  color: var(--isofig-card);
+  color: var(--isofig-on-accent);
 }
 .isofig-choice label:has(input:focus-visible) {
-  outline: 2px solid var(--isofig-accent);
+  outline: 2px solid var(--isofig-focus);
   outline-offset: 2px;
 }
 
@@ -260,7 +265,7 @@
   color: var(--isofig-ink);
 }
 .isofig-note:empty {
-  display: none;
+  margin: 0;
 }
 
 .isofig-say {

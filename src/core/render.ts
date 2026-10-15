@@ -263,7 +263,7 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
   const n = options.n !== undefined ? `<span class="isofig-n">${labels.fig} ${esc(String(options.n))}</span>` : "";
   const html =
     `<figure class="isofig" data-isofig="${esc(id)}"><div class="isofig-card">` +
-    `<div class="isofig-top">${n}<span class="isofig-title">${esc(title)}</span></div>` +
+    `<div class="isofig-top">${n}<span class="isofig-title" aria-hidden="true">${esc(title)}</span></div>` +
     svg +
     `<div class="isofig-bottom"><span class="isofig-hint">${esc(textOf(spec.hint, lang))}</span>` +
     `<span class="isofig-readout">${esc(readout)}</span></div></div>` +

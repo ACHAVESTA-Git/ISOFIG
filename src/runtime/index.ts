@@ -120,8 +120,28 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
   const readout = el.querySelector<HTMLElement>(".isofig-readout");
   const say = el.querySelector<HTMLElement>(".isofig-say");
   const note = el.querySelector<HTMLElement>(".isofig-note");
-  let said = "";
-  let saidAt = 0;
+  // Los avisos esperan a que el lector toque la figura, hablan tras un silencio y nunca encima de una nota.
+  let touched = false;
+  let pending = "";
+  let lastSaid = "";
+  let quietUntil = 0;
+  let voice = 0;
+  const flush = () => {
+    voice = 0;
+    const wait = quietUntil - performance.now();
+    if (wait > 0) {
+      voice = window.setTimeout(flush, wait);
+      return;
+    }
+    if (say && pending && pending !== lastSaid) say.textContent = lastSaid = pending;
+    pending = "";
+  };
+  const speak = (text: string, delay = 1500) => {
+    if (!touched || !text || text === pending || text === lastSaid) return;
+    pending = text;
+    clearTimeout(voice);
+    voice = window.setTimeout(flush, delay);
+  };
   const play = el.querySelector<HTMLButtonElement>(".isofig-play");
   let state = m.init(params, ctx);
   // Solo para capturas: `data-isofig-advance="3"` arranca la figura 3 s ya simulados (un headless no corre rAF).
@@ -181,11 +201,7 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     }
     const text = view.readout ?? d.params.reduce((s, p) => s.replaceAll(`{${p.id}}`, String(params[p.id])), d.readout);
     if (readout && readout.textContent !== text) readout.textContent = text;
-    if (say && view.say && view.say !== said && now - saidAt > 1200) {
-      said = view.say;
-      saidAt = now;
-      say.textContent = view.say;
-    }
+    if (view.say) speak(view.say);
     if (visible && (playing || moving)) wake();
     else last = 0;
   };
@@ -214,12 +230,17 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     if (!id) return;
     params[id] = input.type === "checkbox" ? (input.checked ? 1 : 0) : Number(input.value);
     show(id);
+    touched = true;
     wake();
+    clearTimeout(echo);
+    echo = window.setTimeout(() => speak(readout?.textContent ?? "", 0), 1200);
   };
+  let echo = 0;
   const onPreset = (e: Event) => {
     const action = (e.target as HTMLElement).closest<HTMLElement>("[data-action]");
     const id = action?.dataset["param"];
     if (id) {
+      touched = true;
       params[id] = (params[id] ?? 0) + 1;
       if (!reduced) setPlaying(true);
       wake();
@@ -233,11 +254,18 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
       show(id);
     }
     if (preset.reset) state = m.init(params, ctx);
+    touched = true;
+    quietUntil = performance.now() + 2500;
     if (note) note.textContent = preset.note;
-    if (!reduced) setPlaying(true);
+    if (reduced) {
+      // Sin animación, el desvío muestra directamente su efecto: unos segundos ya simulados.
+      for (let i = 0; i < 8 * 60; i++) state = m.step?.(state, 1 / 60, params, ctx) ?? state;
+      jump = true;
+    } else setPlaying(true);
     wake();
   };
   const onPlay = () => {
+    touched = true;
     setPlaying(!playing);
     wake();
   };
@@ -261,6 +289,8 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     el.removeEventListener("click", onPreset);
     play?.removeEventListener("click", onPlay);
     cancelAnimationFrame(frame);
+    clearTimeout(voice);
+    clearTimeout(echo);
   };
 }
 
