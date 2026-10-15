@@ -91,7 +91,7 @@ presets: [
 ],
 ```
 
-- `toggle` vale 0 o 1; `choice` vale el índice de la opción elegida.
+- `toggle` vale 0 o 1; `choice` vale el índice de la opción elegida; `action` es un botón que suma 1 al pulsarlo (el modelo compara el contador para saber que pasó algo, p. ej. «borrar un pod»).
 - `presets` son botones «Prueba a romperlo»: fijan parámetros, muestran `note` y la anuncian a los lectores de pantalla.
 - El modelo puede teñir un grupo con `s: "ok" | "warn" | "fail"` y anunciar un evento con `say`.
 
