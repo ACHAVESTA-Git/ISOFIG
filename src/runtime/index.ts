@@ -202,7 +202,7 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
 
 const live = new Map<HTMLElement, () => void>();
 
-/** Monta las figuras aún sin montar; una figura con datos rotos no impide montar las demás. */
+/** Una figura con datos rotos no impide montar las demás. */
 export function mountAll(root: ParentNode = document): void {
   root.querySelectorAll<HTMLElement>("[data-isofig]:not([data-isofig-live])").forEach((el) => {
     el.dataset["isofigLive"] = "";
@@ -214,7 +214,7 @@ export function mountAll(root: ParentNode = document): void {
   });
 }
 
-/** Detiene todas las figuras montadas, p. ej. antes de que un router reemplace la página. */
+/** Para llamar antes de que un router reemplace la página. */
 export function unmountAll(): void {
   for (const stop of live.values()) stop();
   live.clear();
