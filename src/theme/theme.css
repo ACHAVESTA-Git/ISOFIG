@@ -1,0 +1,179 @@
+.isofig {
+  --isofig-paper: #f6f6f2;
+  --isofig-card: #fbfbf8;
+  --isofig-ink: #1d1e1c;
+  --isofig-ink-soft: #55574f;
+  --isofig-edge: #2a2b28;
+  --isofig-lo: #e4e3dc;
+  --isofig-mid: #efeee8;
+  --isofig-hi: #fdfdfb;
+  --isofig-accent: #2fb58b;
+  --isofig-light: #ffffff;
+  --isofig-shade: #9a9a90;
+  --isofig-halo: #1d1e1c14;
+  --isofig-chip: #ebeae3;
+  --isofig-radius: 18px;
+  --isofig-font: ui-sans-serif, system-ui, sans-serif;
+  --isofig-mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .isofig {
+    --isofig-paper: #121312;
+    --isofig-card: #171816;
+    --isofig-ink: #eceee8;
+    --isofig-ink-soft: #a9aca3;
+    --isofig-edge: #c9ccc3;
+    --isofig-lo: #1c1d1b;
+    --isofig-mid: #232421;
+    --isofig-hi: #2c2e2a;
+    --isofig-accent: #5fd6ae;
+    --isofig-light: #50534c;
+    --isofig-shade: #000000;
+    --isofig-halo: #00000059;
+    --isofig-chip: #262824;
+  }
+}
+
+:root[data-theme="dark"] .isofig {
+  --isofig-paper: #121312;
+  --isofig-card: #171816;
+  --isofig-ink: #eceee8;
+  --isofig-ink-soft: #a9aca3;
+  --isofig-edge: #c9ccc3;
+  --isofig-lo: #1c1d1b;
+  --isofig-mid: #232421;
+  --isofig-hi: #2c2e2a;
+  --isofig-accent: #5fd6ae;
+  --isofig-light: #50534c;
+  --isofig-shade: #000000;
+  --isofig-halo: #00000059;
+  --isofig-chip: #262824;
+}
+
+.isofig {
+  margin: 0;
+  font-family: var(--isofig-font);
+  color: var(--isofig-ink);
+}
+
+.isofig-card {
+  background: var(--isofig-card);
+  border-radius: var(--isofig-radius);
+  padding: 14px 16px;
+  box-shadow: 0 1px 2px var(--isofig-halo), 0 12px 32px -18px var(--isofig-halo);
+}
+
+.isofig-top,
+.isofig-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.78rem;
+  color: var(--isofig-ink-soft);
+}
+
+.isofig-title {
+  margin-left: auto;
+  color: var(--isofig-ink);
+  font-weight: 600;
+}
+
+.isofig-readout {
+  font-family: var(--isofig-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--isofig-ink);
+  text-align: right;
+}
+
+.isofig-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 6px 0;
+  overflow: visible;
+}
+
+.isofig-art g {
+  --c: var(--isofig-mid);
+}
+.isofig-art .lo { --c: var(--isofig-lo); }
+.isofig-art .hi { --c: var(--isofig-hi); }
+.isofig-art .lit { --c: var(--isofig-accent); }
+
+.isofig-art .t { color: color-mix(in oklab, var(--c), var(--isofig-light) 40%); }
+.isofig-art .b { color: color-mix(in oklab, var(--c), var(--isofig-light) 20%); }
+.isofig-art .s3 { color: var(--c); }
+.isofig-art .s2 { color: color-mix(in oklab, var(--c), var(--isofig-shade) 12%); }
+.isofig-art .s1 { color: color-mix(in oklab, var(--c), var(--isofig-shade) 24%); }
+.isofig-art .s0 { color: color-mix(in oklab, var(--c), var(--isofig-shade) 36%); }
+
+.isofig-art :is(.t, .b, .s0, .s1, .s2, .s3) {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 0.35;
+  stroke-linejoin: round;
+}
+
+.isofig-art :is(.e, .l, .lb, .d) {
+  fill: none;
+  stroke: var(--isofig-edge);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.isofig-art .e { stroke-width: 0.7; }
+.isofig-art .l { stroke-width: 0.45; opacity: 0.7; }
+.isofig-art .lb { stroke-width: 0.6; }
+.isofig-art .d { stroke-width: 1.3; }
+.isofig-art .lit :is(.e, .l, .lb, .d) { stroke: color-mix(in oklab, var(--isofig-accent), var(--isofig-edge) 45%); }
+.isofig-art .h { fill: var(--isofig-halo); }
+
+.isofig-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 10px;
+  font-size: 0.82rem;
+}
+
+.isofig-chip {
+  min-height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--isofig-chip);
+  color: var(--isofig-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.isofig-chip:focus-visible,
+.isofig-param input:focus-visible {
+  outline: 2px solid var(--isofig-accent);
+  outline-offset: 2px;
+}
+
+.isofig-param {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--isofig-chip);
+}
+.isofig-param input {
+  accent-color: var(--isofig-accent);
+  min-height: 24px;
+  width: 120px;
+}
+.isofig-param output {
+  min-width: 4.5ch;
+  font-family: var(--isofig-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.isofig figcaption {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--isofig-ink-soft);
+}

@@ -1,0 +1,51 @@
+{
+  "name": "isofig",
+  "version": "0.1.0",
+  "description": "Explain technical ideas as small, crafted isometric machines: build-time SVG, a tiny animation runtime, Astro and Angular adapters, and a Claude Code skill.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "isofig": "./dist/cli/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/core/index.d.ts",
+      "default": "./dist/core/index.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime/index.d.ts",
+      "default": "./dist/runtime/index.js"
+    },
+    "./astro": "./src/astro/Figure.astro",
+    "./theme.css": "./src/theme/theme.css",
+    "./angular": "./src/angular/isofig-figure.ts"
+  },
+  "files": [
+    "dist",
+    "src/astro",
+    "src/angular",
+    "src/theme",
+    "skill"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.check.json",
+    "test": "node --no-warnings --test \"test/**/*.test.ts\"",
+    "example": "node src/cli/index.ts build examples/token-bucket/spec.ts --format page -o examples/token-bucket/preview.html --model examples/token-bucket/model.ts"
+  },
+  "peerDependencies": {
+    "astro": ">=5"
+  },
+  "peerDependenciesMeta": {
+    "astro": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2"
+  }
+}
