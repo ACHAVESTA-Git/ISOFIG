@@ -39,14 +39,8 @@ function sourceOf(file: string): string {
 }
 
 function page(html: string, modelFile: string | undefined, name: string | undefined, theme: string): string {
-  const runtimeFile = [resolve(pkg, "dist/runtime/index.js"), resolve(pkg, "src/runtime/index.ts")].find((f) => {
-    try {
-      readFileSync(f);
-      return true;
-    } catch {
-      return false;
-    }
-  })!;
+  const fromSource = import.meta.url.endsWith(".ts");
+  const runtimeFile = resolve(pkg, fromSource ? "src/runtime/index.ts" : "dist/runtime/index.js");
   const runtime = sourceOf(runtimeFile).replace(/^export /gm, "");
   const model = modelFile
     ? sourceOf(resolve(modelFile))

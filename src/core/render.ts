@@ -21,7 +21,7 @@ export interface RuntimeData {
   tau: number;
   basis: number[];
   spins: Record<string, number[]>;
-  params: { id: string; value: number; unit: string }[];
+  params: { id: string; value: number; unit: string; spoken: string }[];
   bind: FigureSpec["bind"];
   readout: string;
   lang: string;
@@ -40,6 +40,13 @@ export interface Rendered {
 const LABELS: Record<string, { play: string; pause: string; fig: string }> = {
   es: { play: "Reproducir", pause: "Pausar", fig: "Fig." },
   en: { play: "Play", pause: "Pause", fig: "Fig." },
+};
+
+const TONES = ["lo", "mid", "hi", "lit"];
+
+const num = (v: unknown): number => {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
 };
 
 const PLANES = { xy: [[1, 0, 0], [0, 1, 0]], xz: [[1, 0, 0], [0, 0, 1]], yz: [[0, 1, 0], [0, 0, 1]] } as const;
@@ -75,7 +82,8 @@ function itemSvg(c: Camera, item: Item, lang: string): string {
   for (const d of item.details) if (d.kind === "label") body += labelSvg(c, d, lang);
   const g = item.group ? ` data-g="${esc(item.group)}"` : "";
   const hidden = item.hidden ? ` opacity="0"` : "";
-  return `<g class="${item.tone}"${g}${hidden}>${body}</g>`;
+  const tone = TONES.includes(item.tone) ? item.tone : "mid";
+  return `<g class="${tone}"${g}${hidden}>${body}</g>`;
 }
 
 function shadowSvg(c: Camera, items: Item[]): string {
@@ -118,15 +126,23 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
   const art = order.map((k) => itemSvg(cam, items[k], lang)).join("");
 
   const id = spec.id;
+  if (!/^[a-z0-9][a-z0-9-]*$/i.test(id)) errors.push(`id «${id}»: usa letras, números y guiones`);
   const title = textOf(spec.title, lang);
   const caption = textOf(spec.caption, lang);
-  const alt = textOf(spec.alt, lang) || caption;
+  const alt = textOf(spec.alt, lang);
+  const desc = alt && alt !== caption ? `<desc id="${esc(id)}-d">${esc(alt)}</desc>` : "";
   const svg =
-    `<svg class="isofig-art" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${id}-t ${id}-d">` +
-    `<title id="${id}-t">${esc(title)}</title><desc id="${id}-d">${esc(alt)}</desc>` +
+    `<svg class="isofig-art" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${esc(id)}-t"${desc ? ` aria-describedby="${esc(id)}-d"` : ""}>` +
+    `<title id="${esc(id)}-t">${esc(title)}</title>${desc}` +
     shadowSvg(cam, items) + art + `</svg>`;
 
-  const params = (spec.params ?? []).map((p) => ({ id: p.id, value: p.value, unit: textOf(p.unit, lang) }));
+  const fmt = new Intl.NumberFormat(lang);
+  const params = (spec.params ?? []).map((p) => ({
+    id: p.id,
+    value: num(p.value),
+    unit: textOf(p.unit, lang),
+    spoken: textOf(p.spoken, lang) || textOf(p.unit, lang),
+  }));
   const template = textOf(spec.readout, lang);
   const readout = params.reduce((s, p) => s.replaceAll(`{${p.id}}`, String(p.value)), template);
   const spins: Record<string, number[]> = {};
@@ -151,16 +167,16 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
   };
 
   const play = data.autoplay || spec.model
-    ? `<button type="button" class="isofig-chip isofig-play" aria-pressed="true" data-play="${labels.play}" data-pause="${labels.pause}">${labels.pause}</button>`
+    ? `<button type="button" class="isofig-chip isofig-play" data-play="${labels.play}" data-pause="${labels.pause}">${data.autoplay ? labels.pause : labels.play}</button>`
     : "";
   const controls = (spec.params ?? [])
-    .map((p) => {
-      const unit = textOf(p.unit, lang);
-      const shown = `${p.value}${unit ? " " + unit : ""}`;
+    .map((p, i) => {
+      const { unit, spoken } = params[i];
+      const value = fmt.format(num(p.value));
       return (
         `<label class="isofig-param"><span>${esc(textOf(p.label, lang))}</span>` +
-        `<input type="range" data-param="${esc(p.id)}" min="${p.min}" max="${p.max}" step="${p.step ?? 1}" value="${p.value}" aria-valuetext="${esc(shown)}">` +
-        `<output>${esc(shown)}</output></label>`
+        `<input type="range" data-param="${esc(p.id)}" min="${num(p.min)}" max="${num(p.max)}" step="${num(p.step ?? 1)}" value="${num(p.value)}" aria-valuetext="${esc(`${value} ${spoken}`.trim())}">` +
+        `<span class="isofig-value" aria-hidden="true">${esc(`${value} ${unit}`.trim())}</span></label>`
       );
     })
     .join("");
@@ -170,8 +186,8 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
     `<div class="isofig-top">${n}<span class="isofig-title">${esc(title)}</span></div>` +
     svg +
     `<div class="isofig-bottom"><span class="isofig-hint">${esc(textOf(spec.hint, lang))}</span>` +
-    `<output class="isofig-readout">${esc(readout)}</output></div></div>` +
-    (play || controls ? `<div class="isofig-controls">${play}${controls}</div>` : "") +
+    `<span class="isofig-readout">${esc(readout)}</span></div></div>` +
+    (play || controls ? `<div class="isofig-controls" hidden>${play}${controls}</div>` : "") +
     (caption ? `<figcaption>${esc(caption)}</figcaption>` : "") +
     `<script type="application/json" class="isofig-data">${JSON.stringify(data).replace(/</g, "\\u003c")}</script></figure>`;
 

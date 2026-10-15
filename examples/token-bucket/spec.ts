@@ -22,8 +22,8 @@ const spec: FigureSpec = {
   camera: { azimuth: 38, elevation: 30 },
   model: "token-bucket",
   params: [
-    { id: "refill", label: { en: "Refill", es: "Recarga" }, min: 0.5, max: 6, step: 0.5, value: 2, unit: { en: "tok/s", es: "fichas/s" } },
-    { id: "rate", label: { en: "Traffic", es: "Tráfico" }, min: 0.5, max: 8, step: 0.5, value: 3, unit: "req/s" },
+    { id: "refill", label: { en: "Refill", es: "Recarga" }, min: 0.5, max: 6, step: 0.5, value: 2, unit: { en: "tok/s", es: "fichas/s" }, spoken: { en: "tokens per second", es: "fichas por segundo" } },
+    { id: "rate", label: { en: "Traffic", es: "Tráfico" }, min: 0.5, max: 8, step: 0.5, value: 3, unit: "req/s", spoken: { en: "requests per second", es: "peticiones por segundo" } },
   ],
   groups: {
     refill: { extent: [[0, 0, -48]] },

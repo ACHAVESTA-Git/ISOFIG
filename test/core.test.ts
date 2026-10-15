@@ -78,3 +78,20 @@ test("el importador de compose arma un rack por servicio, en filas según depend
   assert.deepEqual(r.errors, []);
   assert.deepEqual(r.warnings, []);
 });
+
+test("la tarjeta no anuncia la lectura ni duplica el pie", () => {
+  const r = renderFigure(tokenBucket, { lang: "es" });
+  assert.doesNotMatch(r.html, /<output/);
+  assert.doesNotMatch(r.html, /aria-pressed/);
+  assert.doesNotMatch(r.html, /<desc/);
+  assert.match(r.html, /aria-labelledby="token-bucket-t"/);
+  assert.match(r.html, /class="isofig-controls" hidden/);
+  assert.match(r.html, /aria-valuetext="2 fichas por segundo"/);
+});
+
+test("un id con caracteres raros es un error, y los tonos desconocidos caen a mid", () => {
+  const r = renderFigure({ id: 'x" onload="y', title: "t", parts: [{ id: "a", kind: "box", at: [0, 0, 0], size: [4, 4, 4], tone: "zz" as never }] });
+  assert.equal(r.errors.length, 1);
+  assert.match(r.html, /<g class="mid">/);
+  assert.doesNotMatch(r.html, /onload="y/);
+});
