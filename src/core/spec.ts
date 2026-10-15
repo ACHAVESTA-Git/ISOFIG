@@ -103,6 +103,8 @@ export interface ParamSpec {
   value: number;
   step?: number;
   unit?: Text;
+  /** Unidad para lectores de pantalla («peticiones por segundo»); por defecto, `unit`. */
+  spoken?: Text;
 }
 
 /** Enlace declarativo parámetro → grupo, para figuras sin modelo propio. */

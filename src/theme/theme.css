@@ -143,6 +143,10 @@
   font-size: 0.82rem;
 }
 
+.isofig-controls[hidden] {
+  display: none;
+}
+
 .isofig-chip {
   min-height: 32px;
   padding: 0 14px;
@@ -172,7 +176,7 @@
   min-height: 24px;
   width: 120px;
 }
-.isofig-param output {
+.isofig-param .isofig-value {
   min-width: 4.5ch;
   font-family: var(--isofig-mono);
   font-variant-numeric: tabular-nums;

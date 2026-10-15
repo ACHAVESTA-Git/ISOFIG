@@ -32,7 +32,7 @@ export interface FigureData {
   tau: number;
   basis: number[];
   spins: Record<string, number[]>;
-  params: { id: string; value: number; unit: string }[];
+  params: { id: string; value: number; unit: string; spoken: string }[];
   bind?: { group: string; param: string; move?: number[]; spin?: number; fade?: boolean }[];
   readout: string;
   lang: string;
@@ -99,6 +99,8 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
   }
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const ctx: Ctx = { lang: d.lang, reducedMotion: reduced };
+  const fmt = new Intl.NumberFormat(d.lang);
+  el.querySelector(".isofig-controls")?.removeAttribute("hidden");
   const params: Params = Object.fromEntries(d.params.map((p) => [p.id, p.value]));
   const groups = new Map<string, Group>();
   el.querySelectorAll<SVGElement>("[data-g]").forEach((node) => {
@@ -119,7 +121,6 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
   const setPlaying = (on: boolean) => {
     playing = on;
     if (!play) return;
-    play.setAttribute("aria-pressed", String(on));
     play.textContent = (on ? play.dataset["pause"] : play.dataset["play"]) ?? "";
   };
   setPlaying(playing);
@@ -169,11 +170,11 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     const id = input.dataset["param"];
     if (!id) return;
     params[id] = Number(input.value);
-    const unit = d.params.find((p) => p.id === id)?.unit;
-    const shown = input.value + (unit ? " " + unit : "");
-    input.setAttribute("aria-valuetext", shown);
-    const out = input.parentElement?.querySelector("output");
-    if (out) out.textContent = shown;
+    const p = d.params.find((q) => q.id === id);
+    const value = fmt.format(params[id]);
+    input.setAttribute("aria-valuetext", `${value} ${p?.spoken ?? ""}`.trim());
+    const out = input.parentElement?.querySelector(".isofig-value");
+    if (out) out.textContent = `${value} ${p?.unit ?? ""}`.trim();
     wake();
   };
   const onPlay = () => {
@@ -199,9 +200,22 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
   };
 }
 
+const live = new Map<HTMLElement, () => void>();
+
+/** Monta las figuras aún sin montar; una figura con datos rotos no impide montar las demás. */
 export function mountAll(root: ParentNode = document): void {
   root.querySelectorAll<HTMLElement>("[data-isofig]:not([data-isofig-live])").forEach((el) => {
     el.dataset["isofigLive"] = "";
-    mount(el);
+    try {
+      live.set(el, mount(el));
+    } catch (e) {
+      console.error(`isofig «${el.dataset["isofig"]}»:`, e);
+    }
   });
+}
+
+/** Detiene todas las figuras montadas, p. ej. antes de que un router reemplace la página. */
+export function unmountAll(): void {
+  for (const stop of live.values()) stop();
+  live.clear();
 }
