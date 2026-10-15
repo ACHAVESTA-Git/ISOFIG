@@ -48,10 +48,11 @@ interface Group {
 
 const registry = new Map<string, Model<any, any>>();
 const waiting = new Map<string, HTMLElement[]>();
+const live = new Map<HTMLElement, () => void>();
 
 export function register(name: string, model: Model<any, any>): void {
   registry.set(name, model);
-  for (const el of waiting.get(name) ?? []) mount(el, model);
+  for (const el of waiting.get(name) ?? []) if (el.isConnected) live.set(el, mount(el, model));
   waiting.delete(name);
 }
 
@@ -200,8 +201,6 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
   };
 }
 
-const live = new Map<HTMLElement, () => void>();
-
 /** Una figura con datos rotos no impide montar las demás. */
 export function mountAll(root: ParentNode = document): void {
   root.querySelectorAll<HTMLElement>("[data-isofig]:not([data-isofig-live])").forEach((el) => {
@@ -218,4 +217,5 @@ export function mountAll(root: ParentNode = document): void {
 export function unmountAll(): void {
   for (const stop of live.values()) stop();
   live.clear();
+  waiting.clear();
 }
