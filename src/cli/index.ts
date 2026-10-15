@@ -20,7 +20,8 @@ const HELP = `isofig: isometric figures from a spec
   module  a TS module exporting { id, html, data }, for Angular
   json    { html, data } as JSON
   page    a standalone preview page with theme and runtime inlined (use --model for a model file,
-          --advance 3 to open it 3 s into the simulation, for headless screenshots)`;
+          --advance 3 to open it 3 s into the simulation, --set id=value to start a control
+          at another value, --orbit to try turning it)`;
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pkg = resolve(here, "..", "..");
@@ -121,6 +122,7 @@ async function main() {
       theme: { type: "string", default: "light" },
       advance: { type: "string" },
       orbit: { type: "boolean", default: false },
+      set: { type: "string", multiple: true },
       strict: { type: "boolean", default: false },
       help: { type: "boolean", short: "h" },
     },
@@ -156,6 +158,13 @@ async function main() {
     return;
   }
   const spec = await loadSpec(file);
+  // --set param=valor fija el arranque de un control, para previsualizar cada estado sin tocar la spec.
+  for (const pair of values.set ?? []) {
+    const [id, v] = pair.split("=");
+    const p = spec.params?.find((q) => q.id === id);
+    if (p) p.value = Number(v);
+    else console.warn(`aviso: --set ${id}: la spec no tiene ese parámetro`);
+  }
   const r = renderFigure(spec, { lang: values.lang, n: values.n, orbit: values.orbit });
   for (const e of r.errors) console.error(`error: ${e}`);
   for (const w of r.warnings) console.warn(`aviso: ${w}`);

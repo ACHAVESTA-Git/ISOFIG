@@ -56,7 +56,7 @@ vea (la tapa siempre se ve).
 | `ticks` | `from`, `along` (paso entre marcas), `count`, `toward` (dirección de la marca), `every` (cada cuántas una mayor), `size: [menor, mayor]` |
 | `dots` | `points` — tornillos, remaches, luces |
 | `line` | `points`, `bold` — costuras, ranuras, líneas de una placa |
-| `label` | `at`, `text`, `size`, `face` (`top`, `x` o `y`) — un nombre grabado en una cara, para distinguir piezas iguales (servicios, nodos) |
+| `label` | `at`, `text`, `size`, `align` (`start`, `middle`, `end`), `face` (`top`, `x` o `y`) — un nombre grabado en una cara, para distinguir piezas iguales (servicios, nodos) |
 
 ## Grupos
 
