@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1 · 2026-10-15
+
+- Faces at the same depth keep a stable order and coordinates drop float noise before rounding, so identical parts always produce identical markup (and share one `<use>`).
+
 ## 0.6.0 · 2026-10-15
 
 - Identical parts are drawn once in `<defs>` and repeated with `<use>`; figures of the academy dropped from 10–22 KB to 7–10 KB gzip.

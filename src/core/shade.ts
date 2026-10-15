@@ -28,7 +28,7 @@ export function drawMesh(c: Camera, mesh: Mesh): Drawn {
   const order = mesh.faces
     .map((f, i) => ({ f, i, d: depthOf(c, centroid(mesh.v, f.idx)) }))
     .filter(({ i }) => visible[i])
-    .sort((a, b) => a.d - b.d);
+    .sort((a, b) => Math.round((a.d - b.d) * 1e6) || a.i - b.i);
 
   const faces = new Map<Shade, Vec2[][]>();
   for (const { f } of order) {
