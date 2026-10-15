@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0 · 2026-10-15
+
+- Path coordinates are written in half pixels instead of tenths: figures are ~20 % lighter (gzip) with no visible change at 1× or 2×.
+
 ## 0.4.1 · 2026-10-15
 
 - `hidden` on a param keeps its value for the model and skips its control.

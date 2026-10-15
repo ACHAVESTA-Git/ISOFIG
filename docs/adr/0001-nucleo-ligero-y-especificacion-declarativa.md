@@ -18,7 +18,7 @@ adaptador web. Queremos lo mismo para Astro (destino principal) y Angular, dentr
    Al navegador llega SVG ya hecho y un runtime de pocos KB (`isofig/runtime`).
 3. **El movimiento es una transformación**, nunca un redibujo: cada grupo recibe un desplazamiento en el mundo
    (que el runtime proyecta con la base de la cámara), un giro en su plano o una opacidad.
-4. **Peso:** coordenadas en décimas con comandos relativos, caras del mismo tono en un solo `path`, puntos como
+4. **Peso:** coordenadas en medios píxeles (antes décimas; ver 0.5.0) con comandos relativos, caras del mismo tono en un solo `path`, puntos como
    segmentos de longitud cero, clases cortas. Presupuesto por defecto: 40 KB gzip por figura; `isofig check` falla
    si se pasa.
 5. **Tema por variables CSS** (`--isofig-*`). El proyecto que la usa conecta sus propios tokens.
