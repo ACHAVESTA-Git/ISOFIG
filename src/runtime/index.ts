@@ -55,6 +55,12 @@ interface Group {
 const registry = new Map<string, Model<any, any>>();
 const waiting = new Map<string, HTMLElement[]>();
 const live = new Map<HTMLElement, () => void>();
+const cameras = new WeakMap<HTMLElement, (basis: number[], spins: Record<string, number[]>) => void>();
+
+/** Cambia la cámara de una figura montada (lo usa isofig/orbit tras redibujarla). */
+export function retarget(el: HTMLElement, basis: number[], spins: Record<string, number[]>): void {
+  cameras.get(el)?.(basis, spins);
+}
 
 export function register(name: string, model: Model<any, any>): void {
   registry.set(name, model);
@@ -110,13 +116,24 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
   el.querySelector(".isofig-controls")?.removeAttribute("hidden");
   const params: Params = Object.fromEntries(d.params.map((p) => [p.id, p.value]));
   const groups = new Map<string, Group>();
-  el.querySelectorAll<SVGElement>("[data-g]").forEach((node) => {
-    const name = node.dataset["g"]!;
-    const o = node.getAttribute("opacity") === "0" ? 0 : 1;
-    const g = groups.get(name) ?? { els: [], cur: [0, 0, 0, 0, o], goal: [0, 0, 0, 0, o], snap: false, shown: "" };
-    g.els.push(node);
-    groups.set(name, g);
-  });
+  // Al girar la figura (isofig/orbit) el SVG se redibuja: se vuelven a buscar las piezas y conservan su estado.
+  const collect = () => {
+    const before = new Map(groups);
+    groups.clear();
+    el.querySelectorAll<SVGElement>("[data-g]").forEach((node) => {
+      const name = node.dataset["g"]!;
+      const prev = before.get(name);
+      const o = node.getAttribute("opacity") === "0" ? 0 : 1;
+      const g =
+        groups.get(name) ??
+        (prev
+          ? { ...prev, els: [], shown: "", state: undefined }
+          : { els: [], cur: [0, 0, 0, 0, o], goal: [0, 0, 0, 0, o], snap: false, shown: "" });
+      g.els.push(node);
+      groups.set(name, g);
+    });
+  };
+  collect();
   const readout = el.querySelector<HTMLElement>(".isofig-readout");
   const say = el.querySelector<HTMLElement>(".isofig-say");
   const note = el.querySelector<HTMLElement>(".isofig-note");
@@ -280,6 +297,12 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     { rootMargin: "120px" },
   );
   io.observe(el);
+  cameras.set(el, (basis, spins) => {
+    d.basis = basis;
+    d.spins = spins;
+    collect();
+    wake();
+  });
   // El primer cuadro se dibuja aunque el observador no haya avisado todavía (o nunca avise, como en un headless).
   wake();
 
@@ -311,4 +334,48 @@ export function unmountAll(): void {
   for (const stop of live.values()) stop();
   live.clear();
   waiting.clear();
+}
+
+export interface OrbitHandle {
+  turn(azimuth: number, elevation?: number): void;
+  reset(): void;
+  grab(e: PointerEvent): void;
+  stop(): void;
+}
+
+/**
+ * Carga el giro solo cuando hace falta, como `@defer (prefetch on hover; on interaction)`: al pasar el puntero o
+ * enfocar la figura se precarga; al presionar el dibujo o un botón de giro se activa.
+ */
+export function orbitOnDemand(el: HTMLElement, load: () => Promise<OrbitHandle>): () => void {
+  let pending: Promise<OrbitHandle> | null = null;
+  let orbit: OrbitHandle | null = null;
+  const get = () =>
+    (pending ??= load().then((o) => {
+      orbit = o;
+      return o;
+    }));
+  const svg = el.querySelector<SVGElement>(".isofig-orbitable");
+  const warm = () => void get();
+  const down = (e: PointerEvent) => {
+    if (orbit || e.button !== 0) return;
+    get().then((o) => o.grab(e));
+  };
+  const click = (e: Event) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>("[data-orbit]");
+    if (!b) return;
+    const v = Number(b.dataset["orbit"]);
+    get().then((o) => (v ? o.turn(v) : o.reset()));
+  };
+  el.addEventListener("pointerenter", warm, { once: true });
+  el.addEventListener("focusin", warm, { once: true });
+  svg?.addEventListener("pointerdown", down);
+  el.addEventListener("click", click);
+  return () => {
+    el.removeEventListener("pointerenter", warm);
+    el.removeEventListener("focusin", warm);
+    svg?.removeEventListener("pointerdown", down);
+    el.removeEventListener("click", click);
+    orbit?.stop();
+  };
 }

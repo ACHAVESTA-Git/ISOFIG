@@ -45,13 +45,13 @@ const IMPORT = /^import\s+([\s\S]*?)\s+from\s+["']([^"']+)["'];?[ \t]*$/gm;
  * Junta el modelo y los archivos locales que importa en un solo script, para la página suelta: un navegador no
  * puede importar `./medidas.ts` desde `file://`. Los imports de paquetes (solo tipos) desaparecen al quitar tipos.
  */
-function bundle(entry: string): string {
-  const names = new Map<string, string>();
+function bundle(entry: string, root = "__model", given: Record<string, string> = {}): string {
+  const names = new Map<string, string>(Object.entries(given));
   const out: string[] = [];
   const visit = (file: string): string => {
     const known = names.get(file);
     if (known) return known;
-    const self = `__m${names.size}`;
+    const self = `${root}_${names.size}`;
     names.set(file, self);
     let code = sourceOf(file);
     code = code.replace(IMPORT, (_all, what: string, from: string) => {
@@ -83,17 +83,24 @@ function bundle(entry: string): string {
     out.push(`const ${self} = (() => {\n${code}\nreturn { ${exported.join(", ")} };\n})();`);
     return self;
   };
-  const root = visit(entry);
-  return `${out.join("\n")}\nconst __model = ${root}.default;`;
+  const top = visit(entry);
+  return `${out.join("\n")}\nconst ${root} = ${top};`;
 }
 
-function page(html: string, modelFile: string | undefined, name: string | undefined, theme: string): string {
+function page(html: string, modelFile: string | undefined, name: string | undefined, theme: string, orbitSpec?: string, lang = "en"): string {
   const fromSource = import.meta.url.endsWith(".ts");
   const runtimeFile = resolve(pkg, fromSource ? "src/runtime/index.ts" : "dist/runtime/index.js");
   const runtime = sourceOf(runtimeFile).replace(/^export /gm, "");
-  const model = modelFile ? bundle(resolve(modelFile)) : "";
+  const model = modelFile ? `${bundle(resolve(modelFile), "__modelModule")}\nconst __model = __modelModule.default;` : "";
+  const runtimeAlias = { [runtimeFile]: "__runtime" };
+  const orbit = orbitSpec
+    ? `const __runtime = { retarget, orbitOnDemand };\n` +
+      bundle(resolve(pkg, fromSource ? "src/orbit/index.ts" : "dist/orbit/index.js"), "__orbit", runtimeAlias) +
+      `\n${bundle(resolve(orbitSpec), "__specModule")}\n` +
+      `document.querySelectorAll("[data-isofig]").forEach((el) => orbitOnDemand(el, async () => __orbit.enableOrbit(el, __specModule.default, { lang: ${JSON.stringify(lang)} })));\n`
+    : "";
   const css = readFileSync(resolve(pkg, "src/theme/theme.css"), "utf8");
-  const boot = modelFile && name ? `${model}\nregister(${JSON.stringify(name)}, __model);\n` : "";
+  const boot = (modelFile && name ? `${model}\nregister(${JSON.stringify(name)}, __model);\n` : "") + orbit;
   return `<!doctype html><html lang="en" data-theme="${theme}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>isofig preview</title>
 <style>${css}
@@ -113,6 +120,7 @@ async function main() {
       model: { type: "string" },
       theme: { type: "string", default: "light" },
       advance: { type: "string" },
+      orbit: { type: "boolean", default: false },
       strict: { type: "boolean", default: false },
       help: { type: "boolean", short: "h" },
     },
@@ -148,7 +156,7 @@ async function main() {
     return;
   }
   const spec = await loadSpec(file);
-  const r = renderFigure(spec, { lang: values.lang, n: values.n });
+  const r = renderFigure(spec, { lang: values.lang, n: values.n, orbit: values.orbit });
   for (const e of r.errors) console.error(`error: ${e}`);
   for (const w of r.warnings) console.warn(`aviso: ${w}`);
   console.error(`${spec.id}: ${(r.bytes / 1024).toFixed(1)} KB, ${(r.gzip / 1024).toFixed(1)} KB gzip`);
@@ -176,6 +184,8 @@ async function main() {
         values.model,
         spec.model,
         values.theme!,
+        values.orbit ? file : undefined,
+        values.lang,
       );
       break;
     default:

@@ -276,3 +276,23 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+.isofig-orbitable {
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.isofig-orbitable.isofig-grabbing {
+  cursor: grabbing;
+}
+.isofig-orbit {
+  display: inline-flex;
+  gap: 6px;
+}
+.isofig-orbit [data-orbit="-20"],
+.isofig-orbit [data-orbit="20"] {
+  min-width: 36px;
+  padding: 0 10px;
+  font-size: 1rem;
+}

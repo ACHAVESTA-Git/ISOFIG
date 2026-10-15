@@ -1,5 +1,16 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": { "noEmit": true, "rootDir": ".", "noPropertyAccessFromIndexSignature": true },
-  "include": ["src/core", "src/runtime", "src/cli", "examples", "test"]
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": ".",
+    "noPropertyAccessFromIndexSignature": true
+  },
+  "include": [
+    "src/core",
+    "src/runtime",
+    "src/cli",
+    "src/orbit",
+    "examples",
+    "test"
+  ]
 }

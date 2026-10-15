@@ -121,6 +121,23 @@ opacidad.
 
 La auditoría trabaja sobre cajas: es rápida y gruesa. Revisa siempre la figura a 4× en los dos temas.
 
+## Girar la figura (órbita)
+
+`renderFigure(spec, { orbit: true })` añade botones para girar y la pista «arrastra para girar». En la página, el
+giro se carga solo cuando hace falta:
+
+```ts
+import { orbitOnDemand } from "isofig/runtime";
+
+orbitOnDemand(el, async () => {
+  const { enableOrbit } = await import("isofig/orbit");
+  return enableOrbit(el, spec, { lang: "es", range: 40 });
+});
+```
+
+Al pasar el puntero o enfocar la figura se precarga; al presionar el dibujo o un botón se activa. El módulo pesa
+~6 KB gzip más la spec, y solo lo descarga quien gira la figura.
+
 ## Importar y previsualizar
 
 - `isofig import compose <archivo.json|->` arma una spec desde `docker compose config --format json` (ver

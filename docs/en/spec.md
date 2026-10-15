@@ -121,6 +121,23 @@ opacity.
 
 The audit works on boxes: it is fast and coarse. Always review the figure at 4× in both themes.
 
+## Turning the figure (orbit)
+
+`renderFigure(spec, { orbit: true })` adds turn buttons and the "drag to turn" hint. In the page, the orbit loads
+only when needed:
+
+```ts
+import { orbitOnDemand } from "isofig/runtime";
+
+orbitOnDemand(el, async () => {
+  const { enableOrbit } = await import("isofig/orbit");
+  return enableOrbit(el, spec, { lang: "en", range: 40 });
+});
+```
+
+Hovering or focusing the figure prefetches it; pressing the drawing or a button enables it. The module is ~6 KB
+gzip plus the spec, downloaded only by readers who turn the figure.
+
 ## Import and preview
 
 - `isofig import compose <file.json|->` builds a spec from `docker compose config --format json` (see
