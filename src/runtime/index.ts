@@ -244,6 +244,8 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     { rootMargin: "120px" },
   );
   io.observe(el);
+  // El primer cuadro se dibuja aunque el observador no haya avisado todavía (o nunca avise, como en un headless).
+  wake();
 
   return () => {
     io.disconnect();
