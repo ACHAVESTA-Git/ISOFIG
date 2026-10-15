@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.3 · 2026-10-15
+
+- `say`: at most two announcements per reader interaction; then the model stays quiet until the reader touches the figure again (models that name a changing id no longer talk forever).
+- Orbit: a press released before the module loads no longer grabs the figure, a mouse moving with no button pressed releases it, and the turn buttons get `aria-disabled` at the limits.
+
 ## 0.8.2 · 2026-10-15
 
 - `repeat` also replaces `{i}` in `mount`.

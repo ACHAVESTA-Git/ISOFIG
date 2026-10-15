@@ -147,6 +147,8 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
   const note = el.querySelector<HTMLElement>(".isofig-note");
   // Los avisos esperan a que el lector toque la figura, hablan tras un silencio y nunca encima de una nota.
   let touched = false;
+  // Cada interacción del lector habilita como mucho dos avisos del modelo; luego calla hasta que vuelva a tocar.
+  let budget = 0;
   let pending = "";
   let lastSaid = "";
   let quietUntil = 0;
@@ -158,7 +160,10 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
       voice = window.setTimeout(flush, wait);
       return;
     }
-    if (say && pending && pending !== lastSaid) say.textContent = lastSaid = pending;
+    if (say && pending && pending !== lastSaid) {
+      say.textContent = lastSaid = pending;
+      budget = Math.max(0, budget - 1);
+    }
     pending = "";
   };
   const speak = (text: string, delay = 1500) => {
@@ -226,7 +231,7 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     }
     const text = view.readout ?? d.params.reduce((s, p) => s.replaceAll(`{${p.id}}`, String(params[p.id])), d.readout);
     if (readout && readout.textContent !== text) readout.textContent = text;
-    if (view.say) speak(view.say);
+    if (view.say && budget > 0) speak(view.say);
     if (visible && (playing || moving)) wake();
     else last = 0;
   };
@@ -256,6 +261,7 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     params[id] = input.type === "checkbox" ? (input.checked ? 1 : 0) : Number(input.value);
     show(id);
     touched = true;
+    budget = 2;
     wake();
     clearTimeout(echo);
     echo = window.setTimeout(() => speak(readout?.textContent ?? "", 0), 1200);
@@ -266,6 +272,7 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     const id = action?.dataset["param"];
     if (id) {
       touched = true;
+      budget = 2;
       params[id] = (params[id] ?? 0) + 1;
       if (!reduced) setPlaying(true);
       wake();
@@ -280,6 +287,7 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     }
     if (preset.reset) state = m.init(params, ctx);
     touched = true;
+    budget = 2;
     quietUntil = performance.now() + 2500;
     if (note) note.textContent = preset.note;
     if (reduced) {
@@ -291,6 +299,7 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
   };
   const onPlay = () => {
     touched = true;
+    budget = 2;
     setPlaying(!playing);
     wake();
   };
@@ -365,9 +374,15 @@ export function orbitOnDemand(el: HTMLElement, load: () => Promise<OrbitHandle>)
     }));
   const svg = el.querySelector<SVGElement>(".isofig-orbitable");
   const warm = () => void get();
+  // Si el puntero se suelta antes de que cargue el giro, no se agarra nada (si no, gira sin botón presionado).
+  const released = new Set<number>();
+  const up = (e: PointerEvent) => released.add(e.pointerId);
   const down = (e: PointerEvent) => {
     if (orbit || e.button !== 0) return;
-    get().then((o) => o.grab(e));
+    released.delete(e.pointerId);
+    get().then((o) => {
+      if (!released.has(e.pointerId)) o.grab(e);
+    });
   };
   const click = (e: Event) => {
     const b = (e.target as HTMLElement).closest<HTMLElement>("[data-orbit]");
@@ -378,11 +393,13 @@ export function orbitOnDemand(el: HTMLElement, load: () => Promise<OrbitHandle>)
   el.addEventListener("pointerenter", warm, { once: true });
   el.addEventListener("focusin", warm, { once: true });
   svg?.addEventListener("pointerdown", down);
+  window.addEventListener("pointerup", up);
   el.addEventListener("click", click);
   return () => {
     el.removeEventListener("pointerenter", warm);
     el.removeEventListener("focusin", warm);
     svg?.removeEventListener("pointerdown", down);
+    window.removeEventListener("pointerup", up);
     el.removeEventListener("click", click);
     orbit?.stop();
   };
