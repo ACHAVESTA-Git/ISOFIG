@@ -44,7 +44,15 @@ export function enableOrbit(el: HTMLElement, spec: FigureSpec, options: OrbitOpt
     if (na === az && ne === elv) return;
     az = na;
     elv = ne;
+    limits();
     if (!frame) frame = requestAnimationFrame(paint);
+  };
+  // En el tope, el botón de ese lado avisa que ya no gira más.
+  const limits = () => {
+    const left = el.querySelector('[data-orbit="-20"]');
+    const right = el.querySelector('[data-orbit="20"]');
+    left?.setAttribute("aria-disabled", String(az <= base.az - range));
+    right?.setAttribute("aria-disabled", String(az >= base.az + range));
   };
   const grab = (e: PointerEvent) => {
     drag = { id: e.pointerId, x: e.clientX, y: e.clientY, az, el: elv, touch: e.pointerType === "touch" };
@@ -60,6 +68,10 @@ export function enableOrbit(el: HTMLElement, spec: FigureSpec, options: OrbitOpt
   };
   const onMove = (e: PointerEvent) => {
     if (!drag || e.pointerId !== drag.id) return;
+    if (e.pointerType === "mouse" && e.buttons === 0) {
+      onUp(e);
+      return;
+    }
     const dx = e.clientX - drag.x;
     const dy = e.clientY - drag.y;
     set(drag.az - dx * 0.35, drag.touch ? drag.el : drag.el + dy * 0.25);
