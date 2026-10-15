@@ -71,12 +71,21 @@ Copia `skill/` a `~/.claude/skills/isofig` (o a `.claude/skills/isofig` en un pr
 La skill inventa la máquina, escribe la spec y el modelo, corre `isofig check`, mira capturas en los dos temas e
 itera.
 
+## Importar
+
+- **docker compose:** `docker compose config --format json | npx isofig import compose -` entrega una figura con
+  un rack por servicio, réplicas, puertos, volúmenes y redes. [Guía](docs/es/importar.md).
+- **Un boceto o una captura:** pásaselo a la skill de Claude Code; lee la imagen y arma la máquina.
+
+![Un stack de compose con cinco servicios como figura isométrica](docs/assets/compose-light.png)
+
 ## CLI
 
 ```text
 isofig build <spec> [-o archivo] [--format html|module|json|page] [--lang es] [--n 1] [--model archivo]
 isofig check <spec> [--lang es] [--strict]
 isofig add angular <carpeta>
+isofig import compose <archivo.json|-> [-o spec.json]
 ```
 
 ## Límites

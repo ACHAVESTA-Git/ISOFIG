@@ -43,6 +43,18 @@ lines). The fix is the same: a recognisable machine with purposeful detail.
 6. **Write the model** if anything happens over time; otherwise use `bind`.
 7. **Check and look.** Run the commands below, read the PNGs, iterate.
 
+## Starting from what the user already has
+
+- **A sketch, a whiteboard photo or a screenshot of a diagram.** Read the image yourself. List the components,
+  what flows between them and what decides the flow; ask one question only if the mechanism is ambiguous. Then
+  go to step 2 of the workflow: invent the machine from that list. Never trace the picture: the boxes and arrows
+  of the sketch are the *concept*, not the object.
+- **A docker compose file.** Run `docker compose config --format json | npx isofig import compose - -o spec.json`
+  for a first figure (one rack per service, replicas as units, published ports, volumes, networks). Use it as
+  the starting parts list and enrich it: the machine still has to tell the story the user cares about.
+- **A real system to explain (Kubernetes, a queue, an API).** Collect the true numbers first (replicas, limits,
+  rates), then follow the workflow.
+
 ## Craft rules
 
 - **Tones:** base and feet `lo`, structure `mid`, subject `hi`, and exactly one kind of accent `lit` (the thing to
