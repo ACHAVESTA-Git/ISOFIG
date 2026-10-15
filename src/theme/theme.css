@@ -18,7 +18,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .isofig {
+  :where(:root:not([data-theme="light"])) .isofig {
     --isofig-paper: #121312;
     --isofig-card: #171816;
     --isofig-ink: #eceee8;
@@ -35,7 +35,7 @@
   }
 }
 
-:root[data-theme="dark"] .isofig {
+:where(:root[data-theme="dark"]) .isofig {
   --isofig-paper: #121312;
   --isofig-card: #171816;
   --isofig-ink: #eceee8;
