@@ -112,7 +112,7 @@ All colors are `--isofig-*` CSS variables. To connect them to your site's tokens
 }
 ```
 
-The dark theme is enabled with `prefers-color-scheme: dark` or with `data-theme="dark"` on `<html>`.
+The theme rules sit inside `:where()`, so any selector of yours with one class wins over them. The dark theme is enabled with `prefers-color-scheme: dark` or with `data-theme="dark"` on `<html>`.
 `data-theme="light"` forces the light one.
 
 ## 6. View transitions

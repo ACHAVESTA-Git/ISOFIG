@@ -112,7 +112,7 @@ Todos los colores son variables CSS `--isofig-*`. Para conectarlas a los tokens 
 }
 ```
 
-El tema oscuro se activa con `prefers-color-scheme: dark` o con `data-theme="dark"` en `<html>`.
+Las reglas del tema van dentro de `:where()`, así que cualquier selector tuyo con una clase les gana. El tema oscuro se activa con `prefers-color-scheme: dark` o con `data-theme="dark"` en `<html>`.
 `data-theme="light"` fuerza el claro.
 
 ## 6. View transitions
