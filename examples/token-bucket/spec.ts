@@ -25,6 +25,18 @@ const spec: FigureSpec = {
     { id: "refill", label: { en: "Refill", es: "Recarga" }, min: 0.5, max: 6, step: 0.5, value: 2, unit: { en: "tok/s", es: "fichas/s" }, spoken: { en: "tokens per second", es: "fichas por segundo" } },
     { id: "rate", label: { en: "Traffic", es: "Tráfico" }, min: 0.5, max: 8, step: 0.5, value: 3, unit: "req/s", spoken: { en: "requests per second", es: "peticiones por segundo" } },
   ],
+  presets: [
+    {
+      label: { en: "Burst", es: "Ráfaga" },
+      values: { rate: 8 },
+      note: { en: "Traffic is four times the refill: the tube empties and the gate starts rejecting.", es: "El tráfico cuadruplica la recarga: el tubo se vacía y la compuerta empieza a rechazar." },
+    },
+    {
+      label: { en: "Slow refill", es: "Recarga lenta" },
+      values: { refill: 0.5, rate: 3 },
+      note: { en: "Tokens come back once every two seconds: almost every request ends in the reject tray.", es: "Vuelve una ficha cada dos segundos: casi todas las peticiones terminan en la bandeja." },
+    },
+  ],
   groups: {
     refill: { extent: [[0, 0, -48]] },
     gate: { extent: [[0, 0, 18]] },

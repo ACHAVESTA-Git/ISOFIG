@@ -10,12 +10,16 @@ export interface GroupView {
   t?: [number, number, number];
   r?: number;
   o?: number;
+  /** Estado que tiñe el grupo: `ok`, `warn` o `fail`; sin él, su tono normal. */
+  s?: "ok" | "warn" | "fail";
   snap?: boolean;
 }
 
 export interface View {
   groups?: Record<string, GroupView>;
   readout?: string;
+  /** Un evento para lectores de pantalla («saltó el breaker»); se anuncia una vez cuando cambia. */
+  say?: string;
 }
 
 /** `P` nombra los parámetros de la spec, p. ej. `Model<State, { refill: number }>`. */
@@ -32,7 +36,8 @@ export interface FigureData {
   tau: number;
   basis: number[];
   spins: Record<string, number[]>;
-  params: { id: string; value: number; unit: string; spoken: string }[];
+  params: { id: string; value: number; unit: string; spoken: string; options?: string[] }[];
+  presets?: { values: Record<string, number>; note: string; reset?: boolean }[];
   bind?: { group: string; param: string; move?: number[]; spin?: number; fade?: boolean }[];
   readout: string;
   lang: string;
@@ -44,6 +49,7 @@ interface Group {
   goal: number[];
   snap: boolean;
   shown: string;
+  state?: string;
 }
 
 const registry = new Map<string, Model<any, any>>();
@@ -111,7 +117,11 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     g.els.push(node);
     groups.set(name, g);
   });
-  const readout = el.querySelector<HTMLOutputElement>(".isofig-readout");
+  const readout = el.querySelector<HTMLElement>(".isofig-readout");
+  const say = el.querySelector<HTMLElement>(".isofig-say");
+  const note = el.querySelector<HTMLElement>(".isofig-note");
+  let said = "";
+  let saidAt = 0;
   const play = el.querySelector<HTMLButtonElement>(".isofig-play");
   let state = m.init(params, ctx);
   let playing = d.autoplay && !reduced;
@@ -139,6 +149,13 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
       if (v) {
         g.goal = [v.t?.[0] ?? 0, v.t?.[1] ?? 0, v.t?.[2] ?? 0, v.r ?? 0, v.o ?? g.goal[4]];
         g.snap = Boolean(v.snap);
+        if (v.s !== g.state) {
+          g.state = v.s;
+          for (const node of g.els) {
+            if (v.s) node.dataset["state"] = v.s;
+            else delete node.dataset["state"];
+          }
+        }
       }
       for (let i = 0; i < 5; i++) {
         const gap = g.goal[i] - g.cur[i];
@@ -159,6 +176,11 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     }
     const text = view.readout ?? d.params.reduce((s, p) => s.replaceAll(`{${p.id}}`, String(params[p.id])), d.readout);
     if (readout && readout.textContent !== text) readout.textContent = text;
+    if (say && view.say && view.say !== said && now - saidAt > 1200) {
+      said = view.say;
+      saidAt = now;
+      say.textContent = view.say;
+    }
     if (visible && (playing || moving)) wake();
     else last = 0;
   };
@@ -166,16 +188,40 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     if (!frame) frame = requestAnimationFrame(tick);
   };
 
+  const show = (id: string) => {
+    const p = d.params.find((q) => q.id === id);
+    if (!p) return;
+    const value = fmt.format(params[id]);
+    for (const input of el.querySelectorAll<HTMLInputElement>(`[data-param="${id}"]`)) {
+      if (input.type === "checkbox") input.checked = params[id] !== 0;
+      else if (input.type === "radio") input.checked = Number(input.value) === params[id];
+      else {
+        input.value = String(params[id]);
+        input.setAttribute("aria-valuetext", `${value} ${p.spoken}`.trim());
+        const out = input.parentElement?.querySelector(".isofig-value");
+        if (out) out.textContent = `${value} ${p.unit}`.trim();
+      }
+    }
+  };
   const onInput = (e: Event) => {
     const input = e.target as HTMLInputElement;
     const id = input.dataset["param"];
     if (!id) return;
-    params[id] = Number(input.value);
-    const p = d.params.find((q) => q.id === id);
-    const value = fmt.format(params[id]);
-    input.setAttribute("aria-valuetext", `${value} ${p?.spoken ?? ""}`.trim());
-    const out = input.parentElement?.querySelector(".isofig-value");
-    if (out) out.textContent = `${value} ${p?.unit ?? ""}`.trim();
+    params[id] = input.type === "checkbox" ? (input.checked ? 1 : 0) : Number(input.value);
+    show(id);
+    wake();
+  };
+  const onPreset = (e: Event) => {
+    const button = (e.target as HTMLElement).closest<HTMLElement>("[data-preset]");
+    const preset = button ? d.presets?.[Number(button.dataset["preset"])] : undefined;
+    if (!preset) return;
+    for (const [id, v] of Object.entries(preset.values)) {
+      params[id] = v;
+      show(id);
+    }
+    if (preset.reset) state = m.init(params, ctx);
+    if (note) note.textContent = preset.note;
+    if (!reduced) setPlaying(true);
     wake();
   };
   const onPlay = () => {
@@ -183,6 +229,7 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     wake();
   };
   el.addEventListener("input", onInput);
+  el.addEventListener("click", onPreset);
   play?.addEventListener("click", onPlay);
   const io = new IntersectionObserver(
     (entries) => {
@@ -196,6 +243,7 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
   return () => {
     io.disconnect();
     el.removeEventListener("input", onInput);
+    el.removeEventListener("click", onPreset);
     play?.removeEventListener("click", onPlay);
     cancelAnimationFrame(frame);
   };
