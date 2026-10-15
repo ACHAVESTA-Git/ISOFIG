@@ -19,7 +19,8 @@ const HELP = `isofig: isometric figures from a spec
   html    the <figure> markup (default)
   module  a TS module exporting { id, html, data }, for Angular
   json    { html, data } as JSON
-  page    a standalone preview page with theme and runtime inlined (use --model for a model file)`;
+  page    a standalone preview page with theme and runtime inlined (use --model for a model file,
+          --advance 3 to open it 3 s into the simulation, for headless screenshots)`;
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pkg = resolve(here, "..", "..");
@@ -38,16 +39,39 @@ function sourceOf(file: string): string {
   return file.endsWith(".ts") ? stripTypeScriptTypes(code) : code;
 }
 
+const IMPORT = /^import\s+([\s\S]*?)\s+from\s+["']([^"']+)["'];?[ \t]*$/gm;
+
+/**
+ * Junta el modelo y los archivos locales que importa en un solo script, para la página suelta: un navegador no
+ * puede importar `./medidas.ts` desde `file://`. Los imports de paquetes (solo tipos) desaparecen al quitar tipos.
+ */
+function bundle(entry: string): string {
+  const done = new Set<string>();
+  const out: string[] = [];
+  const visit = (file: string, defaultName: string) => {
+    if (done.has(file)) return;
+    done.add(file);
+    let code = sourceOf(file);
+    code = code.replace(IMPORT, (_all, what: string, from: string) => {
+      if (!from.startsWith(".")) return "";
+      const target = resolve(dirname(file), /\.[cm]?[jt]s$/.test(from) ? from : `${from}.ts`);
+      const name = what.trim().startsWith("{") ? "" : what.split(",")[0].trim();
+      visit(target, name);
+      return "";
+    });
+    const local = defaultName || `__default${done.size}`;
+    code = code.replace(/^export default /m, `const ${local} = `).replace(/^export /gm, "");
+    out.push(code);
+  };
+  visit(entry, "__model");
+  return out.join("\n");
+}
+
 function page(html: string, modelFile: string | undefined, name: string | undefined, theme: string): string {
   const fromSource = import.meta.url.endsWith(".ts");
   const runtimeFile = resolve(pkg, fromSource ? "src/runtime/index.ts" : "dist/runtime/index.js");
   const runtime = sourceOf(runtimeFile).replace(/^export /gm, "");
-  const model = modelFile
-    ? sourceOf(resolve(modelFile))
-        .replace(/^import[^;]*;$/gm, "")
-        .replace(/^export default /m, "const __model = ")
-        .replace(/^export /gm, "")
-    : "";
+  const model = modelFile ? bundle(resolve(modelFile)) : "";
   const css = readFileSync(resolve(pkg, "src/theme/theme.css"), "utf8");
   const boot = modelFile && name ? `${model}\nregister(${JSON.stringify(name)}, __model);\n` : "";
   return `<!doctype html><html lang="en" data-theme="${theme}"><head><meta charset="utf-8">
@@ -68,6 +92,7 @@ async function main() {
       n: { type: "string" },
       model: { type: "string" },
       theme: { type: "string", default: "light" },
+      advance: { type: "string" },
       strict: { type: "boolean", default: false },
       help: { type: "boolean", short: "h" },
     },
@@ -126,7 +151,12 @@ async function main() {
       out = JSON.stringify({ html: r.html, data: r.data });
       break;
     case "page":
-      out = page(r.html, values.model, spec.model, values.theme!);
+      out = page(
+        values.advance ? r.html.replace("<figure ", `<figure data-isofig-advance="${Number(values.advance)}" `) : r.html,
+        values.model,
+        spec.model,
+        values.theme!,
+      );
       break;
     default:
       out = r.html;

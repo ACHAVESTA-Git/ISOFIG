@@ -56,6 +56,7 @@ vea (la tapa siempre se ve).
 | `ticks` | `from`, `along` (paso entre marcas), `count`, `toward` (dirección de la marca), `every` (cada cuántas una mayor), `size: [menor, mayor]` |
 | `dots` | `points` — tornillos, remaches, luces |
 | `line` | `points`, `bold` — costuras, ranuras, líneas de una placa |
+| `label` | `at`, `text`, `size`, `face` (`top`, `x` o `y`) — un nombre grabado en una cara, para distinguir piezas iguales (servicios, nodos) |
 
 ## Grupos
 
@@ -119,3 +120,12 @@ opacidad.
 - **Peso:** gzip por encima de `budget`.
 
 La auditoría trabaja sobre cajas: es rápida y gruesa. Revisa siempre la figura a 4× en los dos temas.
+
+## Importar y previsualizar
+
+- `isofig import compose <archivo.json|->` arma una spec desde `docker compose config --format json` (ver
+  [importar.md](importar.md)). Es un punto de partida: enriquécela a mano.
+- `isofig build <spec> --format page --model <modelo> --advance 3` arma una página suelta que empaqueta el modelo
+  y los archivos locales que importa, y arranca con 3 s ya simulados para poder capturarla en Chrome headless.
+- Si un aviso dice «orden de pintado ambiguo cerca de A ↔ B, C», esas son las piezas que forman el ciclo: separa
+  sus cajas en algún eje o parte la pieza larga.

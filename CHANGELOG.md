@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 · 2026-10-15
+
+- `--format page` bundles the model's local imports, so a model that shares measures with its spec previews.
+- `--advance <s>` (and `data-isofig-advance`) opens a figure already simulated, for headless screenshots.
+- Paint-order cycle warnings name the parts involved.
+- Docs: `label` parts and the compose importer in the spec reference.
+
 ## 0.2.0 · 2026-10-15
 
 - Presets: buttons that set several params at once with a note for the reader (the "break it on purpose" path).
