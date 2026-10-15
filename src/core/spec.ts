@@ -84,6 +84,8 @@ export interface LabelPart extends Omit<PartBase, "group"> {
   text: Text;
   size?: number;
   face?: "top" | "x" | "y";
+  /** Dónde cae `at` en el texto: al inicio (por defecto), al centro o al final. */
+  align?: "start" | "middle" | "end";
 }
 
 export type Part = BoxPart | CylinderPart | PrismPart | TicksPart | DotsPart | LinePart | LabelPart;

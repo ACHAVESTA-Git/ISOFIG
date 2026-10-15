@@ -56,7 +56,7 @@ They are drawn on a solid part (`on`) and share its place in the paint order. Th
 | `ticks` | `from`, `along` (step between marks), `count`, `toward` (direction of the mark), `every` (how often a major one appears), `size: [minor, major]` |
 | `dots` | `points` — screws, rivets, lights |
 | `line` | `points`, `bold` — seams, slots, lines on a plate |
-| `label` | `at`, `text`, `size`, `face` (`top`, `x` or `y`) — a name engraved on a face, to tell identical parts apart (services, nodes) |
+| `label` | `at`, `text`, `size`, `align` (`start`, `middle`, `end`), `face` (`top`, `x` or `y`) — a name engraved on a face, to tell identical parts apart (services, nodes) |
 
 ## Groups
 

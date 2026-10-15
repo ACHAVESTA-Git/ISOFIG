@@ -22,7 +22,7 @@ function labelSvg(c: Camera, l: LabelPart, lang: string, cls = `class="tx"`): st
   const k = c.scale;
   const [e, f] = project(c, l.at);
   const m = [k * dot(c.right, along), k * dot(c.down, along), k * dot(c.right, down), k * dot(c.down, down), e, f];
-  return `<text ${cls} font-size="${l.size ?? 6}" transform="matrix(${m.map((v) => Math.round(v * 1000) / 1000).join(" ")})">${esc(textOf(l.text, lang))}</text>`;
+  return `<text ${cls} font-size="${l.size ?? 6}"${l.align && l.align !== "start" ? ` text-anchor="${l.align}"` : ""} transform="matrix(${m.map((v) => Math.round(v * 1000) / 1000).join(" ")})">${esc(textOf(l.text, lang))}</text>`;
 }
 
 /** Dentro de <defs> los selectores no alcanzan las copias de un <use>: los trazos llevan su estilo en línea. */

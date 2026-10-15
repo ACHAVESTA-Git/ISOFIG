@@ -49,6 +49,7 @@ export function expand(parts: Part[]): Part[] {
       const id = p.repeat && !p.id.includes("{i}") ? `${p.id}-${i}` : sub(p.id)!;
       const copy = { ...moved, id, repeat: undefined } as Part;
       if ("on" in copy) copy.on = sub(copy.on)!;
+      if (copy.mount) copy.mount = copy.mount.map((m) => sub(m)!);
       if (isSolid(copy)) copy.group = sub(copy.group);
       out.push(copy);
     }

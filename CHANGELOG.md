@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.2 · 2026-10-15
+
+- `repeat` also replaces `{i}` in `mount`.
+- Labels take `align: "start" | "middle" | "end"`.
+- `--set id=value` (repeatable) starts a control at another value in the preview.
+
 ## 0.8.1 · 2026-10-15
 
 - On mount the runtime reads the current value of every control, so a reader who moved one before a lazy mount keeps it.
