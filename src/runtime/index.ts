@@ -124,6 +124,10 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
   let saidAt = 0;
   const play = el.querySelector<HTMLButtonElement>(".isofig-play");
   let state = m.init(params, ctx);
+  // Solo para capturas: `data-isofig-advance="3"` arranca la figura 3 s ya simulados (un headless no corre rAF).
+  const advance = Number(el.dataset["isofigAdvance"] ?? 0);
+  for (let i = 0; i < advance * 60; i++) state = m.step?.(state, 1 / 60, params, ctx) ?? state;
+  let jump = advance > 0;
   let playing = d.autoplay && !reduced;
   let visible = false;
   let frame = 0;
@@ -142,7 +146,8 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     last = now;
     if (playing) state = m.step?.(state, dt, params, ctx) ?? state;
     const view = m.view(state, params, ctx);
-    const k = reduced ? 1 : 1 - Math.exp(-dt / d.tau);
+    const k = reduced || jump ? 1 : 1 - Math.exp(-dt / d.tau);
+    jump = false;
     let moving = false;
     for (const [name, g] of groups) {
       const v = view.groups?.[name];

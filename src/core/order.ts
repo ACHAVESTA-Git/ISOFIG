@@ -81,7 +81,8 @@ export function paintOrder(c: Camera, boxes: Box3[], names: string[]): Ordered {
     if (pool.length === 0) {
       const left = [...Array(n).keys()].filter((k) => !done[k]);
       const k = left.reduce((m, x) => (depth[x] < depth[m] ? x : m), left[0]);
-      cycles.push(names[k]);
+      const peers = left.filter((j) => j !== k && after[j].includes(k)).map((j) => names[j]);
+      cycles.push(peers.length ? `${names[k]} ↔ ${peers.slice(0, 3).join(", ")}` : names[k]);
       pool = [k];
     }
     const k = pool.reduce((m, x) => (depth[x] < depth[m] ? x : m), pool[0]);

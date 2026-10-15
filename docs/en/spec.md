@@ -56,6 +56,7 @@ They are drawn on a solid part (`on`) and share its place in the paint order. Th
 | `ticks` | `from`, `along` (step between marks), `count`, `toward` (direction of the mark), `every` (how often a major one appears), `size: [minor, major]` |
 | `dots` | `points` — screws, rivets, lights |
 | `line` | `points`, `bold` — seams, slots, lines on a plate |
+| `label` | `at`, `text`, `size`, `face` (`top`, `x` or `y`) — a name engraved on a face, to tell identical parts apart (services, nodes) |
 
 ## Groups
 
@@ -119,3 +120,12 @@ opacity.
 - **Weight:** gzip above `budget`.
 
 The audit works on boxes: it is fast and coarse. Always review the figure at 4× in both themes.
+
+## Import and preview
+
+- `isofig import compose <file.json|->` builds a spec from `docker compose config --format json` (see
+  [import.md](import.md)). It is a starting point: enrich it by hand.
+- `isofig build <spec> --format page --model <model> --advance 3` writes a standalone page that bundles the model
+  and the local files it imports, and opens 3 s into the simulation so headless Chrome can capture it.
+- A warning such as "ambiguous paint order near A ↔ B, C" names the parts in the cycle: separate their boxes on
+  some axis or split the long part.
