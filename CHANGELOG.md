@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0 · 2026-10-15
+
+- Identical parts are drawn once in `<defs>` and repeated with `<use>`; figures of the academy dropped from 10–22 KB to 7–10 KB gzip.
+- Shades and edge colour are CSS variables set on each part (`--ft`, `--f0…--f3`, `--fe`), so they reach `<use>` copies; the state colour is `--sc`.
+- `--format page` wraps every bundled file in its own scope, so two files can declare the same name.
+
 ## 0.5.0 · 2026-10-15
 
 - Path coordinates are written in half pixels instead of tenths: figures are ~20 % lighter (gzip) with no visible change at 1× or 2×.

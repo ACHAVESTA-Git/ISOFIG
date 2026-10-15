@@ -1,6 +1,6 @@
 {
   "name": "isofig",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Explain technical ideas as small, crafted isometric machines: build-time SVG, a tiny animation runtime, Astro and Angular adapters, and a Claude Code skill.",
   "type": "module",
   "license": "MIT",

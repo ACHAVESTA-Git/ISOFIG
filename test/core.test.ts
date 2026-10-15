@@ -134,3 +134,16 @@ test("un parámetro oculto llega al modelo pero no se dibuja su control", () => 
   assert.doesNotMatch(r.html, /data-param="fijo"/);
   assert.equal(r.data.params[0].value, 4);
 });
+
+test("las piezas idénticas se dibujan una vez y se repiten con use", () => {
+  const r = renderFigure({
+    id: "rep",
+    title: "t",
+    parts: [
+      { id: "base", kind: "box", at: [0, 0, 0], size: [60, 200, 4], tone: "lo" },
+      { id: "caja-{i}", kind: "box", at: [20, 10, 4], size: [20, 20, 14], radius: 3, bevel: 1, tone: "hi", group: "caja-{i}", repeat: { count: 4, step: [0, 45, 0] } },
+    ],
+  });
+  assert.equal((r.svg.match(/<use href="#rep-p0"/g) ?? []).length, 4);
+  assert.match(r.svg, /<use href="#rep-p0" x="[\d.]+" y="[\d.]+" class="hi" data-g="caja-0"\/>/);
+});
