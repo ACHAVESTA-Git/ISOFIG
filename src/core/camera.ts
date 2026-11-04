@@ -14,6 +14,8 @@ export interface Camera {
   scale: number;
   ox: number;
   oy: number;
+  /** Dibujo de borrador (ver `View.draft`): menos segmentos y capas, sin piezas compartidas. */
+  draft?: boolean;
 }
 
 export function makeCamera(options: CameraOptions = {}, scale = 1, ox = 0, oy = 0): Camera {

@@ -186,10 +186,10 @@ export function meshOf(p: Exclude<Solid, Round>, c: Camera): Mesh {
   // El marco de y lleva la planta en otro orden: se lee en su base y se orienta sola (horaria o antihoraria).
   if (p.kind === "prism") return prism(prismRing(p), p.frame ?? frameOf(prismPoint(p, [0, 0], p.z), p.axis ?? "z"), p.h, p.bevel ?? 0);
   if (p.kind === "cone") {
-    const n = segmentsFor(Math.max(p.r, p.r2) * c.scale);
+    const n = segmentsFor(Math.max(p.r, p.r2) * c.scale, c.draft);
     return prism(circle(p.r, n), frameOf(p.at, p.axis), p.h, 0, circle(p.r2, n));
   }
-  return prism(circle(p.r, segmentsFor(p.r * c.scale)), frameOf(p.at, p.axis), p.h, p.bevel ?? 0);
+  return prism(circle(p.r, segmentsFor(p.r * c.scale, c.draft)), frameOf(p.at, p.axis), p.h, p.bevel ?? 0);
 }
 
 export interface Lines {

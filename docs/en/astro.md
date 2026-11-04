@@ -134,7 +134,7 @@ reader could move or lose. Everything else downloads with `import()`:
 |---|---|---|
 | `<Figure>` bootstrap | With the page; only if it has a figure | ~1.3 KB |
 | Runtime and model | According to `load` | ~4.2 KB + the model |
-| Orbit (`isofig/orbit`) | When the pointer hovers, focuses or touches the figure | ~8.5 KB |
+| Orbit (`isofig/orbit`) | When the pointer hovers, focuses or touches the figure | ~10 KB |
 | Enlarge (`isofig/zoom`) | When "Enlarge" is pressed | ~0.8 KB |
 
 - `load="visible"` (default): when it gets within 600 px of the screen, or when the pointer hovers, focuses or touches the figure.
@@ -159,7 +159,8 @@ runtime JSON stay those of the spec.
 
 ## 7. Turning and enlarging the figure
 
-`orbit` adds the turn buttons and the drag. The turn redraws the scene in the browser, so the spec travels in the page
+`orbit` adds the turn buttons, the drag (with inertia) and the arrow keys when the drawing has focus; it turns a full
+circle and the figure fits from any angle (options and details in [spec.md](spec.md#turning-the-figure-orbit)). The turn redraws the scene in the browser, so the spec travels in the page
 (as a `<script type="application/json">`): about 1.9 KB gzip per figure with orbit for the example token bucket
 (40 parts). A nested spec (`root`) travels already flattened, so the orbit does not download the tree flattener, the kit
 catalog or the validator. The orbit code downloads only when the reader uses it.

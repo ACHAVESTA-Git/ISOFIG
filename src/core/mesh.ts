@@ -123,8 +123,9 @@ export function prism(ring: Vec2[], frame: Frame, h: number, bevel = 0, top?: Ve
   return { v, faces };
 }
 
-export function segmentsFor(screenRadius: number): number {
-  return Math.max(12, Math.min(48, 4 * Math.ceil(screenRadius / 2.5)));
+/** Cuántos lados lleva un círculo de ese radio en pantalla; en borrador, no más de 16. */
+export function segmentsFor(screenRadius: number, draft?: boolean): number {
+  return Math.max(12, Math.min(draft ? 16 : 48, 4 * Math.ceil(screenRadius / 2.5)));
 }
 
 export function cornerSteps(screenRadius: number): number {

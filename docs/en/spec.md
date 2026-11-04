@@ -173,20 +173,51 @@ The audit works on boxes: it is fast and coarse. Always review the figure at 4×
 
 ## Turning the figure (orbit)
 
-`renderFigure(spec, { orbit: true })` adds turn buttons and the "drag to turn" hint. In the page, the orbit loads
-only when needed:
+`renderFigure(spec, { orbit: true })` adds turn buttons and the "drag or use the arrow keys to turn" hint. In the page,
+the orbit loads only when needed:
 
 ```ts
 import { orbitOnDemand } from "isofig/runtime";
 
 orbitOnDemand(el, async () => {
   const { enableOrbit } = await import("isofig/orbit");
-  return enableOrbit(el, spec, { lang: "en", range: 40 });
+  return enableOrbit(el, spec, { lang: "en" });
 });
 ```
 
-Hovering or focusing the figure prefetches it; pressing the drawing or a button enables it. The module is ~8.5 KB
-gzip plus the spec, downloaded only by readers who turn the figure.
+Hovering or focusing the figure prefetches it; pressing the drawing, a button or an arrow key enables it. The module is
+~10 KB gzip plus the spec, downloaded only by readers who turn the figure.
+
+`enableOrbit` options:
+
+| Option | Default | What it does |
+|---|---|---|
+| `lang` | `"en"` | Language of the labels when it redraws. |
+| `range` | no limit | Degrees the azimuth may turn to each side of the spec's own. Without it the figure turns a **full circle** (mod 360°) and no button is disabled; with it, the button at the limit gets `aria-disabled`. |
+| `minElevation`, `maxElevation` | `12`, `60` | Elevation limits, in degrees. |
+| `instance` | the SVG's | Name of the copy in the DOM (see `RenderOptions.instance`). |
+
+**How it moves**
+
+- **Dragging** turns 0.35° per pixel (with a mouse, 0.25° of elevation per pixel too; a finger only turns sideways).
+  **On release it keeps turning with inertia and brakes smoothly** (the speed drops to 37 % every 0.18 s). Grabbing the
+  figure stops it. With `prefers-reduced-motion` there is no inertia and no gliding: the camera jumps to the requested
+  angle.
+- **Keyboard.** The drawing is focusable (`tabindex="0"`, `aria-keyshortcuts`) and its hint is read after its
+  description. With focus on it, ←/→ turn 15° (like ↺/↻) and ↑/↓ change the elevation by 5°; with Ctrl, Alt or Meta they
+  do nothing, and the controls keep their arrow keys. "Initial view" takes the short way back.
+- **It fits from any angle.** The scale of the initial view is the **cap**: from another azimuth or elevation the camera
+  shrinks just enough for the whole figure to fit the frame, in every pose of the teardown (`groups.*.extent`). The change
+  is continuous, with no jumps, and it never zooms in. The `viewBox` does not change: part focus moves it.
+- **Nothing shows through or mirrored.** Dots, lines, `ticks` and labels engraved on a face that does not look at the
+  reader are not drawn. A label on a lid (`face: "top"`) seen from the other side turns half a turn around its anchor so
+  it reads the right way up; one on a side face (`x`, `y`) that looks away is hidden. This also holds in the initial
+  view: what was engraved on a back face no longer shows through.
+- **Fluidity.** While the camera moves (drag, inertia, arrow keys) the scene is drawn as a **draft**: no `<use>` sharing
+  of identical pieces, fewer layers on spheres and capsules, and only the paint order of the teardown pose that is shown
+  (the value of the `reorder` control). As soon as it stops, it is drawn in full, the same as `drawScene` from that angle.
+  If the reader moves the teardown control, all poses are computed for 1.2 s. You can ask for the same by hand with
+  `drawScene(spec, lang, { draft: true, pose: value })`.
 
 The orbit draws the **assembled** spec. A nested spec (`root`, see [nesting.md](nesting.md)) is flattened at build time
 with `assemble(spec)` from `isofig`, and the flat one is what travels to the page (`<Figure orbit>` and

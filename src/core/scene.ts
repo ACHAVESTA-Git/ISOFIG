@@ -79,11 +79,11 @@ function engraved(c: Camera, mesh: Mesh | undefined, details: Detail[]): Detail[
   });
 }
 
-function itemBody(c: Camera, item: Item, lang: string, inline = false, draft?: boolean): string {
+function itemBody(c: Camera, item: Item, lang: string, inline = false): string {
   const cls = (k: string) => (inline ? `style="${INLINE[k]}"` : `class="${k}"`);
   const solid = item.solid;
   const mesh = isRound(solid) ? undefined : meshOf(solid, c);
-  const drawn = isRound(solid) ? drawRound(c, endsOf(solid), solid.r, draft) : drawMesh(c, mesh!);
+  const drawn = isRound(solid) ? drawRound(c, endsOf(solid), solid.r) : drawMesh(c, mesh!);
   const shown = item.details.length ? engraved(c, mesh, item.details) : item.details;
   const lines = linesOf(shown);
   const proj = (pts: Vec3[]) => pts.map((p) => project(c, p));
@@ -106,13 +106,13 @@ const r2 = (v: number) => Math.round(v * 2) / 2;
  * Las piezas idénticas (un depósito de fichas, una fila de carritos) se dibujan una vez en <defs> y se repiten con
  * <use>: cada una se calcula relativa a su propia esquina, así dos piezas iguales dan el mismo texto.
  */
-function artOf(id: string, c: Camera, items: Item[], order: number[], lang: string, custom: Set<string>, draft?: boolean): { defs: string; art: string } {
+function artOf(id: string, c: Camera, items: Item[], order: number[], lang: string, custom: Set<string>): { defs: string; art: string } {
   const placed = order.map((k) => {
     const item = items[k];
     const [ax, ay] = project(c, item.box.min);
     const tone = TONES.includes(item.tone) ? item.tone : "mid";
     const local = { ...c, ox: c.ox - ax, oy: c.oy - ay };
-    return { item, ax: r2(ax), ay: r2(ay), tone, key: draft ? "" : itemBody(local, item, lang, true), local };
+    return { item, ax: r2(ax), ay: r2(ay), tone, key: c.draft ? "" : itemBody(local, item, lang, true), local };
   });
   const count = new Map<string, number>();
   for (const p of placed) count.set(p.key, (count.get(p.key) ?? 0) + 1);
@@ -126,7 +126,7 @@ function artOf(id: string, c: Camera, items: Item[], order: number[], lang: stri
     // Una pieza que anima un modelo y además se despieza va dentro de un <g> con el grupo del despiece.
     const [open, close] = p.item.outer ? [`<g data-g="${esc(p.item.outer)}">`, "</g>"] : ["", ""];
     if ((count.get(p.key) ?? 0) < 2 || p.key.length < 200) {
-      art += `${open}<g class="${p.tone}"${paint}${g}${hidden}>${itemBody(c, p.item, lang, false, draft)}</g>${close}`;
+      art += `${open}<g class="${p.tone}"${paint}${g}${hidden}>${itemBody(c, p.item, lang)}</g>${close}`;
       continue;
     }
     let ref = ids.get(p.key);
@@ -283,6 +283,7 @@ export function drawScene(spec: FlatSpec, lang: string, view: View = {}): Scene 
   const { items } = buildItems(spec.parts);
   const options = { ...spec.camera, ...(view.azimuth !== undefined ? { azimuth: view.azimuth } : {}), ...(view.elevation !== undefined ? { elevation: view.elevation } : {}) };
   const cam = fitCamera(options, fitPoints(spec, items, makeCamera(options)), W, H, spec.pad ?? 24, view.scale);
+  cam.draft = view.draft;
   const names = items.map((i) => i.id);
   const oriented = items.some((i) => isRound(i.solid) || i.solid.kind === "prism" || (i.solid.kind === "box" && i.solid.frame) || ((i.solid.kind === "cylinder" || i.solid.kind === "cone") && !isWorldAxis(axisOf(i.solid.axis))));
   // La forma de cada pieza se calcula una vez; en cada pose solo se traslada (y su silueta, en pantalla).
@@ -350,7 +351,7 @@ export function drawScene(spec: FlatSpec, lang: string, view: View = {}): Scene 
     });
     reorder = { param, poses };
   }
-  const { defs, art } = artOf(view.instance ?? spec.id, cam, items, order, lang, customPaints(spec), view.draft);
+  const { defs, art } = artOf(view.instance ?? spec.id, cam, items, order, lang, customPaints(spec));
   const spins: Record<string, number[]> = {};
   for (const [g, def] of Object.entries(spec.groups ?? {})) {
     if (!def.spin) continue;

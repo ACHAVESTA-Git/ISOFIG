@@ -70,8 +70,7 @@ export function drawMesh(c: Camera, mesh: Mesh): Drawn {
 
 /** La envolvente de dos círculos de radio `rho`, uno en cada centro (solo cuentan x e y): la silueta de una cápsula. */
 export function stadium(a: readonly number[], b: readonly number[], rho: number, draft?: boolean): Vec2[] {
-  const n = segmentsFor(rho);
-  const ring = circle(rho, draft ? Math.min(n, 16) : n);
+  const ring = circle(rho, segmentsFor(rho, draft));
   return hullOf([a, b].flatMap(([x, y]) => ring.map(([u, v]): Vec2 => [x + u, y + v])));
 }
 
@@ -84,14 +83,14 @@ const LAYERS: [Shade, number, number][] = [["s0", 1, 0], ["s1", 0.9, 0.1], ["s2"
  * Una esfera o una cápsula, de radio `r` y con los centros `ends`. En proyección ortográfica una esfera es un círculo y una
  * cápsula un estadio: lo que las hace volumen son las capas de tono, cada una más chica y más cerca de la luz que la anterior.
  */
-export function drawRound(c: Camera, ends: [Vec3, Vec3], r: number, draft?: boolean): Drawn {
+export function drawRound(c: Camera, ends: [Vec3, Vec3], r: number): Drawn {
   const [a, b] = ends.map((p) => project(c, p));
   const rho = r * c.scale;
   const faces = new Map<Shade, Vec2[][]>();
   // En borrador, solo las capas del borde, la media sombra y la base.
-  for (const [shade, k, s] of draft ? [LAYERS[0], LAYERS[2], LAYERS[4]] : LAYERS) {
+  for (const [shade, k, s] of c.draft ? [LAYERS[0], LAYERS[2], LAYERS[4]] : LAYERS) {
     const m = (p: Vec2): Vec2 => [p[0] + rho * s * LIGHT[0], p[1] + rho * s * LIGHT[1]];
-    faces.set(shade, [stadium(m(a), m(b), rho * k, draft)]);
+    faces.set(shade, [stadium(m(a), m(b), rho * k, c.draft)]);
   }
   const rim = faces.get("s0")![0];
   return { faces, edges: [[...rim, ...rim.slice(0, 1)]] };

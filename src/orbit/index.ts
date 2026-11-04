@@ -66,7 +66,7 @@ export function enableOrbit(el: HTMLElement, spec: FlatSpec, options: OrbitOptio
   const tick = () => {
     frame = 0;
     const now = performance.now();
-    const dt = Math.max(Math.min((now - last) / 1000, 0.1), 1e-3);
+    const dt = Math.max(Math.min((now - last) / 1000, 0.1), 0.008);
     last = now;
     if (drag) {
       drag.v = drag.v * 0.5 + ((az - drag.p) / dt) * 0.5;
