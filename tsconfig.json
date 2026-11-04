@@ -29,6 +29,7 @@
     "src/orbit",
     "src/node",
     "src/kit",
-    "src/zoom"
+    "src/zoom",
+    "src/astro/client.ts"
   ]
 }
