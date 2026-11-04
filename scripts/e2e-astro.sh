@@ -23,6 +23,7 @@ npm install --no-audit --no-fund --silent "astro@$ASTRO" "$TGZ"
 # La figura es la del ejemplo que trae el paquete.
 mkdir -p src/figures
 cp node_modules/isofig/examples/token-bucket/spec.ts node_modules/isofig/examples/token-bucket/model.ts src/figures/
+cp box.json src/figures/box.json
 
 echo "== astro build ($(./node_modules/.bin/astro --version))"
 ./node_modules/.bin/astro build 2>&1 | tail -n 12

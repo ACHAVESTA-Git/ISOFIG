@@ -1,7 +1,12 @@
 import { afterEach, test } from "node:test";
 import assert from "node:assert/strict";
-import { build, clock, cleanUp, demoSpec, flush, motion, pointer, slide, win, type Built } from "./dom.ts";
+import { readFileSync } from "node:fs";
+import { build, clock, cleanUp, demoSpec, flush, motion, pointer, setControl, slide, win, type Built } from "./dom.ts";
+import { renderFigure } from "../src/core/render.ts";
 import { drawScene } from "../src/core/scene.ts";
+import type { FigureSpec, FlatSpec } from "../src/core/spec.ts";
+import { assemble, type Catalog } from "../src/core/tree.ts";
+import { catalog as kit } from "../src/kit/index.ts";
 import { enableOrbit } from "../src/orbit/index.ts";
 import { mount, orbitOnDemand, retarget, unmountAll, type OrbitHandle } from "../src/runtime/index.ts";
 
@@ -200,4 +205,50 @@ test("presionar el dibujo antes de que cargue el giro lo agarra, salvo que el pu
   await flush();
   assert.deepEqual(calls, ["grab 7"], "el 6 se soltó antes de que cargara: no gira sin botón presionado");
   stop();
+});
+
+// Una spec anidada llega al giro ya armada ----------------------------------------------------------------------
+
+const motor = JSON.parse(readFileSync(new URL("../examples/motor-v8/spec.json", import.meta.url), "utf8")) as FigureSpec;
+const flat = assemble(motor, { catalog: kit as Catalog });
+
+test("el giro pide la spec ya armada y dice cómo armarla si le llega un árbol", () => {
+  const f = build(motor, { orbit: true });
+  assert.throws(() => enableOrbit(f.el, motor as FlatSpec), /el giro dibuja la spec ya armada; pásale assemble\(spec\)/);
+  assert.doesNotThrow(() => enableOrbit(f.el, flat).stop());
+});
+
+test("la spec armada dibuja en el navegador lo mismo que el build, con el mismo orden de pintado por pose", () => {
+  const r = renderFigure(motor, { lang: "en" });
+  const s = drawScene(flat, "en", { instance: motor.id });
+  assert.ok(r.svg.includes(`<g class="isofig-scene">${s.markup}</g>`), "mismo SVG");
+  assert.deepEqual(s.reorder, r.data.reorder);
+  assert.ok(s.reorder && s.reorder.poses.length > 1, "el motor se reordena en varias poses");
+});
+
+test("al girar una figura armada de un árbol, el runtime recibe el nuevo orden de pintado y reordena las piezas", () => {
+  motion.reduced = true;
+  const f = build(motor, { orbit: true });
+  mount(f.el);
+  const orbit = enableOrbit(f.el, flat, { lang: "en" });
+  const scene = () => f.q(".isofig-scene");
+  const paintOrder = () => [...scene().children].map((c) => c.getAttribute("data-g") ?? c.getAttribute("href") ?? c.tagName);
+  clock.run(2);
+  const total = scene().children.length;
+  const rest = paintOrder();
+  setControl(f.control("explode"), 3);
+  clock.run(2);
+  const apart = paintOrder();
+  assert.equal(apart.length, total);
+  assert.notDeepEqual(apart, rest, "con el motor desarmado, algunas piezas cambian de lugar en el orden de pintado");
+
+  orbit.turn(25);
+  clock.run(3);
+  assert.equal(scene().children.length, total, "se redibujó sin perder ni repetir piezas");
+  const turned = paintOrder();
+  assert.notDeepEqual(turned, apart, "desde otro ángulo el orden es otro");
+  setControl(f.control("explode"), 0);
+  clock.run(3);
+  assert.notDeepEqual(paintOrder(), turned, "y volver a armarlo lo reordena con las poses del ángulo nuevo");
+  orbit.stop();
 });

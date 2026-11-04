@@ -241,6 +241,25 @@ test("el mini-bundler resuelve imports por defecto, con alias y de espacio de no
   assert.deepEqual([...m["both"]()], ["por-defecto", "efe", "por-defecto"]);
 });
 
+test("--format page --orbit manda al giro la spec ya aplanada: sin root y con el orden de pintado por pose", () => {
+  scratch((dir) => {
+    const out = join(dir, "page.html");
+    const r = cli(["build", join(root, "examples/motor-v8/spec.json"), "--format", "page", "--orbit", "-o", out]);
+    assert.equal(r.status, 0, r.stderr);
+    const script = /<script type="module">([\s\S]*)<\/script>/.exec(readFileSync(out, "utf8"))![1]!;
+    const sent = /const __orbitSpec = (\{.*\});\n/.exec(script)![1]!;
+    const flat = JSON.parse(sent);
+    assert.equal("root" in flat, false, "el árbol no viaja");
+    assert.ok(flat.parts.length > 50, "viajan sus piezas");
+    assert.ok(flat.reorder.at.length > 1, "y las poses donde se reordena");
+    assert.doesNotMatch(script, /assembleTree|use-cycle/, "el giro de la página no lleva el aplanador");
+    const file = join(dir, "page.mjs");
+    writeFileSync(file, script);
+    const check = spawnSync(process.execPath, ["--check", file], { encoding: "utf8" });
+    assert.equal(check.status, 0, check.stderr);
+  });
+});
+
 test("--format page con un modelo que usa export async function y export * da un script válido", () => {
   scratch((dir) => {
     writeFileSync(join(dir, "extra.ts"), "export const LIMIT = 4;\nexport async function warm() { return LIMIT; }\n");

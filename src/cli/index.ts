@@ -11,7 +11,7 @@ import { renderFigure } from "../core/render.ts";
 import { assembleTree, type Catalog } from "../core/tree.ts";
 import { catalog } from "../kit/index.ts";
 import { budgetIssues, measure } from "../node/index.ts";
-import type { FigureSpec } from "../core/spec.ts";
+import type { FigureSpec, FlatSpec } from "../core/spec.ts";
 import { validateSpec } from "../core/validate.ts";
 import { bundle, sourceOf } from "./bundle.ts";
 import { helpOf } from "./help.ts";
@@ -55,7 +55,7 @@ async function loadModel(file: string): Promise<Model<any, any>> {
   return model;
 }
 
-function page(html: string, modelFile: string | undefined, name: string | undefined, theme: string, orbitSpec?: string, lang = "en"): string {
+function page(html: string, modelFile: string | undefined, name: string | undefined, theme: string, orbitSpec?: FlatSpec, lang = "en"): string {
   const fromSource = import.meta.url.endsWith(".ts");
   const runtimeFile = resolve(pkg, fromSource ? "src/runtime/index.ts" : "dist/runtime/index.js");
   const runtime = sourceOf(runtimeFile).replace(/^export /gm, "");
@@ -64,8 +64,9 @@ function page(html: string, modelFile: string | undefined, name: string | undefi
   const orbit = orbitSpec
     ? `const __runtime = { retarget, orbitOnDemand };\n` +
       bundle(resolve(pkg, fromSource ? "src/orbit/index.ts" : "dist/orbit/index.js"), "__orbit", runtimeAlias) +
-      `\n${bundle(resolve(orbitSpec), "__specModule")}\n` +
-      `document.querySelectorAll("[data-isofig]").forEach((el) => orbitOnDemand(el, async () => __orbit.enableOrbit(el, __specModule.default, { lang: ${JSON.stringify(lang)} })));\n`
+      // La spec viaja ya aplanada, como con <Figure orbit>: el giro no sabe armar un árbol.
+      `\nconst __orbitSpec = ${JSON.stringify(orbitSpec).replace(/</g, "\\u003c")};\n` +
+      `document.querySelectorAll("[data-isofig]").forEach((el) => orbitOnDemand(el, async () => __orbit.enableOrbit(el, __orbitSpec, { lang: ${JSON.stringify(lang)} })));\n`
     : "";
   const zoom = `${bundle(resolve(pkg, fromSource ? "src/zoom/index.ts" : "dist/zoom/index.js"), "__zoom")}\nzoomOnDemand(async () => __zoom);\n`;
   const css = readFileSync(resolve(pkg, "src/theme/theme.css"), "utf8");
@@ -211,7 +212,7 @@ async function main() {
         values.model,
         spec.model,
         values.theme!,
-        values.orbit ? file : undefined,
+        values.orbit ? flat : undefined,
         values.lang,
       );
       break;

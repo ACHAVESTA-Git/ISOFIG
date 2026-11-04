@@ -170,7 +170,12 @@ orbitOnDemand(el, async () => {
 ```
 
 Al pasar el puntero o enfocar la figura se precarga; al presionar el dibujo o un botón se activa. El módulo pesa
-~6 KB gzip más la spec, y solo lo descarga quien gira la figura.
+~8,5 KB gzip más la spec, y solo lo descarga quien gira la figura.
+
+El giro dibuja la spec **armada**. Una spec anidada (`root`, ver [anidar.md](anidar.md)) se aplana al compilar con
+`assemble(spec)` de `isofig`, y a la página viaja la aplanada (`<Figure orbit>` y `isofig build --format page --orbit`
+lo hacen solos). Así el navegador no descarga el aplanador del árbol, el catálogo del kit ni el validador, y el giro
+sigue reordenando las piezas por pose. Si le llega un árbol, `enableOrbit` lo dice.
 
 ## Ampliar la figura
 

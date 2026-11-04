@@ -169,8 +169,13 @@ orbitOnDemand(el, async () => {
 });
 ```
 
-Hovering or focusing the figure prefetches it; pressing the drawing or a button enables it. The module is ~6 KB
+Hovering or focusing the figure prefetches it; pressing the drawing or a button enables it. The module is ~8.5 KB
 gzip plus the spec, downloaded only by readers who turn the figure.
+
+The orbit draws the **assembled** spec. A nested spec (`root`, see [nesting.md](nesting.md)) is flattened at build time
+with `assemble(spec)` from `isofig`, and the flat one is what travels to the page (`<Figure orbit>` and
+`isofig build --format page --orbit` do it for you). That way the browser does not download the tree flattener, the kit
+catalog or the validator, and the turn keeps reordering the pieces by pose. Given a tree, `enableOrbit` says so.
 
 ## Enlarging the figure
 

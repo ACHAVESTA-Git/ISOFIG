@@ -6,8 +6,7 @@ import { hullOf, paintOrder, shapesApart, type Shape } from "./order.ts";
 import { drawMesh, SHADES } from "./shade.ts";
 import { customPaints, paintAttr } from "./palette/paint.ts";
 import { dotsOf, escapeHtml as esc, pathOf } from "./serialize.ts";
-import { textOf, type FigureSpec, type LabelPart } from "./spec.ts";
-import { assembleTree, type AssembleOptions } from "./tree.ts";
+import { textOf, type FigureSpec, type FlatSpec, type LabelPart } from "./spec.ts";
 
 const TONES = ["lo", "mid", "hi", "lit"];
 
@@ -214,11 +213,10 @@ export interface Scene {
 }
 
 /**
- * Dibuja la escena de una spec desde una cámara. No depende de Node: el modo órbita la llama en el navegador. Una spec
- * anidada (`root`) se aplana antes.
+ * Dibuja la escena de una spec ya armada (`assemble`, o `renderFigure`, que la arma antes) desde una cámara. No depende
+ * de Node ni de `tree.ts`: el modo órbita la llama en el navegador y no necesita saber aplanar un árbol.
  */
-export function drawScene(input: FigureSpec, lang: string, view: View & AssembleOptions = {}): Scene {
-  const spec = assembleTree(input, view).spec;
+export function drawScene(spec: FlatSpec, lang: string, view: View = {}): Scene {
   const W = spec.width ?? 640;
   const H = spec.height ?? 400;
   const { items } = buildItems(spec.parts);

@@ -1,0 +1,9 @@
+---
+import Figure from "isofig/astro";
+import Layout from "../layouts/Layout.astro";
+import box from "../figures/box.json";
+---
+<Layout title="Nested">
+  <h1>A nested figure with the orbit</h1>
+  <Figure spec={box} lang="en" orbit load="eager" />
+</Layout>

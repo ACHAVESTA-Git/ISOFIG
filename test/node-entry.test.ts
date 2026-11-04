@@ -15,11 +15,11 @@ test("el núcleo, el runtime y la órbita no importan nada de Node ni de paquete
   }
 });
 
-test("el giro redibuja en el navegador con los nombres de las pinturas, sin las tablas de colores ni la validación", () => {
+test("el giro redibuja en el navegador sin el aplanador del árbol, el catálogo, las tablas de colores ni la validación", () => {
   const files = reachable(join(root, "src/orbit/index.ts")).map((f) => f.slice(root.length + 1));
   const palette = files.filter((f) => f.startsWith("src/core/palette/")).sort();
   assert.deepEqual(palette, ["src/core/palette/names.ts", "src/core/palette/paint.ts"]);
-  for (const heavy of ["issues.ts", "validate.ts", "audit.ts", "render.ts", "check.ts"]) {
+  for (const heavy of ["tree.ts", "issues.ts", "validate.ts", "validate-tree.ts", "audit.ts", "render.ts", "check.ts", "kit/index.ts"]) {
     assert.equal(files.some((f) => f.endsWith(`/${heavy}`)), false, `el giro arrastra ${heavy}`);
   }
 });

@@ -10,7 +10,7 @@ import { ISSUE_SEVERITIES, makeIssue, type IssueCode } from "../src/core/issues.
 import { buildItems, expand } from "../src/core/items.ts";
 import { renderFigure } from "../src/core/render.ts";
 import { drawScene } from "../src/core/scene.ts";
-import type { FigureSpec } from "../src/core/spec.ts";
+import type { FigureSpec, FlatSpec } from "../src/core/spec.ts";
 import { budgetIssues, measure } from "../src/node/index.ts";
 import { validateSpec } from "../src/core/validate.ts";
 import tokenBucket from "../examples/token-bucket/spec.ts";
@@ -262,7 +262,7 @@ test("repeat.from: la copia k se desplaza step×k y se llama from+k", () => {
   assert.equal(find({ ...spec, parts: [{ ...(spec.parts[1] as object), repeat: { count: 2, step: [0, 5, 0], from: 1.5 } }] }, "repeat-from-invalid")!.severity, "warning");
 });
 
-const small = (size: number, face?: "x" | "y"): FigureSpec => ({
+const small = (size: number, face?: "x" | "y"): FlatSpec => ({
   ...base,
   width: 680,
   height: 430,

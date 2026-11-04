@@ -2,7 +2,7 @@
 
 In Angular the figure is compiled before the bundler sees it. The isofig CLI turns the spec into a TypeScript
 module with the HTML already generated; a standalone component displays and animates it. The isofig core doesn't
-enter your bundle, only the runtime (~1.7 KB gzip).
+enter your bundle, only the runtime (~3.5 KB gzip, measured by `npm run size`).
 
 Tested with Angular 22: standalone, signals, zoneless and `OnPush`.
 

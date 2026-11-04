@@ -54,8 +54,9 @@ topologías, UML) necesita lo mismo: contenedores anidados que se compilan a pie
 - Un motor completo cabe en un JSON de ~30 KB sin TypeScript: [motor V8](../../examples/motor-v8/spec.json) (215
   piezas, 7 pasos, 12 piezas elegibles, 16,6 KB gzip) y [motor cohete](../../examples/motor-cohete/spec.json).
 - El runtime crece 387 B gzip (acumular, ventanas, atenuación, textos por valor, reorden). El giro (`isofig/orbit`)
-  pasa de ~6,9 a ~12 KB gzip porque `drawScene` ahora sabe aplanar y ordenar por pose; sigue cargándose solo al tocar
-  la figura. El kit no entra en el giro: el catálogo se le pasa si hace falta.
+  pasa de ~6,5 a ~8,5 KB gzip porque `drawScene` ahora ordena por pose y dibuja prismas, conos y ejes inclinados; sigue
+  cargándose solo al tocar la figura. Con el aplanador dentro llegó a ~12 KB: por eso el giro recibe la spec ya aplanada
+  (`assemble` al compilar, que hacen `<Figure orbit>` y la CLI) y ni el aplanador, ni el kit, ni el validador entran en él.
 - Dibujar el V8 con sus siete poses tarda ~40 ms (13 ms sin poses): suficiente para el giro, pero no gratis.
 - La auditoría, que trabaja sobre cajas, usa también los planos de las caras: una culata inclinada sobre su bancada
   ya no «se atraviesa». Las piezas dentro de otras a propósito se marcan con `mount` (también por nodo).

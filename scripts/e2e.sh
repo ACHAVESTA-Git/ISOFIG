@@ -74,7 +74,8 @@ for entry in isofig isofig/runtime isofig/orbit isofig/zoom isofig/astro/client;
   out="out/browser-$(echo "$entry" | tr / -).js"
   printf 'export * from "%s";\n' "$entry" > entry.mjs
   ./node_modules/.bin/esbuild entry.mjs --bundle --platform=browser --format=esm --minify --outfile="$out" --log-level=warning
-  if grep -q 'node:' "$out"; then echo "$entry arrastra un import de node:" >&2; exit 1; fi
+  # Un import de Node es `from"node:zlib"` o `import("node:fs")`; una clave `{node:x}` de un objeto no lo es.
+  if grep -Eq '(from|import\()\s*["'"'"']node:' "$out"; then echo "$entry arrastra un import de node:" >&2; exit 1; fi
   echo "$entry: $(gzip -9 < "$out" | wc -c | tr -d ' ') B min+gzip, sin node:"
 done
 

@@ -24,6 +24,14 @@ const persistent = page("persistent");
 assert.match(persistent, /data-astro-transition-persist="bucket"/);
 assert.match(persistent, /data-isofig-load="eager"/);
 
+// Un árbol con piezas del catálogo viaja al giro ya armado: sin `root`, con sus piezas y el despiece.
+const nested = page("nested");
+const sent = JSON.parse(/<script type="application\/json" class="isofig-spec">([\s\S]*?)<\/script>/.exec(nested)[1]);
+assert.equal("root" in sent, false, "el giro no recibe el árbol");
+assert.ok(sent.parts.length >= 3, "recibe las piezas, también las del catálogo");
+assert.ok(sent.params.some((p) => p.id === "explode"), "y los controles del despiece");
+assert.match(nested, /<input type="range" data-param="explode"/, "el despiece trae su control en el marcado");
+
 // Una página sin figura no lleva nada de la biblioteca.
 const plain = page("plain");
 assert.equal(plain.includes("isofig"), false, "la página sin figura no trae marcado ni tema de isofig");
@@ -37,5 +45,8 @@ assert.ok(text.some((t) => t.includes("isofig-zoombox")), "falta isofig/zoom en 
 assert.ok(text.some((t) => t.includes("isofig-grabbing")), "falta isofig/orbit en _astro/");
 const eager = (name) => text.find((t) => t.includes(name));
 assert.notEqual(eager("isofig-zoombox"), eager("isofigLive"), "el zoom no va dentro del runtime");
+// El giro no lleva el aplanador del árbol ni los mensajes de la validación, ni el kit.
+const orbit = eager("isofig-grabbing");
+for (const heavy of ["use-cycle", "node-id-missing", "labelPlate"]) assert.equal(orbit.includes(heavy), false, `el giro lleva «${heavy}»`);
 
 console.log(`dist/: ${readdirSync(dist).length} entradas, ${assets.length} archivos js; el adaptador hace lo que promete`);

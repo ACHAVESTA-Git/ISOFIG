@@ -2,10 +2,10 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { renderFigure } from "../src/core/render.ts";
 import { drawScene } from "../src/core/scene.ts";
-import type { FigureSpec } from "../src/core/spec.ts";
+import type { FlatSpec } from "../src/core/spec.ts";
 
 // Una figura con todo lo que lleva id o name: título y descripción, piezas repetidas (<defs>) y radios.
-const spec: FigureSpec = {
+const spec: FlatSpec = {
   id: "panel",
   title: "Panel",
   caption: "El pie.",

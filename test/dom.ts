@@ -4,7 +4,7 @@
 import { Window } from "happy-dom";
 import assert from "node:assert/strict";
 import { renderFigure, type RenderOptions } from "../src/core/render.ts";
-import type { FigureSpec } from "../src/core/spec.ts";
+import type { FigureSpec, FlatSpec } from "../src/core/spec.ts";
 import type { FigureData, Model } from "../src/runtime/index.ts";
 
 export const win = new Window({ url: "http://localhost/", width: 1280, height: 800, settings: { disableJavaScriptEvaluation: true } });
@@ -167,6 +167,19 @@ Object.defineProperty(win.SVGGraphicsElement.prototype, "transform", {
   },
 });
 
+// happy-dom analiza `outerHTML` de un elemento SVG como HTML: un `<use .../>` no se cierra y se traga a sus hermanos.
+// Un navegador lo analiza como SVG (foreign content); aquí se envuelve en un <svg> para que ocurra lo mismo.
+const elementHtml = Object.getOwnPropertyDescriptor(win.Element.prototype, "outerHTML")!;
+Object.defineProperty(win.SVGElement.prototype, "outerHTML", {
+  configurable: true,
+  get: elementHtml.get,
+  set(this: Element, html: string) {
+    const holder = doc.createElement("div");
+    holder.innerHTML = `<svg>${html}</svg>`;
+    this.replaceWith(...holder.firstElementChild!.childNodes);
+  },
+});
+
 /** Una espera de verdad (las promesas pendientes, como el `import()` del zoom), sin pasar por el reloj de mentira. */
 export const flush = (): Promise<void> => new Promise((r) => setImmediate(r));
 
@@ -205,7 +218,7 @@ export function pressEscape(): void {
 // Figuras -------------------------------------------------------------------------------------------------------
 
 /** Una figura con un control de cada clase, dos desvíos, un grupo que se mueve y un rótulo. */
-export function demoSpec(extra: Partial<FigureSpec> = {}): FigureSpec {
+export function demoSpec(extra: Partial<FigureSpec> = {}): FlatSpec {
   return {
     id: "demo",
     title: "Demo",
@@ -230,7 +243,7 @@ export function demoSpec(extra: Partial<FigureSpec> = {}): FigureSpec {
       { label: "Calm", values: { rate: 1 }, note: "Calm again", reset: true },
     ],
     ...extra,
-  };
+  } as FlatSpec;
 }
 
 /** Un modelo mínimo: el grupo `bar` de `demoSpec` va a `rate × 5`. */
