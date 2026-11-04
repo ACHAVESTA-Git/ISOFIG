@@ -150,10 +150,11 @@ a single offline HTML file, in both styles and both themes.
 ### 1. Install
 
 ```sh
-npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1
+npm i isofig
 ```
 
-Node 22.18 or later. The package builds itself on install. The name `isofig` on the npm registry does not belong to this project yet: until it is published there, install only from this repository.
+Node 22.18 or later. The package is on npm as [`isofig`](https://www.npmjs.com/package/isofig), published by its author
+(`anthonychavesta`). To follow the repository instead: `npm i github:ACHAVESTA-Git/ISOFIG#v0.10.2`.
 
 ### 2. Write a figure as JSON
 
@@ -401,7 +402,7 @@ AI can check its own work and fix it.
 
 ## Roadmap
 
-- 1.0: the warnings marked ↑ in the [validation guide](docs/en/validate.md) become errors, and the package goes to npm.
+- 1.0: the warnings marked ↑ in the [validation guide](docs/en/validate.md) become errors.
 - Teardown with rotation: hinges that swing open as the figure comes apart (a door, a hood); today teardown only translates.
 - More map objects and importers (OpenAPI, Kubernetes manifests).
 - Adapters for other frameworks.

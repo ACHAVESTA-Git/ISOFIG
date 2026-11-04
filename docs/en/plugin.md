@@ -23,7 +23,7 @@ When you install, choose the scope: user (all your projects), project or local. 
 hand to `~/.claude/skills/isofig`, delete it: otherwise the skill will show up twice.
 
 To build the figures, the skill uses the npm package: if the project does not have it, the skill will ask you to run
-`npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1`.
+`npm i isofig`.
 
 ## 2. Invoke the skill
 

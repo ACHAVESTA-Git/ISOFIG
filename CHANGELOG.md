@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.2 · 2026-11-04
+
+- isofig is on npm: `npm i isofig`, published by its author. The README, the guides, the Claude Code skill and `SECURITY.md` install from npm again; the CLI keeps running as `npx --no-install isofig`.
+
 ## 0.10.1 · 2026-11-04
 
 - Security: the Claude Code skill and the guides no longer run `npm i isofig` or `npx isofig`. That name is not published on npm by this project, so whoever registered it would run code on every plugin user's machine. Installs now come from this repository pinned to a tag (`npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1`) and the CLI runs with `npx --no-install`, which never downloads a package. Added `SECURITY.md`.

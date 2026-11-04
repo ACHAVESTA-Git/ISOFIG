@@ -9,9 +9,9 @@ compatibility: Node 22.18+. Astro 5+ or Angular 19+. Playwright or Chrome for th
 
 You write a **spec** (data, JSON or TypeScript), never drawing code. The isofig core turns it into light SVG at build
 time; a runtime of about 4.3 KB gzip animates it. Answer in the user's language and write the figure's texts in it
-(`{ es, en }` when the project is bilingual). If `isofig` is not installed in the project, run
-`npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1` first. Never `npm i isofig`: that name on the npm registry is not published
-by this project. Run the CLI as `npx --no-install isofig`, which uses the installed copy and never downloads one.
+(`{ es, en }` when the project is bilingual). If `isofig` is not installed in the project, run `npm i isofig` first
+(published on npm by its author, `anthonychavesta`). Run the CLI as `npx --no-install isofig`, which uses the installed
+copy and never downloads one on its own.
 Its guides are in `node_modules/isofig/docs/en/` (Spanish in `docs/es/`); this skill's detail is in `references/`.
 
 ## The idea
