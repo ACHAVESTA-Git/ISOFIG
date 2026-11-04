@@ -112,12 +112,12 @@ opacidad.
 
 ## Auditoría
 
-`renderFigure` y `isofig check` revisan:
+`renderFigure` e `isofig check` revisan (el peso, solo `isofig check` e `isofig/node`):
 
 - **Orden de pintado:** pares que se solapan en pantalla sin un eje que los separe en el mundo.
 - **Apoyo:** toda pieza visible toca otra o el piso, salvo `float`.
 - **Choques:** dos piezas que se hunden más de 0,8 unidades una en otra, salvo `mount`.
-- **Peso:** gzip por encima de `budget`.
+- **Peso:** gzip por encima de `budget`. `renderFigure` no lo mide (el gzip necesita Node): lo hacen `isofig check` y `checkBudget(spec, measure(html))` de `isofig/node`.
 
 La auditoría trabaja sobre cajas: es rápida y gruesa. Revisa siempre la figura a 4× en los dos temas.
 

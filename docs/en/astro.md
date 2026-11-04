@@ -55,7 +55,7 @@ import bucket from "../figures/bucket";
 | `n` | Number shown as "Fig. n". |
 | `class` | Extra class for the container. |
 
-The component imports `isofig/theme.css`, so the CSS only reaches pages that have a figure. If the spec has an
+The component imports `isofig/theme.css` (the theme's only public path), so the CSS only reaches pages that have a figure. If the spec has an
 error (an `on` that points to a part that doesn't exist, a duplicate id), the build fails. Audit warnings
 (floating parts, parts passing through each other, excess weight) are printed in the build console.
 
@@ -128,6 +128,18 @@ npx isofig build src/figures/bucket.ts --format page --model src/figures/bucket.
 
 `check` prints the weight and the warnings (it fails with `--strict` if there are any). `page` builds a
 standalone page to view in the browser or capture headless.
+
+To measure the weight from your own build code, use `isofig/node`. It is the only entry that needs Node
+(`node:zlib`); `isofig` and `isofig/runtime` run in the browser too.
+
+```ts
+import { renderFigure } from "isofig";
+import { checkBudget, measure } from "isofig/node";
+
+const figure = renderFigure(spec);
+const size = measure(figure.html); // { bytes, gzip }
+for (const warning of checkBudget(spec, size)) console.warn(warning); // over `spec.budget` (40 KB by default)
+```
 
 ## Common problems
 

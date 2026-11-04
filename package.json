@@ -16,6 +16,10 @@
       "types": "./dist/runtime/index.d.ts",
       "default": "./dist/runtime/index.js"
     },
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "default": "./dist/node/index.js"
+    },
     "./astro": "./src/astro/Figure.astro",
     "./theme.css": "./src/theme/theme.css",
     "./angular": "./src/angular/isofig-figure.ts",
@@ -41,7 +45,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "check": "tsc -p tsconfig.check.json",
+    "check": "tsc -p tsconfig.check.json && tsc -p tsconfig.browser.json",
     "test": "node --no-warnings --test \"test/**/*.test.ts\"",
     "example": "node src/cli/index.ts build examples/token-bucket/spec.ts --format page -o examples/token-bucket/preview.html --model examples/token-bucket/model.ts"
   },

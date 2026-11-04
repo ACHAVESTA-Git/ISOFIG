@@ -6,6 +6,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 import { renderFigure } from "../core/render.ts";
 import { fromCompose } from "../core/importers/compose.ts";
+import { checkBudget, measure } from "../node/index.ts";
 import type { FigureSpec } from "../core/spec.ts";
 
 const HELP = `isofig: isometric figures from a spec
@@ -166,12 +167,14 @@ async function main() {
     else console.warn(`aviso: --set ${id}: la spec no tiene ese parámetro`);
   }
   const r = renderFigure(spec, { lang: values.lang, n: values.n, orbit: values.orbit });
+  const size = measure(r.html);
+  const warnings = [...r.warnings, ...checkBudget(spec, size, values.lang)];
   for (const e of r.errors) console.error(`error: ${e}`);
-  for (const w of r.warnings) console.warn(`aviso: ${w}`);
-  console.error(`${spec.id}: ${(r.bytes / 1024).toFixed(1)} KB, ${(r.gzip / 1024).toFixed(1)} KB gzip`);
+  for (const w of warnings) console.warn(`aviso: ${w}`);
+  console.error(`${spec.id}: ${(size.bytes / 1024).toFixed(1)} KB, ${(size.gzip / 1024).toFixed(1)} KB gzip`);
 
   if (command === "check") {
-    if (r.errors.length || (values.strict && r.warnings.length)) process.exit(1);
+    if (r.errors.length || (values.strict && warnings.length)) process.exit(1);
     return;
   }
   if (command !== "build") {

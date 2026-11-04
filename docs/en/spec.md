@@ -112,12 +112,12 @@ opacity.
 
 ## Audit
 
-`renderFigure` and `isofig check` check:
+`renderFigure` and `isofig check` check (weight only in `isofig check` and `isofig/node`):
 
 - **Paint order:** pairs that overlap on screen without an axis separating them in the world.
 - **Support:** every visible part touches another or the floor, except `float`.
 - **Collisions:** two parts that sink more than 0.8 units into each other, except `mount`.
-- **Weight:** gzip above `budget`.
+- **Weight:** gzip above `budget`. `renderFigure` does not measure it (gzip needs Node): `isofig check` and `checkBudget(spec, measure(html))` from `isofig/node` do.
 
 The audit works on boxes: it is fast and coarse. Always review the figure at 4× in both themes.
 
