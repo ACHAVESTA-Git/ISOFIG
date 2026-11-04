@@ -21,6 +21,9 @@ const out = resolve(root, values.out ?? "examples/galeria/index.html");
 
 const { assemble, renderFigure, textOf, usesCatalog } = await import(pathToFileURL(join(root, "src/core/index.ts")).href);
 const { catalog } = await import(pathToFileURL(join(root, "src/kit/index.ts")).href);
+// Una spec con `map` se compila con resolveMap (src/core/map): se carga solo si el repositorio lo trae.
+const mapFile = join(root, "src/core/map/index.ts");
+const resolveMap = existsSync(mapFile) ? (await import(pathToFileURL(mapFile).href)).resolveMap : undefined;
 
 const esbuild = (args, input) => execFileSync("npx", ["--no-install", "esbuild", ...args], { cwd: root, input, encoding: "utf8", maxBuffer: 64 << 20, stdio: ["pipe", "pipe", "pipe"] });
 const kb = (n) => `${(n / 1024).toFixed(1)} KB`;
@@ -52,8 +55,20 @@ const NOTES = {
   },
   compose: {
     title: { es: "Docker Compose", en: "Docker Compose" },
-    es: "De qué depende cada servicio de un docker-compose: réplicas, puertos publicados, volúmenes y redes dibujados como piezas.",
-    en: "What each service of a docker-compose depends on: replicas, published ports, volumes and networks drawn as parts.",
+    es: "De qué depende cada servicio de un docker-compose: qué necesita cada uno (otros servicios, volúmenes, redes), dibujado como una máquina.",
+    en: "What each service of a docker-compose depends on: what each one needs (other services, volumes, networks), drawn as a machine.",
+  },
+  "mapa-tienda": {
+    es: "El camino de una compra en una tienda en línea: la CDN entrega lo estático, el balanceador reparte entre tres servidores, el caché responde lo repetido y la cola saca los correos del camino.",
+    en: "The path of a purchase in an online shop: the CDN serves what is static, the balancer spreads requests over three servers, the cache answers what repeats and the queue takes the emails off the path.",
+  },
+  "mapa-pedido": {
+    es: "Qué pasa con un pedido: se paga, se reserva el stock, espera en la cola y sale el envío; si el pago se rechaza, el cliente recibe un aviso y el stock no se toca.",
+    en: "What happens to an order: it is paid, the stock is reserved, it waits in the queue and the shipment leaves; if the payment is rejected, the customer gets a notice and the stock is untouched.",
+  },
+  "mapa-uml": {
+    es: "Un diagrama de clases como archivadores: un cliente hace pedidos, el pedido se compone de líneas y se paga con un pago abstracto, con tarjeta o contra entrega.",
+    en: "A class diagram as filing cabinets: a customer places orders, an order is made of lines and is paid with an abstract payment, by card or cash on delivery.",
   },
 };
 
@@ -67,8 +82,8 @@ const TEXT = {
     theme: "Tema", light: "Claro", dark: "Oscuro",
     index: "Figuras", teaches: "Enseña", touch: "Toca",
     footer: "Todo va en este archivo: figuras, runtime, zoom y giro. No pide nada a la red. Se regenera con",
-    move: "mueve", toggle: "activa", choice: "elige", action: "pulsa", preset: "prueba", turn: "gira el dibujo arrastrándolo", zoom: "usa «{zoom}» para leer los rótulos",
-    or: "o", and: "y", open: "«", close: "»", zoomLabel: "Ampliar",
+    move: "mueve", toggle: "activa", choice: "elige", action: "pulsa", preset: "prueba", pause: "pausa y reanuda con", apart: "desármala paso a paso con", pick: "elige una pieza en", turn: "gira el dibujo arrastrándolo", zoom: "usa «{zoom}» para leer los rótulos",
+    or: "o", and: "y", open: "«", close: "»", zoomLabel: "Ampliar", pauseLabel: "Pausar",
   },
   en: {
     title: "isofig · gallery",
@@ -79,8 +94,8 @@ const TEXT = {
     theme: "Theme", light: "Light", dark: "Dark",
     index: "Figures", teaches: "Teaches", touch: "Touch",
     footer: "Everything is in this file: figures, runtime, zoom and turn. It asks the network for nothing. Regenerate it with",
-    move: "drag", toggle: "switch", choice: "pick", action: "press", preset: "try", turn: "drag the drawing to turn it", zoom: "use “{zoom}” to read the labels",
-    or: "or", and: "and", open: "“", close: "”", zoomLabel: "Enlarge",
+    move: "drag", toggle: "switch", choice: "pick", action: "press", preset: "try", pause: "pause and resume with", apart: "take it apart step by step with", pick: "pick a part under", turn: "drag the drawing to turn it", zoom: "use “{zoom}” to read the labels",
+    or: "or", and: "and", open: "“", close: "”", zoomLabel: "Enlarge", pauseLabel: "Pause",
   },
 }[lang];
 
@@ -109,15 +124,23 @@ const quoted = (labels) => labels.map((l) => `${TEXT.open}${l}${TEXT.close}`);
 const list = (labels, word = TEXT.and) => (labels.length < 2 ? quoted(labels).join("") : `${quoted(labels.slice(0, -1)).join(", ")} ${word} ${quoted(labels.slice(-1))[0]}`);
 
 /** «Toca: mueve «Recarga» y «Tráfico», prueba «Ráfaga», gira el dibujo arrastrándolo…» a partir de lo que declara la spec. */
-function touchOf(spec) {
+function touchOf(spec, autoplay) {
   const by = { range: [], toggle: [], choice: [], action: [] };
-  for (const p of spec.params ?? []) if (!p.hidden) by[p.kind ?? "range"]?.push(textOf(p.label, lang));
   const parts = [];
+  for (const p of spec.params ?? []) {
+    if (p.hidden) continue;
+    const label = textOf(p.label, lang);
+    // Los controles que añade el despiece tienen su propia frase.
+    if (p.id === "explode") parts.push(`${TEXT.apart} ${list([label])}`);
+    else if (p.id === "pick") parts.push(`${TEXT.pick} ${list([label])}`);
+    else by[p.kind ?? "range"]?.push(label);
+  }
   for (const [kind, verb] of [["range", TEXT.move], ["toggle", TEXT.toggle], ["choice", TEXT.choice], ["action", TEXT.action]]) {
     if (by[kind].length) parts.push(`${verb} ${list(by[kind])}`);
   }
   const presets = (spec.presets ?? []).map((p) => textOf(p.label, lang));
   if (presets.length) parts.push(`${TEXT.preset} ${list(presets, TEXT.or)}`);
+  if (autoplay) parts.push(`${TEXT.pause} ${list([TEXT.pauseLabel])}`);
   parts.push(TEXT.turn, TEXT.zoom.replace("{zoom}", TEXT.zoomLabel));
   const sentence = parts.length < 2 ? parts[0] : `${parts.slice(0, -1).join(", ")} ${TEXT.and} ${parts.at(-1)}`;
   return sentence[0].toUpperCase() + sentence.slice(1) + ".";
@@ -144,6 +167,7 @@ if (query.get("theme") === "dark" || query.get("theme") === "light") setTheme(qu
 `;
 
 function bundle(examples) {
+  const withMaps = Boolean(resolveMap) && examples.some((e) => e.spec.map);
   const imports = examples.filter((e) => e.model).map((e, i) => `import * as M${i} from ${JSON.stringify(e.model)};`);
   const registers = examples.filter((e) => e.model).map((e, i) => `register(${JSON.stringify(e.spec.model ?? e.spec.id)}, M${i}.default ?? M${i}.model);`);
   const entry = `
@@ -160,7 +184,7 @@ zoomOnDemand(() => import(${JSON.stringify(join(root, "src/zoom/index.ts"))}));
 mountAll();
 document.querySelectorAll("[data-isofig]").forEach((el) => {
   const spec = specs[el.dataset.isofig];
-  if (spec) orbitOnDemand(el, async () => (await import(${JSON.stringify(join(root, "src/orbit/index.ts"))})).enableOrbit(el, spec, { lang: ${JSON.stringify(lang)} }));
+  if (spec) orbitOnDemand(el, async () => (await import(${JSON.stringify(join(root, "src/orbit/index.ts"))})).enableOrbit(el, spec, { lang: ${JSON.stringify(lang)}${withMaps ? `, resolveMap: spec.map ? (await import(${JSON.stringify(mapFile)})).resolveMap : undefined` : ""} }));
 });
 ${toolbar}`;
   return esbuild(["--bundle", "--minify", "--format=esm", "--target=es2022", "--platform=browser", "--legal-comments=none", "--loader=ts",], entry);
@@ -230,13 +254,13 @@ if (!examples.length) throw new Error("no hay ejemplos en examples/*/spec.*");
 const figures = examples.map(({ name, spec }, i) => {
   const r = renderFigure(spec, { lang, n: i + 1, orbit: true });
   // Una spec anidada trae sus controles (Desarmar, Pieza) al armarse; el giro la arma él mismo, salvo que use el kit.
-  const flat = spec.root ? assemble(spec, { catalog }) : spec;
+  const flat = spec.root || spec.map ? assemble(spec, { catalog, resolveMap }) : spec;
   const orbitSpec = spec.root && usesCatalog(spec) ? flat : spec;
   if (r.errors.length) throw new Error(`${name}: ${r.errors.join("; ")}`);
   for (const w of r.warnings) console.error(`aviso en ${name}: ${w}`);
   const title = NOTES[name]?.title?.[lang] ?? (textOf(spec.title, lang) || name);
   const note = NOTES[name]?.[lang] ?? firstSentence(textOf(spec.caption, lang)) ?? "";
-  return { name, spec: orbitSpec, title, html: r.html, note, touch: NOTES[name]?.[lang === "es" ? "touchEs" : "touchEn"] ?? touchOf(flat) };
+  return { name, spec: orbitSpec, title, html: r.html, note, touch: NOTES[name]?.[lang === "es" ? "touchEs" : "touchEn"] ?? touchOf(flat, r.data.autoplay) };
 });
 
 const rtBytes = runtimeSize();
