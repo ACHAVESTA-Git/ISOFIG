@@ -1,0 +1,269 @@
+/*
+ * Estilo de lujo, opcional: `isofig/themes/luxe.css`. Se carga DESPUÉS de `isofig/theme.css` y se activa con la clase
+ * `isofig-luxe` en la figura o en cualquier ancestro (el <body>, el <html>, un contenedor). Sin ella no cambia nada.
+ *
+ *   «Atelier»  (claro):  papel marfil, tinta espresso, canto de grafito y acento de latón.
+ *   «Nocturne» (oscuro): laca negra, canto de champán en línea fina y acento de oro.
+ *
+ * Sigue al tema como el estándar: `prefers-color-scheme` o `data-theme="light|dark"` en <html>. Los tokens van en
+ * :where() (especificidad 0), como los de theme.css: un `.isofig { --isofig-accent: … }` tuyo, escrito después, gana.
+ * Las reglas de la tarjeta y los controles usan :where(.isofig-luxe) y tienen la misma especificidad que las de
+ * theme.css: por eso va después. Sin fuentes web ni servicios externos.
+ *
+ * Las garantías de la paleta siguen en pie con estos colores y las comprueba test/luxe.test.ts: texto ≥ 4,5:1, canto
+ * ≥ 3:1, ΔE ≥ 10 entre pinturas (≥ 6 con daltonismo) y cada pintura frente al acento.
+ */
+
+/* Atelier. Esta regla vale en los dos modos; los que cambian en oscuro los pisa Nocturne, más abajo. */
+:where(.isofig-luxe .isofig, .isofig.isofig-luxe) {
+  --isofig-paper: #f3ecde;
+  --isofig-card: #faf7ee;
+  --isofig-ink: #2a1e18;
+  --isofig-ink-soft: #6a5948;
+  --isofig-edge: #2f2b27;
+  --isofig-lo: #e3d9c3;
+  --isofig-mid: #eee6d3;
+  --isofig-hi: #fffcf2;
+  --isofig-accent: #ad811f;
+  --isofig-light: #fffdf6;
+  --isofig-shade: #85755f;
+  --isofig-halo: #3a2a1c24;
+  --isofig-chip: #efe7d5;
+  --isofig-ink-on-color: #1f150e;
+  --isofig-on-accent: #1f150e;
+  --isofig-focus: var(--isofig-accent);
+  --isofig-ok: #19966e;
+  --isofig-warn: #f79c40;
+  --isofig-fail: #b71a18;
+  --isofig-radius: 22px;
+  --isofig-luxe-serif: ui-serif, "New York", "Iowan Old Style", Georgia, serif;
+  --isofig-luxe-line: #2a1e1830;
+  --isofig-luxe-track: #2a1e1861;
+  --isofig-luxe-glow: #ffffffb3;
+  --isofig-luxe-sheen: #ffffffd9;
+  --isofig-luxe-vignette: #8a6a2a1a;
+
+  /* Materiales con más cuerpo: el cobre quema, la laca es de color vino, el acero tira a azul. La tinta es espresso o marfil, no gris. */
+  --isofig-paint-aluminium: light-dark(oklch(91% .008 250), oklch(82% .008 246));
+  --isofig-paint-aluminium-ink: #1f150e;
+  --isofig-paint-steel: light-dark(oklch(69% .035 245), oklch(58% .035 240));
+  --isofig-paint-steel-ink: light-dark(#1f150e, #f7f0e0);
+  --isofig-paint-iron: light-dark(oklch(50% .015 245), oklch(45% .012 246));
+  --isofig-paint-iron-ink: light-dark(#1f150e, #f7f0e0);
+  --isofig-paint-copper: light-dark(oklch(53% .12 42), oklch(54% .11 40));
+  --isofig-paint-copper-ink: light-dark(#1f150e, #f7f0e0);
+  --isofig-paint-brass: light-dark(oklch(84% .09 96), oklch(70% .095 93));
+  --isofig-paint-brass-ink: #1f150e;
+  --isofig-paint-rubber: light-dark(oklch(21% .008 60), oklch(20% .006 66));
+  --isofig-paint-rubber-ink: #f7f0e0;
+  --isofig-paint-carbon: light-dark(oklch(37% .03 262), oklch(31% .03 255));
+  --isofig-paint-carbon-ink: light-dark(#1f150e, #f7f0e0);
+  --isofig-paint-glass: light-dark(oklch(80% .06 205), oklch(73% .07 195));
+  --isofig-paint-glass-ink: #1f150e;
+  --isofig-paint-lacquer: light-dark(oklch(41% .14 22), oklch(44% .15 24));
+  --isofig-paint-lacquer-ink: light-dark(#1f150e, #f7f0e0);
+  /* El oro del acento se parece al amarillo de «datos» en oscuro: se aclara y se apaga para que no se confundan. */
+  --isofig-paint-data: light-dark(oklch(93% .075 92), oklch(90% .045 92));
+}
+
+/* Nocturne */
+@media (prefers-color-scheme: dark) {
+  :where(
+      :root:not([data-theme="light"]) :is(.isofig-luxe .isofig, .isofig.isofig-luxe),
+      :root.isofig-luxe:not([data-theme="light"]) .isofig
+    ) {
+    --isofig-paper: #0a090b;
+    --isofig-card: #131215;
+    --isofig-ink: #f2e9d6;
+    --isofig-ink-soft: #b8aa90;
+    --isofig-edge: #d8c79b;
+    --isofig-lo: #19181b;
+    --isofig-mid: #222024;
+    --isofig-hi: #2e2b31;
+    --isofig-accent: #e2bc5f;
+    --isofig-light: #58525a;
+    --isofig-shade: #000000;
+    --isofig-halo: #000000b3;
+    --isofig-chip: #1f1d22;
+    --isofig-ok: #62d0a4;
+    --isofig-warn: #f38835;
+    --isofig-fail: #fc7b6f;
+    --isofig-luxe-line: #d8c79b38;
+    --isofig-luxe-track: #d8c79b66;
+    --isofig-luxe-glow: #e2bc5f12;
+    --isofig-luxe-sheen: #ffffff12;
+    --isofig-luxe-vignette: #000000a6;
+  }
+}
+:where(
+    :root[data-theme="dark"] :is(.isofig-luxe .isofig, .isofig.isofig-luxe),
+    :root.isofig-luxe[data-theme="dark"] .isofig
+  ) {
+  --isofig-paper: #0a090b;
+  --isofig-card: #131215;
+  --isofig-ink: #f2e9d6;
+  --isofig-ink-soft: #b8aa90;
+  --isofig-edge: #d8c79b;
+  --isofig-lo: #19181b;
+  --isofig-mid: #222024;
+  --isofig-hi: #2e2b31;
+  --isofig-accent: #e2bc5f;
+  --isofig-light: #58525a;
+  --isofig-shade: #000000;
+  --isofig-halo: #000000b3;
+  --isofig-chip: #1f1d22;
+  --isofig-ok: #62d0a4;
+  --isofig-warn: #f38835;
+  --isofig-fail: #fc7b6f;
+  --isofig-luxe-line: #d8c79b38;
+  --isofig-luxe-track: #d8c79b66;
+  --isofig-luxe-glow: #e2bc5f12;
+  --isofig-luxe-sheen: #ffffff12;
+  --isofig-luxe-vignette: #000000a6;
+}
+
+/*
+ * La tarjeta: un resplandor tenue arriba a la izquierda, el viñeteado en las esquinas y un filo de línea fina por
+ * dentro (en vez de borde, para que no cambie el tamaño). Todo es pintura de fondo: el texto no se toca.
+ */
+:where(.isofig-luxe) .isofig-card {
+  background:
+    radial-gradient(120% 90% at 14% 0%, var(--isofig-luxe-glow), transparent 62%),
+    radial-gradient(140% 120% at 50% 38%, transparent 58%, var(--isofig-luxe-vignette)),
+    var(--isofig-card);
+  box-shadow:
+    inset 0 0 0 1px var(--isofig-luxe-line),
+    inset 0 1px 0 var(--isofig-luxe-sheen),
+    0 1px 2px var(--isofig-halo),
+    0 22px 44px -26px var(--isofig-halo);
+}
+
+/* El número de figura no se parte («Fig.» / «2») cuando el título serif aprieta la fila. */
+:where(.isofig-luxe) .isofig-n {
+  white-space: nowrap;
+  letter-spacing: 0.06em;
+}
+
+/* Título con serif del sistema; el resto de la tarjeta conserva la sans. */
+:where(.isofig-luxe) :is(.isofig-title, .isofig-zoomtitle) {
+  font-family: var(--isofig-luxe-serif);
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+:where(.isofig-luxe) .isofig-title::before {
+  content: "";
+  display: inline-block;
+  width: 0.42em;
+  height: 0.42em;
+  margin-right: 0.55em;
+  border-radius: 1px;
+  background: var(--isofig-accent);
+  transform: translateY(-0.08em) rotate(45deg);
+}
+/* En una tarjeta estrecha el título baja un punto y el rombo se va: la fila cabe en un celular. */
+@container isofig-card (max-width: 26rem) {
+  :where(.isofig-luxe) .isofig-title {
+    font-size: 0.88rem;
+  }
+  :where(.isofig-luxe) .isofig-title::before {
+    display: none;
+  }
+}
+:where(.isofig-luxe) .isofig-readout {
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: 0.01em;
+}
+:where(.isofig-luxe) figcaption {
+  font-family: var(--isofig-luxe-serif);
+  line-height: 1.5;
+}
+
+/* Cantos de línea fina: lo que dibuja la silueta, más ligero y siempre ≥ 3:1 frente a la tarjeta. */
+:where(.isofig-luxe) .isofig-art .e {
+  stroke-width: 0.6;
+}
+
+/* Chips en píldora con un hilo de línea; el aro de foco es el acento (≥ 3:1 frente a la tarjeta, comprobado). */
+:where(.isofig-luxe) .isofig-chip {
+  box-shadow: inset 0 0 0 1px var(--isofig-luxe-line);
+  letter-spacing: 0.01em;
+}
+:where(.isofig-luxe) .isofig-param {
+  box-shadow: inset 0 0 0 1px var(--isofig-luxe-line);
+}
+@media (hover: hover) {
+  :where(.isofig-luxe) .isofig-chip:hover {
+    box-shadow: inset 0 0 0 1px var(--isofig-accent);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :where(.isofig-luxe) .isofig-chip {
+    transition: box-shadow 0.18s ease;
+  }
+}
+:where(.isofig-luxe) .isofig-preset {
+  background: color-mix(in oklab, var(--isofig-fail) 14%, var(--isofig-chip));
+}
+:where(.isofig-luxe) .isofig-choice label:has(input:checked) {
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--isofig-accent), var(--isofig-ink) 35%);
+}
+
+/* El deslizante: riel de un hilo y pulgar de oro con luz arriba a la izquierda. El área táctil sigue siendo de 24 px. */
+:where(.isofig-luxe) .isofig-param input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  height: 24px;
+}
+:where(.isofig-luxe) .isofig-param input[type="range"]::-webkit-slider-runnable-track {
+  height: 2px;
+  border-radius: 2px;
+  background: var(--isofig-luxe-track);
+}
+:where(.isofig-luxe) .isofig-param input[type="range"]::-moz-range-track {
+  height: 2px;
+  border-radius: 2px;
+  background: var(--isofig-luxe-track);
+}
+:where(.isofig-luxe) .isofig-param input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -8px;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, color-mix(in oklab, var(--isofig-accent), white 58%), var(--isofig-accent) 54%, color-mix(in oklab, var(--isofig-accent), black 34%));
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--isofig-accent), black 48%), 0 2px 5px var(--isofig-halo);
+}
+:where(.isofig-luxe) .isofig-param input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, color-mix(in oklab, var(--isofig-accent), white 58%), var(--isofig-accent) 54%, color-mix(in oklab, var(--isofig-accent), black 34%));
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--isofig-accent), black 48%), 0 2px 5px var(--isofig-halo);
+}
+
+/* El diálogo de Ampliar: la misma tarjeta, con el hilo bajo la barra. */
+:where(.isofig-luxe) .isofig-zoombar {
+  box-shadow: 0 1px 0 var(--isofig-luxe-line);
+}
+@media (min-width: 900px) {
+  :where(.isofig-luxe) .isofig-zoombox[open] {
+    box-shadow: 0 0 0 1px var(--isofig-luxe-line), 0 24px 64px -24px var(--isofig-halo);
+  }
+}
+
+/* Contraste forzado: sin sombras ni degradados, el hilo pasa a ser un borde de verdad. */
+@media (forced-colors: active) {
+  :where(.isofig-luxe) .isofig-card,
+  :where(.isofig-luxe) .isofig-param,
+  :where(.isofig-luxe) .isofig-chip {
+    border: 1px solid CanvasText;
+  }
+  :where(.isofig-luxe) .isofig-title::before {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+}

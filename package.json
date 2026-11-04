@@ -60,10 +60,12 @@
       "default": "./dist/astro/client.js"
     },
     "./theme.css": "./src/theme/theme.css",
+    "./themes/luxe.css": "./src/theme/luxe.css",
     "./package.json": "./package.json"
   },
   "sideEffects": [
     "./src/theme/theme.css",
+    "./src/theme/luxe.css",
     "./src/astro/Figure.astro",
     "./src/angular/isofig-figure.ts"
   ],

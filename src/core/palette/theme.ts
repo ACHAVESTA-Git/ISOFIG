@@ -4,7 +4,12 @@ export type Mode = "light" | "dark";
 export const MODES: Mode[] = ["light", "dark"];
 
 /** Los colores de `theme.css` que intervienen en una cara pintada. Una prueba comprueba que no se desfasen. */
-export const THEME: Record<Mode, Record<"paper" | "card" | "edge" | "light" | "shade" | "accent" | "ok" | "warn" | "fail", string>> = {
+export type ThemeColors = Record<"paper" | "card" | "edge" | "light" | "shade" | "accent" | "ok" | "warn" | "fail", string> & {
+  /** Las dos tintas del texto grabado, si el tema no usa las de siempre. */
+  inks?: { dark: string; light: string };
+};
+
+export const THEME: Record<Mode, ThemeColors> = {
   light: {
     paper: "#f6f6f2",
     card: "#fbfbf8",
@@ -40,10 +45,10 @@ export const EDGE_MIX = 0.5;
 
 export type Face = keyof typeof LIGHTEN | keyof typeof DARKEN;
 
-export function faceOf(c: Linear, face: Face, mode: Mode): Linear {
-  const t = THEME[mode];
+/** Con `t`, los colores de otro tema (el de lujo, el tuyo); sin él, los del tema estándar. */
+export function faceOf(c: Linear, face: Face, mode: Mode, t: ThemeColors = THEME[mode]): Linear {
   if (face === "t" || face === "b") return mix(c, parseColor(t.light), LIGHTEN[face]);
   return mix(c, parseColor(t.shade), DARKEN[face]);
 }
 
-export const edgeOf = (c: Linear, mode: Mode): Linear => mix(c, parseColor(THEME[mode].edge), EDGE_MIX);
+export const edgeOf = (c: Linear, mode: Mode, t: ThemeColors = THEME[mode]): Linear => mix(c, parseColor(t.edge), EDGE_MIX);
