@@ -1,13 +1,13 @@
 # isofig con Astro
 
 El componente `Figure` genera el SVG al compilar. A la página llegan el HTML de la figura, el CSS del tema (una vez, en
-línea) y un arranque de ~1,3 KB gzip. El runtime (~4,2 KB gzip), el modelo, el giro y la ampliación se descargan después,
+línea) y un arranque de ~1,3 KB gzip. El runtime (~4,3 KB gzip), el modelo, el giro y la ampliación se descargan después,
 cuando el lector se acerca a la figura o la usa, y el runtime solo trabaja mientras la figura está en pantalla.
 
 ## 1. Instalar
 
 ```sh
-npm i isofig
+npm i github:ACHAVESTA-Git/ISOFIG#v0.10.0
 ```
 
 Requiere Node 22.18 o superior (para cargar specs escritas en TypeScript) y Astro 5 o superior.
@@ -133,7 +133,7 @@ perder ni mover. Lo demás se descarga con `import()`:
 | Qué | Cuándo | Peso (gzip) |
 |---|---|---|
 | Arranque de `<Figure>` | Con la página; solo si tiene una figura | ~1,3 KB |
-| Runtime y modelo | Según `load` | ~4,2 KB + el modelo |
+| Runtime y modelo | Según `load` | ~4,3 KB + el modelo |
 | Giro (`isofig/orbit`) | Al pasar el puntero, enfocar o tocar la figura | ~10 KB |
 | Ampliación (`isofig/zoom`) | Al pulsar «Ampliar» | ~0,8 KB |
 
@@ -260,8 +260,8 @@ Pon el mismo nombre en las dos páginas. También sirve envolverla: `<div transi
 ## 11. Revisar antes de publicar
 
 ```sh
-npx isofig check src/figuras/balde.ts --lang es --strict
-npx isofig build src/figuras/balde.ts --format page --model src/figuras/balde.model.ts -o vista.html
+npx --no-install isofig check src/figuras/balde.ts --lang es --strict
+npx --no-install isofig build src/figuras/balde.ts --format page --model src/figuras/balde.model.ts -o vista.html
 ```
 
 `check` imprime el peso y los avisos (falla con `--strict` si hay alguno). `page` arma una página suelta para

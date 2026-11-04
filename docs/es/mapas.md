@@ -193,8 +193,8 @@ detienen y con movimiento reducido quedan quietos a mitad de camino y a la vista
 ## Importar
 
 ```sh
-docker compose config --format json | npx isofig import compose - -o stack.json
-npx isofig import mermaid diagrama.mmd -o mapa.json      # o «-» para leer de la entrada estándar
+docker compose config --format json | npx --no-install isofig import compose - -o stack.json
+npx --no-install isofig import mermaid diagrama.mmd -o mapa.json      # o «-» para leer de la entrada estándar
 ```
 
 **Mermaid.** Un subconjunto de `flowchart` / `graph` y de `classDiagram`:

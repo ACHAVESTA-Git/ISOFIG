@@ -7,10 +7,10 @@ wrong; only the second catches what a reader would not believe. Full list of cod
 ## 1. `isofig check`
 
 ```sh
-npx isofig check figure.ts --model model.ts --presets --strict      # a machine with a model
-npx isofig check figure.ts --strict                                 # no model: bind, tracks, an assembly or a map
-npx isofig check figure.ts --model model.ts --presets --seconds 20  # a slower figure (12 s by default)
-npx isofig check figure.ts --lang es --strict                       # messages (and error:/aviso:/nota: prefixes) in Spanish
+npx --no-install isofig check figure.ts --model model.ts --presets --strict      # a machine with a model
+npx --no-install isofig check figure.ts --strict                                 # no model: bind, tracks, an assembly or a map
+npx --no-install isofig check figure.ts --model model.ts --presets --seconds 20  # a slower figure (12 s by default)
+npx --no-install isofig check figure.ts --lang es --strict                       # messages (and error:/aviso:/nota: prefixes) in Spanish
 ```
 
 - `--strict` fails on any warning, never on notes (`info`). Aim for **zero warnings**. Warnings marked ↑ in
@@ -48,7 +48,7 @@ Build one preview page and capture it. The script below needs Playwright in the 
 (`npm i -D playwright && npx playwright install chromium`); it works from the project root.
 
 ```sh
-npx isofig build figure.ts --format page --model model.ts --advance 4 -o preview.html
+npx --no-install isofig build figure.ts --format page --model model.ts --advance 4 -o preview.html
 node <this skill's folder>/scripts/capture.mjs preview.html --out shots
 ```
 

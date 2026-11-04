@@ -75,9 +75,9 @@ when the fit is intended). The audit works on boxes, so it is fast and coarse: a
 ## Previewing
 
 ```sh
-npx isofig build figure.ts --format page --model model.ts --advance 4 -o preview.html   # opens 4 s into the simulation
-npx isofig build figure.ts --format page --set rate=8 -o rate8.html                     # starts a control elsewhere
-npx isofig build figure.ts --format page --orbit -o orbit.html                          # try the turn
+npx --no-install isofig build figure.ts --format page --model model.ts --advance 4 -o preview.html   # opens 4 s into the simulation
+npx --no-install isofig build figure.ts --format page --set rate=8 -o rate8.html                     # starts a control elsewhere
+npx --no-install isofig build figure.ts --format page --orbit -o orbit.html                          # try the turn
 ```
 
 A headless capture does not reliably run the animation, so `--advance` is how you see a figure in motion. `--set` starts any

@@ -2,15 +2,15 @@
 
 In Angular the figure is compiled before the bundler sees it. The isofig CLI turns the spec into a TypeScript
 module with the HTML already generated; a standalone component displays and animates it. The isofig core doesn't
-enter your bundle, only the runtime (~4.2 KB gzip, measured by `npm run size`).
+enter your bundle, only the runtime (~4.3 KB gzip, measured by `npm run size`).
 
 Tested with Angular 22: standalone, signals, zoneless and `OnPush`.
 
 ## 1. Install
 
 ```sh
-npm i isofig
-npx isofig add angular src/app/isofig
+npm i github:ACHAVESTA-Git/ISOFIG#v0.10.0
+npx --no-install isofig add angular src/app/isofig
 ```
 
 `add angular` copies `isofig-figure.ts` into your project; that is the only way to install the component. The
@@ -35,7 +35,7 @@ format is the same as in Astro: see [spec.md](spec.md) and [`examples/token-buck
 ## 3. Generate the module
 
 ```sh
-npx isofig build figures/bucket.ts --format module --lang en -o src/app/figures/bucket.figure.ts
+npx --no-install isofig build figures/bucket.ts --format module --lang en -o src/app/figures/bucket.figure.ts
 ```
 
 It's best to keep it as a script in `package.json` and run it before `ng build`:

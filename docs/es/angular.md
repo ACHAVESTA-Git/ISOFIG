@@ -2,15 +2,15 @@
 
 En Angular la figura se compila antes de que la vea el bundler. La CLI de isofig convierte la spec en un
 módulo TypeScript con el HTML ya generado; un componente standalone lo muestra y lo anima. El núcleo de isofig no
-entra a tu bundle, solo el runtime (~4,2 KB gzip, lo mide `npm run size`).
+entra a tu bundle, solo el runtime (~4,3 KB gzip, lo mide `npm run size`).
 
 Probado con Angular 22: standalone, signals, zoneless y `OnPush`.
 
 ## 1. Instalar
 
 ```sh
-npm i isofig
-npx isofig add angular src/app/isofig
+npm i github:ACHAVESTA-Git/ISOFIG#v0.10.0
+npx --no-install isofig add angular src/app/isofig
 ```
 
 `add angular` copia `isofig-figure.ts` a tu proyecto; es la única forma de instalar el componente. El paquete no
@@ -35,7 +35,7 @@ formato es el mismo que en Astro: ver [spec.md](spec.md) y [`examples/token-buck
 ## 3. Generar el módulo
 
 ```sh
-npx isofig build figures/balde.ts --format module --lang es -o src/app/figures/balde.figure.ts
+npx --no-install isofig build figures/balde.ts --format module --lang es -o src/app/figures/balde.figure.ts
 ```
 
 Conviene dejarlo como script en `package.json` y correrlo antes de `ng build`:

@@ -3,8 +3,8 @@
 ## docker compose
 
 ```sh
-docker compose config --format json | npx isofig import compose - -o figures/stack.json
-npx isofig build figures/stack.json --format page -o preview.html
+docker compose config --format json | npx --no-install isofig import compose - -o figures/stack.json
+npx --no-install isofig build figures/stack.json --format page -o preview.html
 ```
 
 `docker compose config` resolves the file (variables, `extends`, profiles) and prints JSON, so isofig never has
@@ -26,8 +26,8 @@ The result is a plain spec: edit it to change an object (`is`), group services i
 ## Mermaid
 
 ```sh
-npx isofig import mermaid diagram.mmd -o figures/map.json      # or "-" to read standard input
-npx isofig build figures/map.json --format page -o preview.html
+npx --no-install isofig import mermaid diagram.mmd -o figures/map.json      # or "-" to read standard input
+npx --no-install isofig build figures/map.json --format page -o preview.html
 ```
 
 A subset of `flowchart` / `graph` (shapes, arrows with text, `&`, subgraphs) and of `classDiagram` (classes with their

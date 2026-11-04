@@ -214,8 +214,8 @@ an error.
 ## Import
 
 ```sh
-docker compose config --format json | npx isofig import compose - -o stack.json
-npx isofig import mermaid diagram.mmd -o map.json          # or "-" to read standard input
+docker compose config --format json | npx --no-install isofig import compose - -o stack.json
+npx --no-install isofig import mermaid diagram.mmd -o map.json          # or "-" to read standard input
 ```
 
 - **Mermaid**: a subset of `flowchart` / `graph` and `classDiagram`. The label decides the object (Postgres → database,

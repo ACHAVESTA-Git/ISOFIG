@@ -293,8 +293,8 @@ dos piezas redondas). Una pieza metida en la caja de otra (un pistón en su banc
 ## Revisarlo
 
 ```sh
-npx isofig check motor.json --lang es                      # forma del árbol, use, referencias, auditoría
-npx isofig build motor.json --format page -o motor.html --set explode=4 --set pick=3
+npx --no-install isofig check motor.json --lang es                      # forma del árbol, use, referencias, auditoría
+npx --no-install isofig build motor.json --format page -o motor.html --set explode=4 --set pick=3
 ```
 
 `--set` alcanza también `explode` y `pick`: sirve para capturar cada paso y cada pieza elegida. Mira las capturas
