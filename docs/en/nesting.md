@@ -135,6 +135,8 @@ round parts). A part inside another part's box (a piston in its bank) goes first
   the profile of a V block, a leaning cylinder head or a beam. Clockwise or counterclockwise, either works.
 - `cylinder` with a vector axis (`"axis": [-0.71, 0, 0.71]`): a leaning rod or piston.
 - `cone`: a truncated cone, `r` at the starting face and `r2` at the other (0 is a point). A nozzle is built from several.
+- `sphere` (`at` is the center) and `capsule` (a cylinder with a half sphere at each end; `at`, `r`, `h` and `axis` as in
+  `cylinder`): joints, long bones, rounded rods. They explode, repeat and turn like any other part.
 
 ## Checking it
 

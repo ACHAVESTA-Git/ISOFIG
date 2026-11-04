@@ -26,7 +26,7 @@ const find = (spec: unknown, code: IssueCode) => validateSpec(spec, { lang: "en"
 const CASOS: [string, unknown, IssueCode, "error" | "warning", string][] = [
   ["parts vacío", { ...base, parts: [] }, "parts-empty", "warning", "parts"],
   ["box sin size", { ...base, parts: [{ id: "a", kind: "box", at: [0, 0, 0] }] }, "field-missing", "error", "parts[0].size"],
-  ["kind desconocido", { ...base, parts: [{ id: "a", kind: "sphere", at: [0, 0, 0] }] }, "kind-unknown", "error", "parts[0].kind"],
+  ["kind desconocido", { ...base, parts: [{ id: "a", kind: "torus", at: [0, 0, 0] }] }, "kind-unknown", "error", "parts[0].kind"],
   ["at con NaN", { ...base, parts: [{ ...box, at: [0, NaN, 0] }] }, "number-invalid", "error", "parts[0].at[1]"],
   ["size negativo", { ...base, parts: [{ ...box, size: [4, -4, 4] }] }, "size-negative", "error", "parts[0].size[1]"],
   [
@@ -106,9 +106,9 @@ test("cada código tiene mensaje en inglés y en español, con su gravedad", () 
 });
 
 test("un kind desconocido dice cuál es y cuáles hay", () => {
-  const issue = find({ ...base, parts: [{ id: "bola", kind: "sphere", at: [0, 0, 0] }] }, "kind-unknown");
-  assert.match(issue!.message, /'bola' has an unknown kind 'sphere'/);
-  assert.match(issue!.message, /box, cylinder, cone, prism, ticks, dots, line, label/);
+  const issue = find({ ...base, parts: [{ id: "aro", kind: "torus", at: [0, 0, 0] }] }, "kind-unknown");
+  assert.match(issue!.message, /'aro' has an unknown kind 'torus'/);
+  assert.match(issue!.message, /box, cylinder, cone, prism, sphere, capsule, ticks, dots, line, label/);
   assert.match(find({ ...base, parts: [{ id: "x", at: [0, 0, 0] }] }, "kind-missing")!.message, /no kind/);
 });
 

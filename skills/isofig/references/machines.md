@@ -36,6 +36,10 @@ same craft; read `assemblies.md` too.
 - **Concave shapes** are not one part: a prism takes a convex plan, so build an L or a U from several.
 - **Round parts and solids of revolution:** `cylinder` (also leaning, with a vector `axis`), `cone` (truncated, for a
   nozzle or a funnel), `prism` with `axis: "x" | "y"` for a profile extruded sideways.
+- **Balls and rounded bars:** `sphere` (`at` is the center, `r` the radius) and `capsule` (a cylinder with a half
+  sphere at each end: `at`, `r`, `h` of the straight section and `axis`, so it measures `h + 2r`). Joints, skulls, long
+  bones, atoms and their bonds. They look the same from any angle (a circle and a stadium), so they never need `bevel`;
+  rest them on what they touch or say `mount` when they are fitted in it.
 
 ## Things that come and go
 

@@ -55,10 +55,14 @@ export function compare(c: Camera, a: Box3, b: Box3): number {
   return best;
 }
 
-/** Un sólido orientado (inclinado o extruido en x o y): sus vértices, las normales de sus caras planas y su silueta. */
+/**
+ * Un sólido orientado (inclinado o extruido en x o y): sus vértices, las normales de sus caras planas y su silueta. En
+ * una esfera o una cápsula, `pts` son los centros de sus dos puntas y `r` su radio: ocupa todo lo que está a `r` de ellos.
+ */
 export interface Shape {
   pts: Vec3[];
   axes: Vec3[];
+  r?: number;
   /** Envolvente convexa de la pieza en pantalla. */
   hull: Vec2[];
 }
@@ -106,7 +110,7 @@ export function hullsOverlap(a: Vec2[], b: Vec2[]): boolean {
   return true;
 }
 
-function range(pts: Vec3[], n: Vec3): [number, number] {
+function range({ pts, r = 0 }: Shape, n: Vec3): [number, number] {
   let lo = Infinity;
   let hi = -Infinity;
   for (const p of pts) {
@@ -114,17 +118,19 @@ function range(pts: Vec3[], n: Vec3): [number, number] {
     if (v < lo) lo = v;
     if (v > hi) hi = v;
   }
-  return [lo, hi];
+  return [lo - r, hi + r];
 }
 
 /**
- * Los ejes donde buscar un plano que separe dos sólidos: las normales de sus caras planas y la recta entre sus centros
- * (la que separa dos piezas redondas, como un tubo junto a una cámara).
+ * Los ejes donde buscar un plano que separe dos sólidos: las normales de sus caras planas, la recta entre sus centros
+ * (la que separa dos piezas redondas, como un tubo junto a una cámara) y lo que queda de esa recta al quitarle cada eje
+ * (la que separa dos tubos paralelos, aunque estén corridos a lo largo).
  */
 function candidates(a: Shape, b: Shape): Vec3[] {
   const mid = (s: Shape) => mul(s.pts.reduce((acc, p) => add(acc, p), [0, 0, 0] as Vec3), 1 / Math.max(1, s.pts.length));
   const between = unit(sub(mid(b), mid(a)));
-  return between.some((v) => v !== 0) ? [...a.axes, ...b.axes, between] : [...a.axes, ...b.axes];
+  const axes = [...a.axes, ...b.axes];
+  return [...axes, between, ...axes.map((w) => unit(sub(between, mul(w, dot(between, w)))))].filter((n) => n.some((v) => v !== 0));
 }
 
 /**
@@ -138,8 +144,8 @@ export function compareShapes(c: Camera, a: Shape, b: Shape): number {
     const toward = dot(n, c.view);
     const w = Math.abs(toward);
     if (w <= weight) continue;
-    const [a0, a1] = range(a.pts, n);
-    const [b0, b1] = range(b.pts, n);
+    const [a0, a1] = range(a, n);
+    const [b0, b1] = range(b, n);
     if (a1 <= b0 + TOUCH) best = toward > 0 ? -1 : 1;
     else if (b1 <= a0 + TOUCH) best = toward > 0 ? 1 : -1;
     else continue;
@@ -151,8 +157,8 @@ export function compareShapes(c: Camera, a: Shape, b: Shape): number {
 /** Si un plano de las caras separa dos sólidos orientados (con la misma tolerancia de contacto). */
 export function shapesApart(a: Shape, b: Shape): boolean {
   for (const n of candidates(a, b)) {
-    const [a0, a1] = range(a.pts, n);
-    const [b0, b1] = range(b.pts, n);
+    const [a0, a1] = range(a, n);
+    const [b0, b1] = range(b, n);
     if (a1 <= b0 + TOUCH || b1 <= a0 + TOUCH) return true;
   }
   return false;
