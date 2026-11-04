@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.10.0 · 2026-11-04
+
+Feedback from the first outside review: picking a part now flies the camera to it, three teardown bugs are gone, and
+two demos show isofig beyond software.
+
+### Picking a part
+- Picking an entry in the parts list zooms the camera onto it with an animated `viewBox`, paints it in front of everything (even when it sits inside another part) and leaves the rest at 35 % instead of 20 %; "All" returns to the full frame. The frame follows the part when the teardown moves or the figure turns, and nothing outside it spills over the controls.
+- Fixed: dimmed parts never got their color back, so every pick left the figure more see-through.
+- Fixed: turning a taken-apart figure showed it assembled while dragging; the runtime now applies the current pose in the same frame the orbit redraws.
+- The runtime grows from 3.6 to 4.2 KB gzipped; its budget moves from 4096 to 4608 B.
+
+### New solids
+- `sphere` (`at` is the center, `r`) and `capsule` (a cylinder with a half sphere at each end: `at`, `r`, `h`, `axis`; `h: 0` is a sphere), drawn as a circle and a stadium with six tone layers, same light and edge as other solids.
+- `paint`, `tone`, states, `explode`, `repeat`, orbit and `reorder` work unchanged; `shadow` gives a round halo and the frame fits the exact circle.
+- Paint order and audit use the exact silhouette and a separating-plane test for round parts, so parallel tilted capsules no longer report false collisions.
+
+### Faster turning
+- Each teardown pose reuses the rest pose's paint-order decisions for parts that moved together, and the ready list is kept instead of rescanned: `drawScene` runs about twice as fast with byte-identical output (V8 36 → 19 ms, skeleton 76 → 37 ms in Node; in Chrome the V8 turns at ~40 fps instead of ~24).
+- Budgets: orbit 9.5 KB, core 43 KB.
+
+### Validation
+- `check` accepts `"{key}"` placeholders in the numbers of `defs`, as the nesting guide already showed; a `with` that fills one with text is reported on the template.
+
+### Examples
+- `examples/muscle-car`: a Camaro-style muscle car (13 parts, 9-step teardown) made only of boxes, cylinders, cones and prisms, in plain JSON; a schematic, no logos.
+- `examples/sistema-oseo`: an adult human skeleton in anatomical position that comes apart bone by bone in seven steps, built from spheres, capsules and prisms (24 ribs, 24 vertebrae with 23 discs, 27-bone hands, 26-bone feet), with 12 pickable parts and short, checked notes in Spanish and English.
+
 ## 0.9.1 · 2026-11-04
 
 - `npm i github:ACHAVESTA-Git/ISOFIG` builds the package: a `prepare` script compiles `dist/` when npm installs it from git (npm does not run `prepack` there).
