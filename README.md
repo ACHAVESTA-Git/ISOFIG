@@ -3,7 +3,7 @@
 **Interactive 3D machines, maps and diagrams as pure SVG. No WebGL. No renders. No images.**
 
 Describe a machine, a network or a UML model as (nested) JSON. isofig draws it in isometric 3D at build time,
-brings it to life with a 4.2 KB runtime, takes it apart piece by piece and zooms the camera onto the part you pick,
+brings it to life with a 4.3 KB runtime, takes it apart piece by piece and zooms the camera onto the part you pick,
 without you writing a single function. It is not only for software: the same JSON draws a car or a skeleton. It ships
 with Astro and Angular adapters, and with a Claude Code plugin that writes, checks and looks at the figures for you.
 
@@ -32,7 +32,7 @@ a landing page.
 | | |
 |---|---|
 | **No renders, no WebGL** | The figure is SVG generated at build time from 3D geometry. There is nothing to render, record or host. |
-| **Light** | Runtime 4.2 KB gzip. A complete figure weighs 7–34 KB gzip. Turning the figure (9.1 KB) and the enlarge dialog (0.8 KB) download only when someone uses them. |
+| **Light** | Runtime 4.3 KB gzip. A complete figure weighs 7–35 KB gzip. The 360° turn (10 KB) and the enlarge dialog (0.8 KB) download only when someone uses them. |
 | **Works without JavaScript** | The page already contains the drawing. With JS it animates; without it, it is still a figure. |
 | **Readable by search engines and screen readers** | Titles, labels and descriptions are real text in the HTML, not pixels in a video. |
 | **Accessible by default** | Pause button, native controls, `prefers-reduced-motion` (followed live), a polite live region, a focus-trapped enlarge dialog, contrast measured on every color. |
@@ -45,13 +45,13 @@ Measured, not guessed: the weights are the minified, gzipped JavaScript each opt
 
 | | isofig | Three.js / WebGL | Video or GIF render | Mermaid | Lottie |
 |---|---|---|---|---|---|
-| JS sent to the browser | **4.2 KB** runtime | 167 KB (core only) | none, but megabytes of video | 726 KB | 74 KB |
+| JS sent to the browser | **4.3 KB** runtime | 167 KB (core only) | none, but megabytes of video | 726 KB | 74 KB |
 | Shows something without JS | **Yes** | No | Yes | No | No |
 | Text indexable and read aloud | **Yes** | No | No | Yes | No |
 | The reader can play with it | **Yes**: sliders, toggles, presets, teardown | Yes, if you code it | No | No | No |
 | Zoom onto one part of the model | **Yes**: pick a name and the camera goes there | Yes, if you code it | Only what you rendered | No | No |
 | Source you can diff and review | **JSON** | Code | Binary | Text | Exported JSON |
-| Free camera, real lighting | Turning by drag or in steps, flat shading | **Yes** | Whatever you rendered | No | No |
+| Free camera, real lighting | A full 360° turn by drag or arrow keys, with inertia; flat shading | **Yes** | Whatever you rendered | No | No |
 
 isofig is not a 3D engine: for a free camera, physics or photorealism, use Three.js. isofig is for **explaining**:
 a figure that loads instantly, reads like an illustration and lets the reader break the system on purpose.
@@ -64,7 +64,9 @@ a figure that loads instantly, reads like an illustration and lets the reader br
    queue is a conveyor. A class is a filing cabinet with drawers. isofig is built for real, recognisable objects,
    not floating boxes.
 2. **Nested JSON gives you the teardown for free.** Write the engine as a tree (block → banks → heads → valves) and
-   add `explode` to the nodes. isofig adds a stepped "Take apart" slider, a parts list and a readout per step.
+   add `explode` to the nodes. isofig adds a stepped "Take apart" slider, a parts list and a readout per step. Every
+   node also has its three axes, like a Unity Transform: `at` for position and `rotate: [x, y, z]` to tilt a door, an
+   arm or a connecting rod with everything inside it, and the figure turns a full 360° by drag or arrow keys.
    [Guide](docs/en/nesting.md).
 3. **Pick a part and the camera goes to it.** In a figure that comes apart, every named node becomes an entry in the "Part" list. Choose one and
    the view travels to it with an animation, the part is painted in front of everything (even when it sits inside
@@ -328,9 +330,9 @@ Minified and gzipped, checked on every push by `npm run size` against `size-budg
 
 | Piece | When it loads | Size |
 |---|---|---|
-| `isofig/runtime` | when the reader gets close to a figure | 4.2 KB |
+| `isofig/runtime` | when the reader gets close to a figure | 4.3 KB |
 | `isofig/zoom` (enlarge dialog) | when the chip is pressed | 0.8 KB |
-| `isofig/orbit` (turning) | when a turn control is used | 9.1 KB |
+| `isofig/orbit` (360° turn) | when the figure is touched or turned | 10 KB |
 | `isofig/theme.css` | inline, once per page with a figure | 3.0 KB |
 | `isofig/themes/luxe.css` | if you import it | 1.7 KB |
 | A figure (SVG and data) | in the HTML | 7–34 KB |

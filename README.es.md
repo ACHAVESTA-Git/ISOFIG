@@ -3,7 +3,7 @@
 **Máquinas, mapas y diagramas 3D interactivos en SVG puro. Sin WebGL. Sin renders. Sin imágenes.**
 
 Describe una máquina, una red o un modelo UML en JSON (anidado). isofig lo dibuja en 3D isométrico al compilar, le da
-vida con un runtime de 4,2 KB, lo desarma pieza por pieza y acerca la cámara a la pieza que elijas, sin que escribas
+vida con un runtime de 4,3 KB, lo desarma pieza por pieza y acerca la cámara a la pieza que elijas, sin que escribas
 una sola función. No es solo para software: el mismo JSON dibuja un auto o un esqueleto. Trae adaptadores para Astro y
 Angular, y un plugin de Claude Code que escribe las figuras, las valida y las mira por ti.
 
@@ -32,7 +32,7 @@ una documentación o de una landing.
 | | |
 |---|---|
 | **Sin renders ni WebGL** | La figura es SVG generado al compilar a partir de geometría 3D. No hay nada que renderizar, grabar ni alojar. |
-| **Ligera** | Runtime de 4,2 KB gzip. Una figura completa pesa de 7 a 34 KB gzip. El giro (9,1 KB) y el diálogo «Ampliar» (0,8 KB) se descargan solo cuando alguien los usa. |
+| **Ligera** | Runtime de 4,3 KB gzip. Una figura completa pesa de 7 a 35 KB gzip. El giro de 360° (10 KB) y el diálogo «Ampliar» (0,8 KB) se descargan solo cuando alguien los usa. |
 | **Funciona sin JavaScript** | La página ya trae el dibujo. Con JS se anima; sin JS sigue siendo una figura. |
 | **La leen buscadores y lectores de pantalla** | Títulos, rótulos y descripciones son texto real en el HTML, no píxeles de un video. |
 | **Accesible de serie** | Botón de pausa, controles nativos, `prefers-reduced-motion` (seguido en vivo), región viva cortés, diálogo «Ampliar» con foco atrapado y contraste medido en cada color. |
@@ -45,13 +45,13 @@ Medido, no supuesto: el peso es el JavaScript minificado y con gzip que cada opc
 
 | | isofig | Three.js / WebGL | Render en video o GIF | Mermaid | Lottie |
 |---|---|---|---|---|---|
-| JS que llega al navegador | **4,2 KB** de runtime | 167 KB (solo el núcleo) | nada, pero megabytes de video | 726 KB | 74 KB |
+| JS que llega al navegador | **4,3 KB** de runtime | 167 KB (solo el núcleo) | nada, pero megabytes de video | 726 KB | 74 KB |
 | Muestra algo sin JS | **Sí** | No | Sí | No | No |
 | Texto indexable y que se lee en voz alta | **Sí** | No | No | Sí | No |
 | El lector puede jugar con ella | **Sí**: deslizantes, interruptores, desvíos, despiece | Sí, si lo programas | No | No | No |
 | Acercarse a una pieza del modelo | **Sí**: eliges un nombre y la cámara va hacia ella | Sí, si lo programas | Solo lo que hayas renderizado | No | No |
 | Fuente que se puede comparar y revisar | **JSON** | Código | Binario | Texto | JSON exportado |
-| Cámara libre, iluminación real | Giro arrastrando o por pasos, sombreado plano | **Sí** | Lo que hayas renderizado | No | No |
+| Cámara libre, iluminación real | Vuelta de 360° arrastrando o con las flechas, con inercia; sombreado plano | **Sí** | Lo que hayas renderizado | No | No |
 
 isofig no es un motor 3D: para cámara libre, física o fotorrealismo, usa Three.js. isofig es para **explicar**: una
 figura que carga al instante, se lee como una ilustración y deja que el lector rompa el sistema a propósito.
@@ -65,7 +65,9 @@ figura que carga al instante, se lee como una ilustración y deja que el lector 
    para objetos reales y reconocibles, no para cajas flotantes.
 2. **El JSON anidado te da el despiece gratis.** Escribe el motor como un árbol (bloque → bancadas → culatas →
    válvulas) y ponle `explode` a los nodos. isofig añade un control «Desarmar» por pasos, una lista de piezas y una
-   lectura en cada paso. [Guía](docs/es/anidar.md).
+   lectura en cada paso. Cada nodo tiene además sus tres ejes, como el Transform de Unity: `at` para la posición y
+   `rotate: [x, y, z]` para inclinar una puerta, un brazo o una biela con todo lo que lleva dentro, y la figura se
+   recorre en 360° arrastrándola o con las flechas. [Guía](docs/es/anidar.md).
 3. **Eliges una pieza y la cámara va hacia ella.** En una figura que se desarma, cada nodo con nombre es una entrada de
    la lista «Pieza». Elige una y la vista viaja hasta ella con una animación, la pieza se pinta delante de todo (aunque
    esté dentro de otra), lo demás queda al 35 % para que no pierdas la orientación y su nota aparece en la lectura.
@@ -328,9 +330,9 @@ Minificado y con gzip, comprobado en cada push por `npm run size` contra `size-b
 
 | Pieza | Cuándo se carga | Peso |
 |---|---|---|
-| `isofig/runtime` | cuando el lector se acerca a una figura | 4,2 KB |
+| `isofig/runtime` | cuando el lector se acerca a una figura | 4,3 KB |
 | `isofig/zoom` (diálogo «Ampliar») | al pulsar el chip | 0,8 KB |
-| `isofig/orbit` (giro) | al usar un control de giro | 9,1 KB |
+| `isofig/orbit` (giro de 360°) | al tocar o girar la figura | 10 KB |
 | `isofig/theme.css` | en línea, una vez por página con figura | 3,0 KB |
 | `isofig/themes/luxe.css` | si lo importas | 1,7 KB |
 | Una figura (SVG y datos) | en el HTML | 7–34 KB |
