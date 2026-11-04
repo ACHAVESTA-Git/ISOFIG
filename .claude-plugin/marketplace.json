@@ -4,12 +4,12 @@
     "name": "ACHAVESTA-Git",
     "url": "https://github.com/ACHAVESTA-Git"
   },
-  "description": "Isometric explanatory figures for technical docs, from a Claude Code skill.",
+  "description": "isofig: interactive isometric figures, teardowns and maps in pure SVG, written and checked by Claude.",
   "plugins": [
     {
       "name": "isofig",
       "source": "./",
-      "description": "Explain technical ideas as small isometric machines: a Claude Code skill that writes isofig specs for build-time SVG figures."
+      "description": "Writes isofig figures for you: machines, nested assemblies you can take apart, and topology, flow and UML maps, then checks them and looks at screenshots."
     }
   ]
 }
