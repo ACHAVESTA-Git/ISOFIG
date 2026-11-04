@@ -1,0 +1,16 @@
+---
+import { ClientRouter } from "astro:transitions";
+const { title } = Astro.props;
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title}</title>
+    <ClientRouter />
+  </head>
+  <body>
+    <nav><a href="/">Figures</a> <a href="/plain/">No figure</a> <a href="/persistent/">Persistent</a></nav>
+    <slot />
+  </body>
+</html>

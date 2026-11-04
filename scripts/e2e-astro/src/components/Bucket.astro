@@ -1,0 +1,10 @@
+---
+import Figure from "isofig/astro";
+import spec from "../figures/spec.ts";
+const props = Astro.props;
+---
+<Figure spec={spec} lang="en" {...props} />
+<script>
+  import { models } from "isofig/astro/client";
+  models({ "token-bucket": () => import("../figures/model.ts") });
+</script>

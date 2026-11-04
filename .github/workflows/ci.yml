@@ -2,15 +2,24 @@ name: ci
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, dev, "release/**"]
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  # Tipos, pruebas (con las instantáneas del SVG), compilación y la CLI sobre el ejemplo, en el Node mínimo y en los dos más nuevos.
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        node: [22, 24]
+        node: ["22.18.0", "24", "26"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -22,3 +31,47 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: node dist/cli/index.js check examples/token-bucket/spec.ts --strict
+
+  # Lo que pesa cada pieza que llega al navegador, contra size-budget.json.
+  size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run size
+
+  # El paquete tal como lo instala un usuario: npm pack, un proyecto vacío, tsc, isofig check y build, y las entradas de exports.
+  package:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["22.18.0", "24", "26"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: scripts/e2e.sh
+
+  # <Figure> en un proyecto Astro mínimo (con ClientRouter y transition:persist), con el paquete instalado desde su .tgz.
+  astro:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        astro: ["5", "7"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: scripts/e2e-astro.sh ${{ matrix.astro }}

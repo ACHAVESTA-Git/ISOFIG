@@ -1,0 +1,9 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Bucket from "../components/Bucket.astro";
+---
+<Layout title="Figures">
+  <h1>The same figure twice</h1>
+  <Bucket n={1} load="idle" />
+  <Bucket n={2} orbit />
+</Layout>

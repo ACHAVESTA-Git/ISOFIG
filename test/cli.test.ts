@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -132,6 +132,17 @@ test("--format page no deja pasar la ExperimentalWarning de stripTypeScriptTypes
     assert.equal(r.status, 0, r.stderr);
     assert.doesNotMatch(r.stderr, /stripTypeScriptTypes/);
     assert.match(r.stderr, /token-bucket: .* KB gzip/, "lo demás sí se imprime");
+  });
+});
+
+test("check --model carga también un modelo .ts que está dentro de node_modules", () => {
+  scratch((dir) => {
+    const example = join(dir, "node_modules", "isofig", "examples", "token-bucket");
+    mkdirSync(example, { recursive: true });
+    cpSync(join(root, "examples/token-bucket"), example, { recursive: true });
+    const r = cli(["check", join(example, "spec.ts"), "--model", join(example, "model.ts"), "--presets", "--strict"]);
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stderr, /token-bucket: .* KB gzip/);
   });
 });
 

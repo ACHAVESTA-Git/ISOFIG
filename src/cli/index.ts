@@ -27,13 +27,14 @@ const PALETTE_FORMATS = ["css", "json"];
 const here = dirname(fileURLToPath(import.meta.url));
 const pkg = resolve(here, "..", "..");
 
-async function importModule(abs: string): Promise<{ default?: FigureSpec; spec?: FigureSpec }> {
+/** Importa un archivo `.ts` o `.js`; sus exports `default`, `spec` y `model` son los que busca la CLI. */
+async function importFile(abs: string): Promise<{ default?: unknown; spec?: unknown; model?: unknown }> {
   try {
     return await import(pathToFileURL(abs).href);
   } catch (e) {
     // Node no quita tipos bajo node_modules (el ejemplo que trae el paquete): se quitan aquí y se importa el resultado.
     if ((e as { code?: string }).code !== "ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING") throw e;
-    const code = `${bundle(abs, "__spec")}\nexport default __spec.default;\nexport const spec = __spec.spec;`;
+    const code = `${bundle(abs, "__file")}\nexport default __file.default;\nexport const spec = __file.spec;\nexport const model = __file.model;`;
     return import(`data:text/javascript;base64,${Buffer.from(code).toString("base64")}`);
   }
 }
@@ -41,15 +42,15 @@ async function importModule(abs: string): Promise<{ default?: FigureSpec; spec?:
 async function loadSpec(file: string): Promise<FigureSpec> {
   const abs = resolve(file);
   if (extname(abs) === ".json") return JSON.parse(readFileSync(abs, "utf8"));
-  const mod = await importModule(abs);
-  const spec = mod.default ?? mod.spec;
+  const mod = await importFile(abs);
+  const spec = (mod.default ?? mod.spec) as FigureSpec | undefined;
   if (!spec) throw new Error(`${file} must export default (or export const spec) a FigureSpec`);
   return spec;
 }
 
 async function loadModel(file: string): Promise<Model<any, any>> {
-  const mod = await import(pathToFileURL(resolve(file)).href);
-  const model = mod.default ?? mod.model;
+  const mod = await importFile(resolve(file));
+  const model = (mod.default ?? mod.model) as Model<any, any> | undefined;
   if (!model) throw new Error(`${file} must export default (or export const model) a Model`);
   return model;
 }
