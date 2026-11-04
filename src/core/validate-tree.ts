@@ -32,6 +32,11 @@ function checkNode(rep: Reporter, node: unknown, path: string, def: boolean): vo
     if (node[f] !== undefined && !hasText(node[f])) rep.add("type-invalid", `${path}.${f}`, { field: f, expected: "text", got: show(node[f]) });
   }
   for (const f of ["at", "explode"]) if (node[f] !== undefined) checkVector(rep, node[f], `${path}.${f}`, f);
+  const turn = node["rotate"];
+  // Los ángulos van en grados: unos pocos y con muchos decimales (1.5708, 0.7854) son radianes.
+  if (turn !== undefined && checkVector(rep, turn, `${path}.rotate`, "rotate") && turn.every((a) => Math.abs(a) <= 6.3) && turn.some((a) => Math.abs(a * 100 - Math.round(a * 100)) > 1e-6)) {
+    rep.add("rotate-radians", `${path}.rotate`, { id: name, got: JSON.stringify(turn) });
+  }
   const stage = node["stage"];
   if (stage !== undefined && !isNum(stage)) rep.add("stage-invalid", `${path}.stage`, { got: show(stage) });
   else if (stage !== undefined && !def && !moves(node)) rep.add("stage-without-explode", `${path}.stage`, { id: name });

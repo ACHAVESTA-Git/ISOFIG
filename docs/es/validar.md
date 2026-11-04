@@ -70,10 +70,10 @@ no lanza: devuelve sus errores.
 | Piezas | `mount-unknown` ↑, `size-zero`, `number-negative`, `count-invalid` ↑, `repeat-from-invalid` ↑, `prism-clockwise` ↑, `prism-concave` ↑, `prism-degenerate`, `group-ignored`, `label-text-missing`, `label-size-invalid`, `group-unused` ↑ |
 | Controles | `param-id-missing` ↑, `param-id-duplicate` ↑, `param-number-invalid` ↑, `param-range-invalid` ↑, `param-step-invalid`, `param-value-out-of-range` ↑, `param-value-off-step` ↑, `param-label-missing`, `choice-options-missing` ↑, `choice-value-invalid` ↑, `toggle-value-invalid` |
 | `bind` | `bind-unknown-param` ↑, `bind-unknown-group` ↑, `bind-spin-no-pivot` ↑, `bind-no-effect`, `bind-window-invalid` |
-| Árbol | `stage-without-explode`, `explode-on-root`, `root-repeat` |
+| Árbol | `stage-without-explode`, `explode-on-root`, `root-repeat`, `rotate-radians` |
 | Mapa y recorridos | `map-flow-short`, `map-cell-collision`, `map-cell-invalid`, `map-paint-unknown`, `track-delay-invalid`, `track-group-unknown` y, del compilador, `map-label-small`, `map-route-blocked` |
 | Desvíos y lectura | `preset-unknown-param` ↑, `preset-value-invalid` ↑, `preset-value-out-of-range` ↑, `preset-value-off-step` ↑, `preset-press-invalid` ↑, `preset-no-effect`, `preset-label-missing`, `preset-note-missing`, `readout-unknown-param`, `readout-long` |
-| Auditoría | `part-floats`, `parts-overlap`, `paint-order-ambiguous`, `label-unreadable`, y `weight-over-budget`, que necesita Node: lo dan `isofig check` y `budgetIssues(spec, measure(html), lang)` de `isofig/node` |
+| Auditoría | `part-floats`, `parts-overlap`, `paint-order-ambiguous`, `label-unreadable`, `label-faces-away` (un rótulo en una cara girada que mira de espaldas a la cámara), y `weight-over-budget`, que necesita Node: lo dan `isofig check` y `budgetIssues(spec, measure(html), lang)` de `isofig/node` |
 | Color ([color.md](color.md)) | `paint-unknown` ↑, `paint-is-state`, `palette-base-invalid`, `palette-use-invalid`, y sobre el dibujo `palette-roles-unmet`, `palette-too-many-colors`, `paint-indistinct`, `paint-text-contrast` |
 | `check` | `model-group-unknown` ↑, `group-never-driven`, `model-param-unknown` ↑, `preset-same-view`, `set-unknown-param` |
 

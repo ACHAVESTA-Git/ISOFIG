@@ -1,6 +1,6 @@
 import type { Camera } from "./camera.ts";
 import { add, boxOf, mul, type Box3, type Vec2, type Vec3 } from "./math.ts";
-import { areaOf, axisOf, circle, cornerSteps, frameOf, prism, roundedRect, segmentsFor, type Mesh } from "./mesh.ts";
+import { areaOf, axisOf, circle, cornerSteps, frameOf, framePoint, prism, roundedRect, segmentsFor, type Mesh } from "./mesh.ts";
 import type { Part, PrismPart, Tone } from "./spec.ts";
 
 export type Solid = Extract<Part, { kind: "box" | "cylinder" | "cone" | "prism" | "sphere" | "capsule" }>;
@@ -114,7 +114,22 @@ function discBox(c: Vec3, w: Vec3, r: number): Vec3[] {
 /** Los centros de las dos medias esferas (el mismo en una esfera). */
 export const endsOf = (p: Round): [Vec3, Vec3] => [p.at, p.kind === "capsule" ? add(p.at, mul(axisOf(p.axis), Math.max(0, p.h))) : p.at];
 
+/** La planta de un prisma, antihoraria y en el orden (u, v) de su base (con `axis` y va como [z, x]). */
+function prismRing(p: PrismPart): Vec2[] {
+  const ring = p.axis === "y" ? p.plan.map(([x, z]): Vec2 => [z, x]) : p.plan;
+  return areaOf(ring) < 0 ? [...ring].reverse() : ring;
+}
+
+/** Las esquinas, en el mundo, de una caja o un prisma con `frame` (los pone un nodo con `rotate`); sin él, nada. */
+export function framedPoints(p: Solid): Vec3[] | undefined {
+  if ((p.kind !== "box" && p.kind !== "prism") || !p.frame) return undefined;
+  const [ring, h] = p.kind === "box" ? ([[[0, 0], [p.size[0], 0], [p.size[0], p.size[1]], [0, p.size[1]]], p.size[2]] as const) : ([prismRing(p), p.h] as const);
+  return ring.flatMap(([s, t]) => [framePoint(p.frame!, s, t, 0), framePoint(p.frame!, s, t, h)]);
+}
+
 export function solidBox(p: Solid): Box3 {
+  const corners = framedPoints(p);
+  if (corners) return boxOf(corners);
   if (p.kind === "box") return { min: [...p.at], max: add(p.at, p.size) };
   if (isRound(p)) return boxOf(endsOf(p).flatMap((c) => [add(c, [-p.r, -p.r, -p.r]), add(c, [p.r, p.r, p.r])]));
   if (p.kind === "prism") return boxOf(p.plan.flatMap((q) => [prismPoint(p, q, p.z), prismPoint(p, q, p.z + p.h)]));
@@ -166,15 +181,10 @@ export function meshOf(p: Exclude<Solid, Round>, c: Camera): Mesh {
   if (p.kind === "box") {
     const [w, d, h] = p.size;
     const r = p.radius ?? 0;
-    return prism(roundedRect(w, d, r, cornerSteps(r * c.scale)), frameOf(p.at), h, p.bevel ?? 0);
+    return prism(roundedRect(w, d, r, cornerSteps(r * c.scale)), p.frame ?? frameOf(p.at), h, p.bevel ?? 0);
   }
-  if (p.kind === "prism") {
-    const axis = p.axis ?? "z";
-    // El marco de y lleva la planta en otro orden: se lee en su base y se orienta sola (horaria o antihoraria).
-    let ring = axis === "y" ? p.plan.map(([x, z]): Vec2 => [z, x]) : p.plan;
-    if (areaOf(ring) < 0) ring = [...ring].reverse();
-    return prism(ring, frameOf(prismPoint(p, [0, 0], p.z), axis), p.h, p.bevel ?? 0);
-  }
+  // El marco de y lleva la planta en otro orden: se lee en su base y se orienta sola (horaria o antihoraria).
+  if (p.kind === "prism") return prism(prismRing(p), p.frame ?? frameOf(prismPoint(p, [0, 0], p.z), p.axis ?? "z"), p.h, p.bevel ?? 0);
   if (p.kind === "cone") {
     const n = segmentsFor(Math.max(p.r, p.r2) * c.scale);
     return prism(circle(p.r, n), frameOf(p.at, p.axis), p.h, 0, circle(p.r2, n));
