@@ -105,10 +105,10 @@ function textIn(t: Text | undefined, lang: string): string {
 const lower = (s: string, lang: string) => (/^\p{Lu}\p{Ll}/u.test(s) ? s[0].toLocaleLowerCase(lang) + s.slice(1) : s);
 
 /**
- * Aplana una spec anidada (`root`, `defs`, `use`) a la `FigureSpec` de siempre: piezas en coordenadas de mundo, un
- * grupo por nodo que se desarma o se puede elegir, y, si algún nodo trae `explode`, el control «Desarmar», la lista de
- * piezas, los enlaces de cada etapa, el encuadre de cada pose y las poses en las que recalcular el orden de pintado.
- * Es pura, no lanza con una spec rota (lo dice en `errors`) y corre en el navegador.
+ * Aplana una spec anidada (`root`, `defs`, `use`) a la `FigureSpec` de siempre: piezas en coordenadas de mundo y un grupo
+ * por nodo que se desarma o se elige. Si algún nodo trae `explode`, añade el control «Desarmar» con sus etapas, la lista
+ * de piezas, los enlaces por etapa, el encuadre de cada pose y las poses donde recalcular el orden de pintado. Es pura,
+ * no lanza con una spec rota (lo reporta en `errors`) y corre en el navegador.
  */
 export function assembleTree(input: FigureSpec, options: AssembleOptions = {}): Assembled {
   // Un `map` se compila primero a su árbol `root` y a sus recorridos; el resto es igual que para una spec anidada.

@@ -31,11 +31,10 @@ export class OverridesError extends Error {
 }
 
 /**
- * Devuelve una copia de la spec con los cambios aplicados, o la misma spec si no hay nada que aplicar. Es pura: no
- * toca la original. Lo que se cambia se revisa con `validateSpec` (mismos códigos y mensajes, en y es): un valor fuera
- * de rango o de paso, un desvío sin `label` o que fija un parámetro que no existe. Se añaden dos códigos propios, para
- * lo que `validateSpec` no puede ver: un id que no es un parámetro y un valor inicial para una acción. Si algo no
- * encaja lanza un `OverridesError` con todos los problemas.
+ * Devuelve una copia de la spec con los cambios, o la misma si no hay nada que cambiar. Es pura: no toca la original.
+ * Lo que cambia se revisa con `validateSpec` (mismos códigos y mensajes): un valor fuera de rango o de paso, o un desvío
+ * sin `label` o que fija un parámetro inexistente. Añade dos códigos propios para lo que `validateSpec` no ve: un id que
+ * no es parámetro y un valor para una acción. Si algo no encaja, lanza un `OverridesError` con todos los problemas.
  */
 export function applyOverrides(spec: FigureSpec, overrides: FigureOverrides = {}, options: OverridesOptions = {}): FigureSpec {
   const lang = options.lang ?? "en";

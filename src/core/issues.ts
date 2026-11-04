@@ -20,10 +20,10 @@ type VarName =
   | "hidden" | "runs" | "at" | "seconds" | "paint" | "vision" | "theme" | "base" | "use";
 export type V = Partial<Record<VarName, string | number>>;
 type Q = (s: string | number | undefined) => string;
-/** Traduce lo que se esperaba (`array`, `positive`…): los códigos de `EXPECTED` no cambian, el texto sí. */
+/** Traduce lo que se esperaba (`list`, `positive`…): los códigos de `EXPECTED` no cambian, el texto sí. */
 type X = (key: string) => string;
 export interface Entry {
-  /** Gravedad en 0.9. En 1.0 los avisos que dejan la figura rota pasarán a error (ver docs/en/validate.md). */
+  /** Gravedad por defecto; quien emite puede cambiarla. Los criterios de gravedad están en `docs/en/validate.md`. */
   severity: Severity;
   en: (v: V, q: Q, x: X) => string;
   es: (v: V, q: Q, x: X) => string;

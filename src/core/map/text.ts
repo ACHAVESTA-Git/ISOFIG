@@ -16,13 +16,13 @@ export function longest(t: Text | undefined): string {
 /** Cuánto mide, en unidades del mundo, un texto grabado con `size`. */
 export const widthOf = (t: Text | undefined, size: number): number => longest(t).length * CHAR_EM * size;
 
-/** Un `Text` por idioma, armado con `make(lang)`; sin idiomas en `from`, texto plano. */
+/** Arma un `Text` por idioma con `make(get, lang)`; si ninguno de `from` trae idiomas, devuelve un texto plano en inglés. */
 export function mapText(from: (Text | undefined)[], make: (get: (t: Text | undefined) => string, lang: string) => string): Text {
   const langs = [...new Set(from.flatMap(langsOf))].sort();
   if (!langs.length) return make((t) => textOf(t, "en"), "en");
   return Object.fromEntries(langs.map((l) => [l, make((t) => textOf(t, l), l)]));
 }
 
-/** Rodea cada idioma de un texto con `open` y `close`: el estereotipo `«interface»`. */
+/** Envuelve cada idioma del texto con `open` y `close` (por ejemplo, el estereotipo «interface»). */
 export const surround = (t: Text, open: string, close: string): Text =>
   typeof t === "string" ? open + t + close : Object.fromEntries(Object.entries(t).map(([l, v]) => [l, open + v + close]));

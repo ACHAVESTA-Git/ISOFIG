@@ -219,9 +219,9 @@ export interface Node {
 export type NodeDef = Omit<Node, "id"> & { id?: string };
 
 /**
- * Un recorrido declarativo, sin modelo: el grupo viaja por la polilínea `path` a velocidad constante (según la
- * longitud del arco) y vuelve a empezar. Respeta el botón de pausa; con movimiento reducido se queda quieto a mitad
- * de camino.
+ * Un recorrido declarativo, con o sin modelo: el grupo viaja por la polilínea `path` a velocidad constante (según la
+ * longitud del arco) y vuelve a empezar. Respeta el botón de pausa; con movimiento reducido se queda quieto en una pose
+ * fija.
  */
 export interface TrackSpec {
   /** Grupo (el `group` de sus piezas) que viaja. Sus piezas se dibujan donde empieza `path`. */
@@ -259,7 +259,7 @@ export interface FigureSpec {
   groups?: Record<string, GroupSpec>;
   params?: ParamSpec[];
   bind?: BindSpec[];
-  /** Grupos que recorren una polilínea sin modelo (los paquetes de un mapa). */
+  /** Grupos que recorren una polilínea, con o sin modelo (los paquetes de un mapa). */
   tracks?: TrackSpec[];
   /** Una topología, un mapa de flujo o un diagrama UML: se compila a un árbol `root` y a `tracks` (ver `docs/es/mapas.md`). */
   map?: MapSpec;

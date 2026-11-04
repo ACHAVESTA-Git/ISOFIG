@@ -44,7 +44,7 @@ export interface RuntimeData {
   params: { id: string; value: number; unit: string; spoken: string; options?: string[]; texts?: string[] }[];
   presets?: { values: Record<string, number>; note: string; reset?: boolean; press?: string[] }[];
   bind: FigureSpec["bind"];
-  /** Recorridos sin modelo (ver `tracks` en la spec) y el segundo en que se queda el reloj con movimiento reducido. */
+  /** Recorridos (con o sin modelo; ver `tracks` en la spec) y el segundo en que arranca el reloj con movimiento reducido. */
   tracks?: TrackData[];
   rest?: number;
   readout: string;

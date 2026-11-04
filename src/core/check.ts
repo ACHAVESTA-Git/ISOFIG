@@ -23,9 +23,9 @@ const keyOf = (v: View): string => JSON.stringify([v.groups ?? {}, v.readout ?? 
 
 /**
  * Ejecuta el modelo en Node, sin navegador, como lo haría el runtime: `seconds` simulados con los valores iniciales y,
- * con `presets`, cada desvío pulsado a mitad de una ejecución (con sus valores, sus `press` y su `reset`). Dice qué grupos
- * escribe el modelo que ninguna pieza tiene, qué grupos de la spec no mueve nunca, qué desvíos dejan la misma vista que
- * no pulsarlos, qué parámetros lee que la spec no declara y cuál es su lectura más larga.
+ * con `presets`, cada desvío pulsado a mitad de una ejecución (con sus valores, `press` y `reset`). Avisa de los grupos
+ * que el modelo escribe y ninguna pieza tiene, de los que la spec no mueve nunca, de los desvíos que dejan la misma vista
+ * que no pulsarlos, de los parámetros que lee sin declarar y de la lectura más larga.
  */
 export function checkModel(spec: FigureSpec, model: Model<any, any>, options: CheckModelOptions = {}): Issue[] {
   const lang = options.lang ?? "en";
@@ -43,7 +43,7 @@ export function checkModel(spec: FigureSpec, model: Model<any, any>, options: Ch
   const issues: Issue[] = [];
   let failed = false;
 
-  /** Una ejecución: el modelo con sus parámetros (que apuntan lo que lee) y su cronómetro. */
+  /** Una ejecución: el modelo con sus parámetros (un Proxy que anota lo que lee) y su cronómetro. */
   const session = () => {
     const target: Params = { ...initial };
     const params = new Proxy(target, {

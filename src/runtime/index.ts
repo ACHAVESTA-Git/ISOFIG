@@ -49,7 +49,7 @@ export interface FigureData {
   params: { id: string; value: number; unit: string; spoken: string; options?: string[]; texts?: string[] }[];
   presets?: { values: Record<string, number>; note: string; reset?: boolean; press?: string[] }[];
   bind?: { group: string; param: string; move?: number[]; spin?: number; fade?: boolean; win?: number[]; keep?: number[] }[];
-  /** Recorridos sin modelo: ver `tracks` en la spec. */
+  /** Recorridos (con o sin modelo): ver `tracks` en la spec. */
   tracks?: { g: string; p: number[][]; T: number; d?: number; l?: 0; h?: number[][] }[];
   rest?: number;
   readout: string;

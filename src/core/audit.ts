@@ -39,16 +39,16 @@ export function audit(items: Item[], lang = "en", apart?: (a: Item, b: Item) => 
 }
 
 /**
- * Ancho al que se mide cada rótulo, en px de pantalla del SVG: el de un celular de 390 px dentro de la página de la
- * academia (medido: 326) y el de la vista ampliada que abre el chip «Ampliar» (unos 1150).
+ * Ancho al que se mide cada rótulo, en px de pantalla del SVG: el de un celular de 390 px (medido: 326) y el de la vista
+ * ampliada que abre el chip «Ampliar» (unos 1150).
  */
 export const LABEL_WIDTHS = { phone: 326, zoomed: 1150 };
 
 /**
- * Mínimos legibles, en px de la letra. El de la vista ampliada (9) deja fuera a los rótulos que ni ampliando se
- * leen. Medido en las 114 figuras de la academia con rótulos: ampliada, la mediana llega a 11,7 px y el 10 % menor
- * queda bajo 8,2 px; con 9 avisan 34 figuras y con 11 avisarían 65, demasiadas para frenar una rama que ya las tiene.
- * El del celular (9) es solo informativo: ahí las 114 quedan bajo 9 px, así que se resume.
+ * Mínimos legibles, en px de la letra. El de la vista ampliada (9) deja fuera los rótulos que ni ampliados se leen.
+ * Medido en 114 figuras con rótulos: ampliada, la mediana llega a 11,7 px y el 10 % menor queda bajo 8,2 px; con 9
+ * avisan 34 figuras y con 11, 65: demasiadas para el contenido que ya existe. El del celular (9) es solo informativo:
+ * ahí las 114 quedan bajo 9 px, así que se resume.
  */
 export const LABEL_MIN_PX = { zoomed: 9, phone: 9 };
 

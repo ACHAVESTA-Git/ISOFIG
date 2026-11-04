@@ -102,8 +102,8 @@ function checkGroups(rep: Reporter, groups: unknown, used: Set<string> | undefin
  * Revisa una spec sin dibujarla y devuelve lo que está mal, con un `code` estable y el `path` del campo
  * (`parts[3].size`). No usa dependencias y corre en el navegador.
  *
- * En 0.9 solo son `error` los casos que ya rompen el dibujo (un `NaN` en una coordenada, una medida negativa, un `kind`
- * desconocido, ids repetidos, una pieza que le falta un campo); todo lo demás es `warning`. En 1.0 se endurecerá.
+ * Solo son `error` los casos que rompen el dibujo (un `NaN` en una coordenada, una medida negativa, un `kind`
+ * desconocido, ids repetidos, una pieza sin un campo obligatorio); todo lo demás es `warning`.
  */
 export function validateSpec(spec: unknown, options: ValidateOptions = {}): Issue[] {
   const { rep, issues } = reporter(options.lang ?? "en");

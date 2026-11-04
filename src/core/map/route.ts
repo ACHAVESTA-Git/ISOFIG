@@ -1,8 +1,8 @@
 /**
- * Rutas ortogonales sobre el piso entre las huellas de los nodos. Se busca el camino más barato en una cuadrícula
- * dispersa (las líneas que pasan por los bordes y los centros de los nodos y por el medio de cada pasillo): cada giro
- * cuesta, ir por donde ya va otra cinta cuesta, cruzarla cuesta más, y las cintas que comparten origen o destino se
- * juntan en un tronco. Todo es determinista: mismas entradas, mismas rutas.
+ * Rutas ortogonales sobre el piso entre las huellas de los nodos. Dijkstra sobre una cuadrícula dispersa, con líneas en
+ * los bordes de los estorbos, en los puertos y en el medio de cada pasillo. Cada giro cuesta; ir por un tramo que ya
+ * lleva otra cinta cuesta, y cruzarla cuesta más; las cintas con el mismo origen o destino se juntan en un tronco. Es
+ * determinista: mismas entradas, mismas rutas.
  */
 
 /** Una huella en el piso: `x` crece hacia el lector; `y`, hacia la derecha. */
@@ -63,7 +63,7 @@ export function portOf(r: Rect, side: Side): Pt {
 const grow = (r: Rect, m: number): Rect => ({ x0: r.x0 - m, y0: r.y0 - m, x1: r.x1 + m, y1: r.y1 + m, ...(r.hide ? { hide: r.hide } : {}) });
 const same = (a: number, b: number) => Math.abs(a - b) < 0.06;
 
-/** Un montículo binario mínimo: la cola del camino más barato. */
+/** Cola de prioridad (montículo binario mínimo) del Dijkstra. */
 class Heap {
   private items: [number, number][] = [];
   push(cost: number, id: number): void {
@@ -141,7 +141,7 @@ function lines(blocks: Rect[], axis: "x" | "y", extra: number[], bounds: [number
 export interface Routed {
   /** Esquinas de la cinta, de la huella de origen a la de destino. */
   pts: Pt[];
-  /** No se encontró un camino libre y se dibujó uno directo. */
+  /** No hubo camino libre: se trazó un codo entre la cara de adelante del origen y la de atrás del destino. */
   blocked: boolean;
 }
 

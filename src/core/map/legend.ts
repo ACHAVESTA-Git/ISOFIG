@@ -6,7 +6,7 @@ import { box, label, prism } from "./parts.ts";
 import { widthOf } from "./text.ts";
 import type { LinkKind, TreeNode } from "./types.ts";
 
-/** En un diagrama de clases los colores son otra cosa: clase e interfaz. */
+/** En un diagrama UML los roles `compute` y `edge` se leen como clase e interfaz. */
 const UML_LABELS: Record<string, Text> = { compute: { es: "clase", en: "class" }, edge: { es: "interfaz", en: "interface" } };
 
 const LINK_LABELS: Record<Exclude<LinkKind, "link">, Text> = {

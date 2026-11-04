@@ -91,7 +91,7 @@ const abstractTag = (n: MapNode): Text | undefined => (n.stereotype !== undefine
 /** Una clase: un archivador con cajón de nombre, de atributos y de métodos. */
 export const classCabinet: GlyphFn = (a) => cabinet(a, { stereotype: abstractTag(a.node), members: true, fields: true, plug: false });
 
-/** Una interfaz: el archivador sin atributos, con el enchufe encima que dice «aquí se conecta algo». */
+/** Una interfaz: el archivador sin atributos, con un enchufe encima: se lee como «aquí se conecta algo». */
 export const interfaceCabinet: GlyphFn = (a) => cabinet(a, { stereotype: a.node.stereotype !== undefined ? surround(a.node.stereotype, "«", "»") : "«interface»", members: true, fields: false, plug: true });
 
 /** Cuánto sale cada cajón al desarmar, hacia el lector. */

@@ -27,9 +27,9 @@ const START_SIZE = 9;
 const MAX_SIZE = 26;
 
 /**
- * Compila un mapa a un árbol de nodos (`root`), los recorridos de sus paquetes (`tracks`) y el tamaño y la cámara que
- * le sientan. Es una función pura y no usa Node: corre igual en el navegador. El tamaño de los rótulos sale de un
- * ajuste: se busca el menor con el que la letra mide ~10 px en la vista ampliada (a 1150 px de ancho).
+ * Compila un mapa a `root` (árbol de nodos), `tracks` (recorridos de los paquetes), tamaño y cámara. Es pura y no usa
+ * Node, así que corre igual en el navegador. El tamaño de la letra se ajusta buscando el menor que mida ~10 px en la
+ * vista ampliada (ver `MIN_PX`).
  */
 export function compileMap(map: MapSpec, o: CompileOptions = {}): CompiledMap {
   const layout = map.layout && map.layout in CAMERAS ? map.layout : "flow";
@@ -54,8 +54,8 @@ export function compileMap(map: MapSpec, o: CompileOptions = {}): CompiledMap {
   let s = fixed ?? START_SIZE;
   let cur = attempt(s);
   if (fixed === undefined) {
-    // La letra y el tamaño de la escena dependen uno del otro: se acerca de punto fijo en punto fijo y se queda con la
-    // menor que aún se lee.
+    // La letra y el tamaño de la escena dependen uno del otro: se itera hasta un punto fijo y se queda con la letra más
+    // chica que aún se lee.
     let best = cur.px >= MIN_PX ? cur : undefined;
     for (let i = 0; i < 14 && !(cur.px >= MIN_PX && cur.px <= MIN_PX * 1.04) && s < MAX_SIZE; i++) {
       s = Math.min(MAX_SIZE, (s * MIN_PX * 1.015) / cur.px);
