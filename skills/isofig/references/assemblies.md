@@ -55,15 +55,17 @@ The top-level `parts`, if present, are the fixed scenery in world coordinates (a
 6. **Paint by material** (`paint: "aluminium"` on the node) and keep one `lit` accent for what the reader should find.
 7. **Use `defs` and `repeat`** for what repeats (cylinders, legs); `use` a kit piece for the stand.
 8. **Concave shapes are several parts**; a nozzle is several `cone`s. Tilted pieces: `cylinder` with a vector `axis`
-   (a rod), `prism` with `axis: "x" | "y"` (a V-block profile).
+   (a rod), `prism` with `axis: "x" | "y"` (a V-block profile). Round ones: `sphere` for a joint or a skull, `capsule`
+   for a long bone or a rounded rod (give both `mount` where one is fitted in the other).
 
 ## What the figure gets
 
 - **"Take apart"**: a stepped control from "Assembled" to "Step 7 of 7". Each node moves by the sum of its own `explode`
   and its ancestors', within its stage's window.
 - **The parts list**: one button per name, in tree order; two nodes with the same name (both heads) are one entry.
-  Picking a part fades the rest and the readout shows its `name · note`. Assembled, the rest turns see-through and
-  the part shows inside (the pistons in their bank).
+  Picking a part zooms onto it, paints it in front and leaves the rest at 35 %; the readout shows its `name · note`.
+  Assembled, the part shows inside the see-through rest (the pistons in their bank). Give every entry a part worth
+  zooming into: a name for a tiny bolt makes a close-up of nothing.
 - **The readout** ("Step 3 of 7: heads off"); screen readers hear the step.
 - **Paint order per pose.** It is computed at rest and at the end of every stage, and the runtime reorders the DOM when
   it crosses a threshold, so a part is never painted over the one that hid it.

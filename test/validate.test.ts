@@ -26,7 +26,7 @@ const find = (spec: unknown, code: IssueCode) => validateSpec(spec, { lang: "en"
 const CASOS: [string, unknown, IssueCode, "error" | "warning", string][] = [
   ["parts vacío", { ...base, parts: [] }, "parts-empty", "warning", "parts"],
   ["box sin size", { ...base, parts: [{ id: "a", kind: "box", at: [0, 0, 0] }] }, "field-missing", "error", "parts[0].size"],
-  ["kind desconocido", { ...base, parts: [{ id: "a", kind: "sphere", at: [0, 0, 0] }] }, "kind-unknown", "error", "parts[0].kind"],
+  ["kind desconocido", { ...base, parts: [{ id: "a", kind: "torus", at: [0, 0, 0] }] }, "kind-unknown", "error", "parts[0].kind"],
   ["at con NaN", { ...base, parts: [{ ...box, at: [0, NaN, 0] }] }, "number-invalid", "error", "parts[0].at[1]"],
   ["size negativo", { ...base, parts: [{ ...box, size: [4, -4, 4] }] }, "size-negative", "error", "parts[0].size[1]"],
   [
@@ -106,9 +106,9 @@ test("cada código tiene mensaje en inglés y en español, con su gravedad", () 
 });
 
 test("un kind desconocido dice cuál es y cuáles hay", () => {
-  const issue = find({ ...base, parts: [{ id: "bola", kind: "sphere", at: [0, 0, 0] }] }, "kind-unknown");
-  assert.match(issue!.message, /'bola' has an unknown kind 'sphere'/);
-  assert.match(issue!.message, /box, cylinder, cone, prism, ticks, dots, line, label/);
+  const issue = find({ ...base, parts: [{ id: "aro", kind: "torus", at: [0, 0, 0] }] }, "kind-unknown");
+  assert.match(issue!.message, /'aro' has an unknown kind 'torus'/);
+  assert.match(issue!.message, /box, cylinder, cone, prism, sphere, capsule, ticks, dots, line, label/);
   assert.match(find({ ...base, parts: [{ id: "x", at: [0, 0, 0] }] }, "kind-missing")!.message, /no kind/);
 });
 
@@ -428,4 +428,18 @@ test("el CLI: --lang cambia el idioma y el prefijo, --strict falla con avisos, c
   assert.equal(ok.status, 0);
   assert.match(ok.stderr, /^nota: model\.readout: La lectura más larga/m);
   assert.equal(cli("check", spec, "--presets").status, 1);
+});
+
+test("en defs, un número puede ser «{clave}» como enseña la guía; un with que lo llena con texto se avisa en la plantilla", () => {
+  const spec = (alto: unknown) =>
+    ({
+      id: "mesa",
+      title: "Mesa",
+      alt: "Una mesa",
+      defs: { pata: { parts: [{ id: "c", kind: "cylinder", at: [0, 0, 0], r: 4, h: "{alto}" }] } },
+      root: { id: "mesa", parts: [{ id: "tablero", kind: "box", at: [0, 0, 30], size: [60, 40, 4] }], children: [{ id: "p1", use: "pata", with: { alto: alto }, at: [4, 4, 0] }] },
+    }) as unknown as FigureSpec;
+  const errors = (s: FigureSpec) => validateSpec(s).filter((i) => i.severity === "error").map((i) => `${i.code} ${i.path}`);
+  assert.deepEqual(errors(spec(30)), []);
+  assert.deepEqual(errors(spec("treinta")), ["number-invalid defs.pata.parts[0].h"]);
 });

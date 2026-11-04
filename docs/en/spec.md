@@ -47,8 +47,20 @@ passes over it, and never takes part in paint-order doubts; maps use it).
 | `cylinder` | `at` (center of the starting face), `r`, `h`, `axis` (`x`/`y`/`z` or a vector such as `[1, 0, 1]`), `bevel` | Wheels, knobs, tokens, posts; with a vector, a leaning rod or piston. |
 | `cone` | `at`, `r` (starting face), `r2` (the other one; 0 is a point), `h`, `axis` | A truncated cone: nozzles, funnels, trumpets. The first solid of revolution. |
 | `prism` | `plan` (convex), `z`, `h`, `axis` (`z` by default; `y` or `x`), `bevel` | Any convex plan. With `axis: "y"` the plan is `[x, z]` and is extruded along y from `z`: the profile of a V block or a beam. Concave ones are built from several parts. |
+| `sphere` | `at` (the **center**), `r` | Balls, joints, skulls, atoms, beads. |
+| `capsule` | `at` (center of the starting face of the straight section), `r`, `h` (length of the straight section), `axis` (`x`/`y`/`z` or a vector such as `[1, 0, 1]`) | A cylinder with a half sphere of radius `r` at each end, so it measures `h + 2r` end to end. Long bones, rounded rods, tubes, the bonds of a molecule. With `h: 0` it is a sphere. |
 
 - `bevel` cuts the edge of the top: between 0.4 and 1.6 it looks like a manufactured part.
+- **Spheres and capsules** always look like a circle and a "stadium" (the hull of two circles), from wherever you look;
+  six layers of tone give them volume, with the same light and the same face tones as the other parts, and the outline
+  has the same stroke. `tone`, `paint`, `shadow` (a round halo) and the `ok`/`warn`/`fail` states work the same, and
+  turning and exploding move them unchanged. There is no z-buffer, so two parts that cut through each other are painted
+  one over the other: rest a capsule against a sphere, or declare the fit with `mount`.
+
+  ```json
+  { "id": "head", "kind": "sphere", "at": [20, 20, 12], "r": 10, "tone": "hi" }
+  { "id": "femur", "kind": "capsule", "at": [40, 20, 8], "r": 5, "h": 50, "axis": [1, 0, 1], "tone": "hi" }
+  ```
 - `repeat: { count, step, from }` creates offset copies. `{i}` in `id` or `group` is replaced by the index; if `id`
   doesn't include it, `-i` is appended. `from` is the first value of `{i}` (0 by default): copy number k moves
   `step × k` and is named `from + k`, so two rows can share out the numbers of one group (`row-0…13` and

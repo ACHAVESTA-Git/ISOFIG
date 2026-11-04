@@ -30,6 +30,9 @@ function piece(name: string) {
     getAttribute: (k: string) => attrs[k] ?? null,
     setAttribute: (k: string, v: string) => void (attrs[k] = v),
     removeAttribute: (k: string) => void delete attrs[k],
+    closest(): unknown {
+      return this;
+    },
   };
 }
 
@@ -38,6 +41,9 @@ function figure(d: FigureData, names: string[]) {
   const kids = [...pieces];
   const scene = {
     kids,
+    get children() {
+      return kids;
+    },
     querySelectorAll: () => [...pieces],
     append(n: (typeof pieces)[number]) {
       kids.splice(kids.indexOf(n), 1);
@@ -101,7 +107,7 @@ test("varios bind al mismo grupo se suman, cada uno en su ventana, y la elecció
     ],
     readout: "{pick}",
   });
-  const f = figure(d, ["base", "tapa", "perilla"]);
+  const f = figure(d, ["tapa", "perilla", "base"]);
   mount(f.el, undefined, d);
   tick();
   assert.equal(f.readout.textContent, "Armado");
@@ -113,8 +119,13 @@ test("varios bind al mismo grupo se suman, cada uno en su ventana, y la elecció
   f.input("pick", 1, "radio");
   tick();
   assert.equal(f.readout.textContent, "Tapa · cierra la caja");
-  assert.equal(f.get("base").attrs["opacity"], "0.200");
+  assert.equal(f.get("base").attrs["opacity"], "0.350", "lo demás se aparta sin desaparecer");
   assert.equal(f.get("tapa").attrs["opacity"], "1");
+  assert.deepEqual(f.scene.kids.map((k) => k.name), ["base", "tapa", "perilla"], "la pieza elegida se pinta encima");
+  f.input("pick", 0, "radio");
+  tick();
+  assert.deepEqual(f.scene.kids.map((k) => k.name), ["tapa", "perilla", "base"], "con «Todo», el orden en reposo");
+  assert.equal(f.get("base").attrs["opacity"], "1", "y lo que estaba apartado recupera su color");
 });
 
 test("los movimientos de dos ventanas se suman en el grupo", () => {

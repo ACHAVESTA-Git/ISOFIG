@@ -152,8 +152,8 @@ const CATALOG = {
   },
   "on-not-solid": {
     severity: "error",
-    en: (v, q) => `${q(v.id)} goes on ${q(v.on)}, which is a detail: details go on a box, cylinder or prism.`,
-    es: (v, q) => `${q(v.id)} va sobre ${q(v.on)}, que es un detalle: los detalles van sobre una caja, un cilindro o un prisma.`,
+    en: (v, q) => `${q(v.id)} goes on ${q(v.on)}, which is a detail: details go on a solid (box, cylinder, sphere…).`,
+    es: (v, q) => `${q(v.id)} va sobre ${q(v.on)}, que es un detalle: los detalles van sobre un sólido (caja, cilindro, esfera…).`,
   },
   "mount-unknown": {
     severity: "warning",
