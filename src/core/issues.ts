@@ -466,6 +466,18 @@ const CATALOG = {
     es: (v) => `--set ${v.id}: la spec no tiene ese parámetro.`,
   },
 
+  // Lo que un sitio cambia de una figura (applyOverrides y la prop overrides de <Figure>)
+  "override-unknown-param": {
+    severity: "error",
+    en: (v, q) => `${v.where} names ${q(v.param)}, which is not a parameter of the figure${v.suggest ? `; did you mean ${q(v.suggest)}?` : "."} Parameters: ${v.known || "none"}.`,
+    es: (v, q) => `${v.where} nombra ${q(v.param)}, que no es un parámetro de la figura${v.suggest ? `; ¿querías ${q(v.suggest)}?` : "."} Parámetros: ${v.known || "ninguno"}.`,
+  },
+  "override-action-value": {
+    severity: "error",
+    en: (v, q) => `${q(v.param)} is an action: it has no initial value (a preset presses it with 'press').`,
+    es: (v, q) => `${q(v.param)} es una acción: no tiene valor inicial (un desvío la pulsa con 'press').`,
+  },
+
   // Color (los mensajes viven junto a la paleta)
   ...PALETTE_MESSAGES,
 } as const satisfies Record<string, Entry>;

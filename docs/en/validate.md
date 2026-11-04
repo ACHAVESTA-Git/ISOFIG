@@ -55,6 +55,7 @@ returns its errors.
 | `on-unknown`, `on-not-solid` | A detail on a part that does not exist, or that is itself a detail |
 | `dimension-invalid`, `camera-invalid`, `spin-plane-invalid` | `width`, `height`, `pad`, the camera angles or a spin plane that cannot be used |
 | `draw-failed`, `model-invalid`, `model-throws`, `presets-need-model` | The drawing or the model failed; `--presets` without `--model` |
+| `override-unknown-param`, `override-action-value` | `applyOverrides` (and the `overrides` prop of `<Figure>`) names an id that is not a parameter, or gives an initial value to an action. What it changes is also checked with the `param-value-*`, `toggle-value-invalid`, `choice-value-invalid` and `preset-*` codes, so the messages are the same |
 
 **Warnings** (the ones marked ↑ become errors in 1.0)
 

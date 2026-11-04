@@ -55,6 +55,7 @@ no lanza: devuelve sus errores.
 | `on-unknown`, `on-not-solid` | Un detalle sobre una pieza que no existe, o que es otro detalle |
 | `dimension-invalid`, `camera-invalid`, `spin-plane-invalid` | `width`, `height`, `pad`, los ángulos de la cámara o el plano de un giro que no sirven |
 | `draw-failed`, `model-invalid`, `model-throws`, `presets-need-model` | Falló el dibujo o el modelo; `--presets` sin `--model` |
+| `override-unknown-param`, `override-action-value` | `applyOverrides` (y la prop `overrides` de `<Figure>`) nombra un id que no es un parámetro, o da un valor inicial a una acción. Lo que cambia se revisa además con los códigos `param-value-*`, `toggle-value-invalid`, `choice-value-invalid` y `preset-*`, así que los mensajes son los mismos |
 
 **Avisos** (los marcados ↑ pasan a error en 1.0)
 
