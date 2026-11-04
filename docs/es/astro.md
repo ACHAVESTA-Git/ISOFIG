@@ -99,6 +99,8 @@ export default model;
   `spin`) y `o` (opacidad). Los valores se interpolan solos; usa `snap: true` cuando el modelo ya da un movimiento
   continuo.
 - El orden de registro no importa: si la figura monta antes, espera al modelo.
+- `ctx.pressed`, `ctx.changed` y `ctx.say` dicen qué tocó el lector y anuncian eventos (ver [spec.md](spec.md)).
+- `<Figure>` activa el chip «Ampliar»: `isofig/zoom` se descarga solo si alguien lo pulsa.
 
 ## 5. Tema
 

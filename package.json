@@ -22,6 +22,10 @@
     "./orbit": {
       "types": "./dist/orbit/index.d.ts",
       "default": "./dist/orbit/index.js"
+    },
+    "./zoom": {
+      "types": "./dist/zoom/index.d.ts",
+      "default": "./dist/zoom/index.js"
     }
   },
   "files": [

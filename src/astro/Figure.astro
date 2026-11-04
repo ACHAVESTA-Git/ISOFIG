@@ -18,8 +18,9 @@ for (const w of figure.warnings) console.warn(`isofig «${spec.id}»: ${w}`);
 <div class:list={["isofig-host", className]} set:html={figure.html} />
 
 <script>
-  import { mountAll, unmountAll } from "isofig/runtime";
+  import { mountAll, unmountAll, zoomOnDemand } from "isofig/runtime";
 
+  zoomOnDemand(() => import("isofig/zoom"));
   mountAll();
   document.addEventListener("astro:page-load", () => mountAll());
   document.addEventListener("astro:before-swap", () => unmountAll());

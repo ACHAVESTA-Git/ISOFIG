@@ -24,6 +24,7 @@ A `FigureSpec` is a plain object: it can be written in TypeScript (with autocomp
 | `model` | `string` | Name under which the model is registered in the runtime. |
 | `autoplay` | `boolean` | Defaults to `true` if there is a model. With reduced motion it always starts paused. |
 | `motion.tau` | `number` | Time constant of the interpolation (s), 0.18 by default. |
+| `motion.settle` | `number` | With reduced motion, seconds simulated at once on mount and after every control or preset (presets simulate 8 if unset). |
 | `budget` | `number` | KB gzip it must not exceed (40 by default). |
 
 `Text` is `"text"` or `{ es: "…", en: "…" }`.
@@ -88,12 +89,29 @@ params: [
 ],
 presets: [
   { label: "Slow dependency", values: { latency: 3000 }, note: "Watch only its compartment fill up.", reset: true },
+  { label: "Delete a pod", values: { replicas: 3 }, press: ["delete"], note: "The Deployment replaces it within seconds." },
 ],
 ```
 
-- `toggle` is 0 or 1; `choice` is the index of the chosen option; `action` is a button that adds 1 when pressed (the model compares the counter to know something happened, e.g. "delete a pod").
-- `presets` are "Try to break it" buttons: they set params, show `note` and announce it to screen readers.
-- A model can tint a group with `s: "ok" | "warn" | "fail"` and announce an event with `say`.
+- `toggle` is 0 or 1; `choice` is the index of the chosen option; `action` is a button that adds 1 when pressed.
+- `presets` are "Try to break it" buttons: they set params, show `note` and announce it to screen readers. `press` presses actions after setting the values (and after `reset`), so the preset doesn't have to ask "now press…".
+- A model can tint a group with `s: "ok" | "warn" | "fail"`.
+
+## What the model gets in `ctx`
+
+```ts
+step(s, dt, p, ctx) {
+  if (ctx.changed("replicas")) s.wanted = p.replicas;      // the control changed
+  if (ctx.pressed("delete")) {                              // the action was pressed (button or preset with press)
+    s.pods.pop();
+    ctx.say("A pod was deleted: the Deployment creates another"); // an event, once
+  }
+}
+```
+
+- `ctx.pressed(id)` and `ctx.changed(id)` are true during the step after the press or the change: the model doesn't need to keep a copy of the parameter to compare.
+- `ctx.say(text)` announces an event when it happens. The runtime decides when to speak: it stays quiet until the reader touches the figure, waits for 1.5 s of silence, never talks over a preset note, speaks at most twice per interaction and never repeats the last thing it said. If the readout echo talks over it, it is said afterwards. `view.say` keeps working as before.
+- `ctx.reducedMotion` updates live if the reader changes the system setting. With `motion.settle`, the runtime already shows the settled state: the model doesn't have to compute it by hand. The simulation continues from the current state; a preset with `reset` always gives the same result.
 
 ## bind
 
@@ -137,6 +155,22 @@ orbitOnDemand(el, async () => {
 
 Hovering or focusing the figure prefetches it; pressing the drawing or a button enables it. The module is ~6 KB
 gzip plus the spec, downloaded only by readers who turn the figure.
+
+## Enlarging the figure
+
+On a phone the drawing is about 326 px wide and its labels 2 to 5 px tall. The card has an "Enlarge" chip that opens
+a dialog with the same SVG 1150 px wide (or wider, until the median label reaches 11 px), with scrolling and pinch.
+The figure keeps animating and turning inside; Esc or "Close" closes it and focus returns to the chip. The chip is
+hidden and shows up on mount if the page gave a loader:
+
+```ts
+import { zoomOnDemand, mountAll } from "isofig/runtime";
+
+zoomOnDemand(() => import("isofig/zoom")); // before mounting; the module (~1 KB gzip) downloads on press
+mountAll();
+```
+
+`renderFigure(spec, { zoom: false })` removes the chip. `--isofig-zoom-width` changes the dialog's minimum width.
 
 ## Import and preview
 

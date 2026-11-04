@@ -2,7 +2,17 @@ export type Params = Record<string, number>;
 
 export interface Ctx {
   lang: string;
+  /** Se actualiza si el lector cambia la preferencia del sistema con la figura montada. */
   reducedMotion: boolean;
+  /**
+   * Anuncia un evento a los lectores de pantalla («saltó el breaker») en el momento en que pasa. El runtime decide
+   * cuándo hablar con las mismas reglas que `view.say`, así que el modelo no guarda lo que ya dijo.
+   */
+  say(text: string): void;
+  /** Verdadero durante el paso siguiente a pulsar la acción `id` (su botón o un desvío con `press`). */
+  pressed(id: string): boolean;
+  /** Verdadero durante el paso siguiente a cambiar el parámetro `id` (un control, un desvío o una pulsación). */
+  changed(id: string): boolean;
 }
 
 /** Lo que un grupo debe mostrar: desplazamiento en el mundo, giro en grados y opacidad. */
@@ -37,10 +47,17 @@ export interface FigureData {
   basis: number[];
   spins: Record<string, number[]>;
   params: { id: string; value: number; unit: string; spoken: string; options?: string[] }[];
-  presets?: { values: Record<string, number>; note: string; reset?: boolean }[];
+  presets?: { values: Record<string, number>; note: string; reset?: boolean; press?: string[] }[];
   bind?: { group: string; param: string; move?: number[]; spin?: number; fade?: boolean }[];
   readout: string;
   lang: string;
+  /** Con movimiento reducido, segundos que se simulan de golpe al montar y tras cada control o desvío. */
+  settle?: number;
+}
+
+/** Lo que exporta isofig/zoom. */
+export interface ZoomModule {
+  openZoom(el: HTMLElement): void;
 }
 
 interface Group {
@@ -56,6 +73,15 @@ const registry = new Map<string, Model<any, any>>();
 const waiting = new Map<string, HTMLElement[]>();
 const live = new Map<HTMLElement, () => void>();
 const cameras = new WeakMap<HTMLElement, (basis: number[], spins: Record<string, number[]>) => void>();
+let zoomer: (() => Promise<ZoomModule>) | undefined;
+
+/**
+ * Activa el chip «Ampliar» de las figuras que se monten después: `zoomOnDemand(() => import("isofig/zoom"))`. El
+ * módulo se descarga la primera vez que alguien lo pulsa.
+ */
+export function zoomOnDemand(load: () => Promise<ZoomModule>): void {
+  zoomer = load;
+}
 
 /** Cambia la cámara de una figura montada (lo usa isofig/orbit tras redibujarla). */
 export function retarget(el: HTMLElement, basis: number[], spins: Record<string, number[]>): void {
@@ -110,8 +136,23 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     waiting.set(d.model!, [...(waiting.get(d.model!) ?? []), el]);
     return () => {};
   }
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const ctx: Ctx = { lang: d.lang, reducedMotion: reduced };
+  const motion = matchMedia("(prefers-reduced-motion: reduce)");
+  let reduced = motion.matches;
+  // Lo que cambió (1) o se pulsó (2) desde el último paso del modelo.
+  const marks = new Map<string, number>();
+  // Un aviso de `ctx.say` se sigue ofreciendo 3 s hasta que se dice: si el eco de la lectura lo pisa, llega después.
+  let offer = "";
+  let offerUntil = 0;
+  const ctx: Ctx = {
+    lang: d.lang,
+    reducedMotion: reduced,
+    say(text) {
+      offer = text;
+      offerUntil = performance.now() + 3000;
+    },
+    pressed: (id) => marks.get(id) === 2,
+    changed: (id) => marks.has(id),
+  };
   const fmt = new Intl.NumberFormat(d.lang);
   el.querySelector(".isofig-controls")?.removeAttribute("hidden");
   const params: Params = Object.fromEntries(d.params.map((p) => [p.id, p.value]));
@@ -163,6 +204,7 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     if (say && pending && pending !== lastSaid) {
       say.textContent = lastSaid = pending;
       budget = Math.max(0, budget - 1);
+      if (pending === offer) offer = "";
     }
     pending = "";
   };
@@ -174,10 +216,19 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
   };
   const play = el.querySelector<HTMLButtonElement>(".isofig-play");
   let state = m.init(params, ctx);
+  let jump = false;
+  const step = (dt: number) => {
+    state = m.step?.(state, dt, params, ctx) ?? state;
+    marks.clear();
+  };
+  // Simula `s` segundos de golpe; el cuadro siguiente salta al resultado sin interpolar.
+  const run = (s = 0) => {
+    for (let i = 0; i < s * 60; i++) step(1 / 60);
+    jump ||= s > 0;
+  };
   // Solo para capturas: `data-isofig-advance="3"` arranca la figura 3 s ya simulados (un headless no corre rAF).
-  const advance = Number(el.dataset["isofigAdvance"] ?? 0);
-  for (let i = 0; i < advance * 60; i++) state = m.step?.(state, 1 / 60, params, ctx) ?? state;
-  let jump = advance > 0;
+  run(Number(el.dataset["isofigAdvance"] ?? 0));
+  if (reduced) run(d.settle);
   let playing = d.autoplay && !reduced;
   let visible = false;
   let frame = 0;
@@ -194,7 +245,7 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     frame = 0;
     const dt = last ? Math.min((now - last) / 1000, 1 / 30) : 0;
     last = now;
-    if (playing) state = m.step?.(state, dt, params, ctx) ?? state;
+    if (playing) step(dt);
     const view = m.view(state, params, ctx);
     const k = reduced || jump ? 1 : 1 - Math.exp(-dt / d.tau);
     jump = false;
@@ -231,7 +282,8 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     }
     const text = view.readout ?? d.params.reduce((s, p) => s.replaceAll(`{${p.id}}`, String(params[p.id])), d.readout);
     if (readout && readout.textContent !== text) readout.textContent = text;
-    if (view.say && budget > 0) speak(view.say);
+    const news = view.say || (performance.now() < offerUntil && offer);
+    if (news && budget > 0) speak(news);
     if (visible && (playing || moving)) wake();
     else last = 0;
   };
@@ -259,44 +311,53 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     const id = input.dataset["param"];
     if (!id) return;
     params[id] = input.type === "checkbox" ? (input.checked ? 1 : 0) : Number(input.value);
+    marks.set(id, 1);
     show(id);
     touched = true;
     budget = 2;
+    if (reduced) run(d.settle);
     wake();
     clearTimeout(echo);
     echo = window.setTimeout(() => speak(readout?.textContent ?? "", 0), 1200);
   };
   let echo = 0;
-  const onPreset = (e: Event) => {
-    const action = (e.target as HTMLElement).closest<HTMLElement>("[data-action]");
-    const id = action?.dataset["param"];
-    if (id) {
-      touched = true;
-      budget = 2;
-      params[id] = (params[id] ?? 0) + 1;
-      if (!reduced) setPlaying(true);
-      wake();
-      return;
-    }
-    const button = (e.target as HTMLElement).closest<HTMLElement>("[data-preset]");
-    const preset = button ? d.presets?.[Number(button.dataset["preset"])] : undefined;
-    if (!preset) return;
-    for (const [id, v] of Object.entries(preset.values)) {
-      params[id] = v;
-      show(id);
-    }
-    if (preset.reset) state = m.init(params, ctx);
+  const press = (id: string) => {
+    params[id] = (params[id] ?? 0) + 1;
+    marks.set(id, 2);
+  };
+  const onClick = (e: Event) => {
+    const target = e.target as HTMLElement;
+    if (target.closest("[data-zoom]")) return void zoomer?.().then((z) => z.openZoom(el));
+    const id = target.closest<HTMLElement>("[data-action]")?.dataset["param"];
+    const preset = id ? undefined : d.presets?.[Number(target.closest<HTMLElement>("[data-preset]")?.dataset["preset"])];
+    if (!id && !preset) return;
     touched = true;
     budget = 2;
-    quietUntil = performance.now() + 2500;
-    if (note) note.textContent = preset.note;
-    if (reduced) {
-      // Sin animación, el desvío muestra directamente su efecto: unos segundos ya simulados.
-      for (let i = 0; i < 8 * 60; i++) state = m.step?.(state, 1 / 60, params, ctx) ?? state;
-      jump = true;
-    } else setPlaying(true);
+    if (preset) {
+      for (const [k, v] of Object.entries(preset.values)) {
+        if (params[k] !== v) marks.set(k, 1);
+        params[k] = v;
+        show(k);
+      }
+      if (preset.reset) state = m.init(params, ctx);
+      preset.press?.forEach(press);
+      quietUntil = performance.now() + 2500;
+      if (note) note.textContent = preset.note;
+    } else press(id!);
+    // Sin animación, el desvío muestra directamente su efecto: unos segundos ya simulados.
+    if (reduced) run(preset ? (d.settle ?? 8) : d.settle);
+    else setPlaying(true);
     wake();
   };
+  const onMotion = () => {
+    ctx.reducedMotion = reduced = motion.matches;
+    setPlaying(d.autoplay && !reduced);
+    if (reduced) run(d.settle);
+    wake();
+  };
+  motion.addEventListener("change", onMotion);
+  const zoom = el.querySelector<HTMLElement>("[data-zoom]");
+  if (zoom && zoomer) zoom.hidden = false;
   const onPlay = () => {
     touched = true;
     budget = 2;
@@ -304,7 +365,7 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     wake();
   };
   el.addEventListener("input", onInput);
-  el.addEventListener("click", onPreset);
+  el.addEventListener("click", onClick);
   play?.addEventListener("click", onPlay);
   const io = new IntersectionObserver(
     (entries) => {
@@ -325,8 +386,9 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
 
   return () => {
     io.disconnect();
+    motion.removeEventListener("change", onMotion);
     el.removeEventListener("input", onInput);
-    el.removeEventListener("click", onPreset);
+    el.removeEventListener("click", onClick);
     play?.removeEventListener("click", onPlay);
     cancelAnimationFrame(frame);
     clearTimeout(voice);
@@ -336,6 +398,8 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
 
 /** Una figura con datos rotos no impide montar las demás. */
 export function mountAll(root: ParentNode = document): void {
+  // Las figuras que ya salieron de la página sin `unmountAll` se detienen y se sueltan.
+  for (const [el, stop] of live) if (!el.isConnected) live.delete(el), stop();
   root.querySelectorAll<HTMLElement>("[data-isofig]:not([data-isofig-live])").forEach((el) => {
     el.dataset["isofigLive"] = "";
     try {
@@ -348,7 +412,8 @@ export function mountAll(root: ParentNode = document): void {
 
 /** Para llamar antes de que un router reemplace la página. */
 export function unmountAll(): void {
-  for (const stop of live.values()) stop();
+  // Sin la marca, una figura con `transition:persist` vuelve a montarse en la página siguiente.
+  for (const [el, stop] of live) stop(), delete el.dataset["isofigLive"];
   live.clear();
   waiting.clear();
 }

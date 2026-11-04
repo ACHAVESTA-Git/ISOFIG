@@ -99,6 +99,8 @@ export default model;
   `spin`) and `o` (opacity). Values are interpolated automatically; use `snap: true` when the model already
   produces continuous motion.
 - Registration order doesn't matter: if the figure mounts first, it waits for the model.
+- `ctx.pressed`, `ctx.changed` and `ctx.say` tell what the reader touched and announce events (see [spec.md](spec.md)).
+- `<Figure>` enables the "Enlarge" chip: `isofig/zoom` downloads only if someone presses it.
 
 ## 5. Theme
 

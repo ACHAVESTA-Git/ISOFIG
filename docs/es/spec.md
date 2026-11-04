@@ -24,6 +24,7 @@ Una `FigureSpec` es un objeto plano: se puede escribir en TypeScript (con autoco
 | `model` | `string` | Nombre con el que se registra el modelo en el runtime. |
 | `autoplay` | `boolean` | Por defecto, `true` si hay modelo. Con movimiento reducido siempre arranca en pausa. |
 | `motion.tau` | `number` | Constante de tiempo de la interpolación (s), por defecto 0,18. |
+| `motion.settle` | `number` | Con movimiento reducido, segundos que se simulan de golpe al montar y tras cada control o desvío (los desvíos simulan 8 si no se indica). |
 | `budget` | `number` | KB gzip que no debe pasar (por defecto 40). |
 
 `Text` es `"texto"` o `{ es: "…", en: "…" }`.
@@ -88,12 +89,29 @@ params: [
 ],
 presets: [
   { label: "Dependencia lenta", values: { latencia: 3000 }, note: "Mira cómo se llena solo su compartimento.", reset: true },
+  { label: "Borra un pod", values: { replicas: 3 }, press: ["borrar"], note: "El Deployment lo repone en segundos." },
 ],
 ```
 
-- `toggle` vale 0 o 1; `choice` vale el índice de la opción elegida; `action` es un botón que suma 1 al pulsarlo (el modelo compara el contador para saber que pasó algo, p. ej. «borrar un pod»).
-- `presets` son botones «Prueba a romperlo»: fijan parámetros, muestran `note` y la anuncian a los lectores de pantalla.
-- El modelo puede teñir un grupo con `s: "ok" | "warn" | "fail"` y anunciar un evento con `say`.
+- `toggle` vale 0 o 1; `choice` vale el índice de la opción elegida; `action` es un botón que suma 1 al pulsarlo.
+- `presets` son botones «Prueba a romperlo»: fijan parámetros, muestran `note` y la anuncian a los lectores de pantalla. `press` pulsa acciones después de fijar los valores (y de `reset`), así que el desvío no tiene que pedir «pulsa…».
+- El modelo puede teñir un grupo con `s: "ok" | "warn" | "fail"`.
+
+## Lo que el modelo recibe en `ctx`
+
+```ts
+step(s, dt, p, ctx) {
+  if (ctx.changed("replicas")) s.deseado = p.replicas;     // el control cambió
+  if (ctx.pressed("borrar")) {                              // la acción se pulsó (botón o desvío con press)
+    s.pods.pop();
+    ctx.say("Se borró un pod: el Deployment crea otro");   // un evento, una vez
+  }
+}
+```
+
+- `ctx.pressed(id)` y `ctx.changed(id)` son verdaderos durante el paso siguiente a la pulsación o al cambio: el modelo no necesita guardar una copia del parámetro para compararla.
+- `ctx.say(texto)` anuncia un evento en el momento en que pasa. El runtime decide cuándo hablar: calla hasta que el lector toca la figura, espera 1,5 s de silencio, no pisa la nota de un desvío, habla como mucho dos veces por interacción y no repite lo último que dijo. Si el eco de la lectura lo pisa, lo dice después. `view.say` sigue funcionando como antes.
+- `ctx.reducedMotion` cambia en vivo si el lector cambia la preferencia del sistema. Con `motion.settle`, el runtime ya muestra el estado asentado: el modelo no tiene que calcularlo a mano. La simulación sigue desde el estado actual; un desvío con `reset` da siempre el mismo resultado.
 
 ## bind
 
@@ -137,6 +155,22 @@ orbitOnDemand(el, async () => {
 
 Al pasar el puntero o enfocar la figura se precarga; al presionar el dibujo o un botón se activa. El módulo pesa
 ~6 KB gzip más la spec, y solo lo descarga quien gira la figura.
+
+## Ampliar la figura
+
+En un celular el dibujo mide unos 326 px y sus rótulos, de 2 a 5 px. La tarjeta trae un chip «Ampliar» que abre un
+diálogo con el mismo SVG a 1150 px de ancho (o más, hasta que la mediana de los rótulos llegue a 11 px), con
+desplazamiento y pellizco. La figura sigue animándose y girando dentro; se cierra con Esc o con «Cerrar» y el foco
+vuelve al chip. El chip sale oculto y aparece al montar la figura si la página dio un cargador:
+
+```ts
+import { zoomOnDemand, mountAll } from "isofig/runtime";
+
+zoomOnDemand(() => import("isofig/zoom")); // antes de montar; el módulo (~1 KB gzip) se descarga al pulsar
+mountAll();
+```
+
+`renderFigure(spec, { zoom: false })` quita el chip. `--isofig-zoom-width` cambia el ancho mínimo del diálogo.
 
 ## Importar y previsualizar
 
