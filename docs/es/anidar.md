@@ -137,6 +137,8 @@ dos piezas redondas). Una pieza metida en la caja de otra (un pistón en su banc
   Sirve para el perfil de un bloque en V, una culata inclinada o una viga. Horaria o antihoraria, da igual.
 - `cylinder` con un eje vector (`"axis": [-0.71, 0, 0.71]`): una biela o un pistón inclinados.
 - `cone`: tronco de cono, `r` en la cara inicial y `r2` en la otra (0 es una punta). Una tobera se arma con varios.
+- `sphere` (`at` es el centro) y `capsule` (un cilindro con media esfera en cada punta; `at`, `r`, `h` y `axis` como en
+  `cylinder`): articulaciones, huesos largos, bielas redondeadas. Se despiezan, se repiten y giran como cualquier pieza.
 
 ## Revisarlo
 

@@ -100,6 +100,8 @@ export const PART_KEYS = {
   cylinder: [...BASE, "at", "r", "h", "axis", "bevel"],
   cone: [...BASE, "at", "r", "r2", "h", "axis"],
   prism: [...BASE, "plan", "z", "h", "axis", "bevel"],
+  sphere: [...BASE, "at", "r"],
+  capsule: [...BASE, "at", "r", "h", "axis"],
   ticks: [...BASE, ...words("on from along count toward every size")],
   dots: [...BASE, "on", "points"],
   line: [...BASE, "on", "points", "bold"],
@@ -107,7 +109,7 @@ export const PART_KEYS = {
 } as const;
 
 export const KINDS = Object.keys(PART_KEYS);
-export const SOLIDS: readonly string[] = ["box", "cylinder", "cone", "prism"];
+export const SOLIDS: readonly string[] = ["box", "cylinder", "cone", "prism", "sphere", "capsule"];
 
 /** Lo que una pieza no puede dibujarse sin tener. */
 export const REQUIRED: Record<string, readonly string[]> = {
@@ -115,6 +117,8 @@ export const REQUIRED: Record<string, readonly string[]> = {
   cylinder: ["at", "r", "h"],
   cone: ["at", "r", "r2", "h"],
   prism: ["plan", "z", "h"],
+  sphere: ["at", "r"],
+  capsule: ["at", "r", "h"],
   ticks: words("on from along count toward"),
   dots: ["on", "points"],
   line: ["on", "points"],

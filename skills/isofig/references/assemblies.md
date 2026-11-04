@@ -55,7 +55,8 @@ The top-level `parts`, if present, are the fixed scenery in world coordinates (a
 6. **Paint by material** (`paint: "aluminium"` on the node) and keep one `lit` accent for what the reader should find.
 7. **Use `defs` and `repeat`** for what repeats (cylinders, legs); `use` a kit piece for the stand.
 8. **Concave shapes are several parts**; a nozzle is several `cone`s. Tilted pieces: `cylinder` with a vector `axis`
-   (a rod), `prism` with `axis: "x" | "y"` (a V-block profile).
+   (a rod), `prism` with `axis: "x" | "y"` (a V-block profile). Round ones: `sphere` for a joint or a skull, `capsule`
+   for a long bone or a rounded rod (give both `mount` where one is fitted in the other).
 
 ## What the figure gets
 

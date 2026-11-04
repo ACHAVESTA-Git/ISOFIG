@@ -71,6 +71,26 @@ export interface ConePart extends PartBase {
   axis?: Axis | Vec3;
 }
 
+/** Esfera: `at` es el centro. En proyección ortográfica es siempre un círculo, vista desde donde se la vea. */
+export interface SpherePart extends PartBase {
+  kind: "sphere";
+  at: Vec3;
+  r: number;
+}
+
+/**
+ * Cápsula: un cilindro de radio `r` con media esfera en cada punta, así que mide `h + 2r` de punta a punta. `at` y `h`
+ * son los del tramo recto, como en `cylinder`; con `h` 0 es una esfera. Huesos largos, bielas redondeadas, tubos.
+ */
+export interface CapsulePart extends PartBase {
+  kind: "capsule";
+  /** Centro de la cara inicial del tramo recto. */
+  at: Vec3;
+  r: number;
+  h: number;
+  axis?: Axis | Vec3;
+}
+
 export interface PrismPart extends PartBase {
   kind: "prism";
   /** Planta convexa. Con `axis` `z` (por defecto) son puntos [x, y]; con `y`, [x, z]; con `x`, [y, z]. */
@@ -120,7 +140,7 @@ export interface LabelPart extends Omit<PartBase, "group"> {
   align?: "start" | "middle" | "end";
 }
 
-export type Part = BoxPart | CylinderPart | ConePart | PrismPart | TicksPart | DotsPart | LinePart | LabelPart;
+export type Part = BoxPart | CylinderPart | ConePart | PrismPart | SpherePart | CapsulePart | TicksPart | DotsPart | LinePart | LabelPart;
 
 export interface GroupSpec {
   /** Desplazamientos extremos (mundo) para que la figura quepa en cualquier pose. */
