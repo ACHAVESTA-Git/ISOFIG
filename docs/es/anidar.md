@@ -24,7 +24,7 @@ pieza por pieza**, sin modelo ni funciones: el control «Desarmar», la lista de
 }
 ```
 
-`isofig build caja.json` funciona tal cual: `renderFigure`, `drawScene`, `validateSpec` y el CLI aceptan `root`.
+`isofig build caja.json` funciona tal cual: `renderFigure`, `validateSpec` y el CLI aceptan `root` (`drawScene` y el giro lo reciben ya aplanado con `assemble`).
 Ejemplos completos: [`examples/motor-v8/spec.json`](../../examples/motor-v8/spec.json) y
 [`examples/motor-cohete/spec.json`](../../examples/motor-cohete/spec.json).
 
@@ -77,7 +77,8 @@ subárbol; un texto que es solo `"{alto}"` toma el valor tal cual (un número). 
 El catálogo por defecto de `renderFigure`, `validateSpec` y el CLI es el de [`isofig/kit`](kit.md): `"use": "bench",
 "with": { "size": [150, 250] }` funciona desde JSON sin configurar nada. Un `pool` con `extent` trae además sus
 `groups`, que se suman a los de la figura. Otro catálogo se pasa en `renderFigure(spec, { catalog })` o
-`assemble(spec, { catalog })`; el giro (`enableOrbit`) recibe el mismo en `options.catalog`.
+`assemble(spec, { catalog })`. El giro (`enableOrbit`) recibe la spec ya armada con `assemble(spec, { catalog })`: nunca
+necesita el catálogo.
 
 ## El despiece
 

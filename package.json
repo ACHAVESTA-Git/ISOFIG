@@ -91,6 +91,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.check.json && tsc -p tsconfig.browser.json",
+    "size": "npm run build --silent && node scripts/size.ts",
     "test": "node --no-warnings --test \"test/**/*.test.ts\"",
     "prepack": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\" && npm run build",
     "prepublishOnly": "npm run check && npm test",
@@ -108,6 +109,8 @@
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
+    "esbuild": "^0.28.2",
+    "happy-dom": "^21.0.4",
     "typescript": "^7.0.2"
   }
 }

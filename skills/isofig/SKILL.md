@@ -7,7 +7,7 @@ compatibility: Node 22.18+. Astro 5+ or Angular 19+. Chrome or Chromium for the 
 
 # isofig
 
-You write a **spec** (data), not drawing code. The isofig core turns it into SVG at build time; a ~1.7 KB runtime
+You write a **spec** (data), not drawing code. The isofig core turns it into SVG at build time; a ~3.5 KB runtime
 animates it. Answer and write the figure's texts in the user's language (give `{ es, en }` when the project is
 bilingual).
 

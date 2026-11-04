@@ -1,4 +1,5 @@
 import type { Lch } from "./color.ts";
+import type { PaintName } from "./names.ts";
 import type { Mode } from "./theme.ts";
 
 export type PaintKind = "material" | "role";
@@ -11,7 +12,7 @@ export interface PaintDef {
   lch: Record<Mode, Lch>;
 }
 
-const def = (kind: PaintKind, name: string, es: string, en: string, light: Lch, dark: Lch): PaintDef => ({
+const def = (kind: PaintKind, name: PaintName, es: string, en: string, light: Lch, dark: Lch): PaintDef => ({
   name,
   kind,
   label: { es, en },
@@ -51,6 +52,3 @@ export const ROLES: PaintDef[] = [
 
 export const PAINTS: PaintDef[] = [...ROLES, ...MATERIALS];
 export const PAINT = new Map(PAINTS.map((p) => [p.name, p]));
-
-/** Los colores de estado los pone el modelo en tiempo de ejecución: nunca son una pintura. */
-export const RESERVED = ["ok", "warn", "fail"] as const;

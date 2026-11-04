@@ -21,6 +21,7 @@
     "src/zoom",
     "src/astro",
     "examples",
+    "scripts",
     "test"
   ]
 }

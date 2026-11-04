@@ -3,7 +3,7 @@ import { formatIssue, makeIssue, type Issue } from "./issues.ts";
 import { paletteIssues, paletteStyle } from "./palette/figure.ts";
 import { drawScene } from "./scene.ts";
 import { escapeHtml as esc } from "./serialize.ts";
-import { textOf, type FigureSpec } from "./spec.ts";
+import { textOf, type FigureSpec, type FlatSpec } from "./spec.ts";
 import { assembleTree, type Catalog } from "./tree.ts";
 import { catalog as kit } from "../kit/index.ts";
 import { validateSpec } from "./validate.ts";
@@ -133,7 +133,7 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
   }
 }
 
-function draw(spec: FigureSpec, options: RenderOptions, lang: string, issues: Issue[]): Rendered {
+function draw(spec: FlatSpec, options: RenderOptions, lang: string, issues: Issue[]): Rendered {
   const labels = LABELS[lang] ?? LABELS["en"];
   const W = spec.width ?? 640;
   const H = spec.height ?? 400;

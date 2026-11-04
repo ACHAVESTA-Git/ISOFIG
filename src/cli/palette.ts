@@ -1,5 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { messageLang, PREFIXES } from "../core/issues.ts";
 import { derivePalette, type DerivedPalette } from "../core/palette/derive.ts";
 import { paletteCss, paletteJson, reportTable } from "../core/palette/format.ts";
 import { lin, measureSet, type SetMeasure } from "../core/palette/guarantees.ts";
@@ -11,6 +12,8 @@ export interface PaletteOptions {
   format?: string;
   report?: boolean;
   out?: string;
+  /** Idioma de los prefijos («warning» o «aviso»). */
+  lang?: string;
 }
 
 /** `isofig palette`: los roles de una marca, como CSS o JSON, y si se pide, la tabla de garantías (por stderr). */
@@ -20,7 +23,7 @@ export function runPalette(opts: PaletteOptions): number {
   try {
     d = derivePalette(base);
   } catch (e) {
-    console.error(e instanceof Error ? e.message : String(e));
+    console.error(`${PREFIXES[messageLang(opts.lang)].error}: ${e instanceof Error ? e.message : String(e)}`);
     return 1;
   }
   const text = opts.format === "json" ? JSON.stringify(paletteJson(d), null, 2) + "\n" : paletteCss(d);
@@ -34,6 +37,6 @@ export function runPalette(opts: PaletteOptions): number {
     console.error(reportTable(d.measures, `isofig palette · roles from ${d.base}`));
     console.error("\n" + reportTable(materials, "materials (fixed)"));
   }
-  for (const mode of MODES) for (const f of d.measures[mode].failures) console.warn(`aviso (${mode}): ${f}`);
+  for (const mode of MODES) for (const f of d.measures[mode].failures) console.warn(`${PREFIXES[messageLang(opts.lang)].warning} (${mode}): ${f}`);
   return d.ok ? 0 : 1;
 }

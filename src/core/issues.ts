@@ -523,6 +523,26 @@ const CATALOG = {
     en: (v) => `--set ${v.id}: the spec has no such parameter.`,
     es: (v) => `--set ${v.id}: la spec no tiene ese parámetro.`,
   },
+  "set-value-invalid": {
+    severity: "error",
+    en: (v) => `--set ${v.id}: expected <param>=<number>.`,
+    es: (v) => `--set ${v.id}: se esperaba <param>=<número>.`,
+  },
+  "cli-unknown-command": {
+    severity: "error",
+    en: (v, q) => `Unknown command ${q(v.id)}. Commands: ${v.list}.`,
+    es: (v, q) => `Comando desconocido ${q(v.id)}. Comandos: ${v.list}.`,
+  },
+  "cli-unknown-format": {
+    severity: "error",
+    en: (v, q) => `Unknown --format ${q(v.id)} for ${v.kind}. Formats: ${v.list}.`,
+    es: (v, q) => `--format ${q(v.id)} desconocido para ${v.kind}. Formatos: ${v.list}.`,
+  },
+  "cli-missing-argument": {
+    severity: "error",
+    en: (v) => `isofig ${v.id} needs ${v.expected}.`,
+    es: (v) => `isofig ${v.id} necesita ${v.expected}.`,
+  },
 
   // Lo que un sitio cambia de una figura (applyOverrides y la prop overrides de <Figure>)
   "override-unknown-param": {

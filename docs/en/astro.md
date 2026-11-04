@@ -1,7 +1,7 @@
 # isofig with Astro
 
 The `Figure` component generates the SVG at build time. The page receives the figure's HTML, the theme CSS (once,
-inline) and a ~2 KB gzip bootstrap. The runtime (~3 KB gzip), the model, the orbit and the enlarge dialog download
+inline) and a ~1.3 KB gzip bootstrap. The runtime (~3.5 KB gzip), the model, the orbit and the enlarge dialog download
 later, when the reader gets close to the figure or uses it, and the runtime only works while the figure is on screen.
 
 ## 1. Install
@@ -132,9 +132,9 @@ reader could move or lose. Everything else downloads with `import()`:
 
 | What | When | Weight (gzip) |
 |---|---|---|
-| `<Figure>` bootstrap | With the page; only if it has a figure | ~2 KB |
-| Runtime and model | According to `load` | ~3 KB + the model |
-| Orbit (`isofig/orbit`) | When the pointer hovers, focuses or touches the figure | ~6.8 KB |
+| `<Figure>` bootstrap | With the page; only if it has a figure | ~1.3 KB |
+| Runtime and model | According to `load` | ~3.5 KB + the model |
+| Orbit (`isofig/orbit`) | When the pointer hovers, focuses or touches the figure | ~8.5 KB |
 | Enlarge (`isofig/zoom`) | When "Enlarge" is pressed | ~0.8 KB |
 
 - `load="visible"` (default): when it gets within 600 px of the screen, or when the pointer hovers, focuses or touches the figure.
@@ -160,8 +160,9 @@ runtime JSON stay those of the spec.
 ## 7. Turning and enlarging the figure
 
 `orbit` adds the turn buttons and the drag. The turn redraws the scene in the browser, so the spec travels in the page
-(as a `<script type="application/json">`): about 1.6 KB gzip per figure with orbit for the example token bucket
-(40 parts). The orbit code downloads only when the reader uses it.
+(as a `<script type="application/json">`): about 1.9 KB gzip per figure with orbit for the example token bucket
+(40 parts). A nested spec (`root`) travels already flattened, so the orbit does not download the tree flattener, the kit
+catalog or the validator. The orbit code downloads only when the reader uses it.
 
 The "Enlarge" chip appears on every mounted figure and opens the drawing in a large dialog, with labels that are
 readable on a phone. `<Figure>` enables `isofig/zoom` for you (it downloads only if someone presses the chip);
@@ -231,7 +232,7 @@ The card answers to its own width (container query) and reserves height for the 
 figure runs. What each variable controls, the ink on the accent and on states, and `--isofig-readout-lines`: [theme.md](theme.md).
 
 **Where the theme CSS goes.** `<Figure>` inlines it in a `<style>` tag at the start of the first figure of each page
-(about 2.8 KB gzip per page). All three options were tried in an Astro 7 project with `<ClientRouter />` (Chromium and
+(about 3.1 KB gzip per page). All three options were tried in an Astro 7 project with `<ClientRouter />` (Chromium and
 WebKit, with the stylesheet delayed 500 ms):
 
 | Way | Pages without a figure | After navigating with `ClientRouter` |

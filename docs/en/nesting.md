@@ -24,7 +24,7 @@ piece**, with no model and no functions: the "Take apart" control, the parts lis
 }
 ```
 
-`isofig build box.json` works as is: `renderFigure`, `drawScene`, `validateSpec` and the CLI accept `root`. Complete
+`isofig build box.json` works as is: `renderFigure`, `validateSpec` and the CLI accept `root` (`drawScene` and the orbit take it already flattened with `assemble`). Complete
 examples: [`examples/motor-v8/spec.json`](../../examples/motor-v8/spec.json) and
 [`examples/motor-cohete/spec.json`](../../examples/motor-cohete/spec.json).
 
@@ -76,8 +76,8 @@ wins over the subtree, and its `parts` and `children` are added to the subtree's
 
 The default catalog of `renderFigure`, `validateSpec` and the CLI is [`isofig/kit`](kit.md)'s: `"use": "bench",
 "with": { "size": [150, 250] }` works from JSON with no setup. A `pool` with `extent` also brings its `groups`, which
-are added to the figure's. Pass another catalog as `renderFigure(spec, { catalog })` or `assemble(spec, { catalog })`;
-the orbit (`enableOrbit`) takes the same one in `options.catalog`.
+are added to the figure's. Pass another catalog as `renderFigure(spec, { catalog })` or `assemble(spec, { catalog })`. The orbit
+(`enableOrbit`) takes the spec already assembled with `assemble(spec, { catalog })`: it never needs the catalog.
 
 ## The teardown
 

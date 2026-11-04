@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { specifiers } from "./imports.ts";
+import { reachable, specifiers } from "./imports.ts";
 import { renderFigure } from "../src/core/render.ts";
 import { checkBudget, measure } from "../src/node/index.ts";
 import tokenBucket from "../examples/token-bucket/spec.ts";
@@ -12,6 +12,15 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 test("el núcleo, el runtime y la órbita no importan nada de Node ni de paquetes (entran en un bundle de navegador)", () => {
   for (const entry of ["src/core/index.ts", "src/runtime/index.ts", "src/orbit/index.ts"]) {
     assert.deepEqual(specifiers(join(root, entry)), [], `${entry} importa algo que no es suyo`);
+  }
+});
+
+test("el giro redibuja en el navegador sin el aplanador del árbol, el catálogo, las tablas de colores ni la validación", () => {
+  const files = reachable(join(root, "src/orbit/index.ts")).map((f) => f.slice(root.length + 1));
+  const palette = files.filter((f) => f.startsWith("src/core/palette/")).sort();
+  assert.deepEqual(palette, ["src/core/palette/names.ts", "src/core/palette/paint.ts"]);
+  for (const heavy of ["tree.ts", "issues.ts", "validate.ts", "validate-tree.ts", "audit.ts", "render.ts", "check.ts", "kit/index.ts"]) {
+    assert.equal(files.some((f) => f.endsWith(`/${heavy}`)), false, `el giro arrastra ${heavy}`);
   }
 });
 
