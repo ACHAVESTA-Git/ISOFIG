@@ -207,6 +207,11 @@ const CATALOG = {
     en: (v, q) => `${q(v.id)} has a stage but no explode, and nothing below it moves: the stage does nothing.`,
     es: (v, q) => `${q(v.id)} tiene stage pero no explode, y nada debajo se mueve: el stage no hace nada.`,
   },
+  "rotate-radians": {
+    severity: "warning",
+    en: (v, q) => `${q(v.id)}: rotate is in degrees, and ${v.got} looks like radians.`,
+    es: (v, q) => `${q(v.id)}: rotate va en grados, y ${v.got} parece estar en radianes.`,
+  },
   "explode-on-root": {
     severity: "warning",
     en: () => "The root node has explode: it has nothing to move away from, so it is ignored.",
@@ -527,6 +532,11 @@ const CATALOG = {
     severity: "warning",
     en: (v, q) => `${v.count} of ${v.total} labels stay under ${v.min} px even in the enlarged view; the smallest, ${q(v.text)}, measures ${v.zoomed} px there (${v.mobile} px on a phone). Raise its size to ${v.need} or more.`,
     es: (v, q) => `${v.count} de ${v.total} rótulos quedan bajo ${v.min} px incluso en la vista ampliada; el menor, ${q(v.text)}, mide ${v.zoomed} px ahí (${v.mobile} px en el celular). Sube su size a ${v.need} o más.`,
+  },
+  "label-faces-away": {
+    severity: "warning",
+    en: (v, q) => `Label ${q(v.id)} faces away from the camera or edge-on: it reads mirrored or not at all.`,
+    es: (v, q) => `El rótulo ${q(v.id)} da la espalda a la cámara o está de canto: se lee al revés o no se ve.`,
   },
   "label-small-mobile": {
     severity: "info",

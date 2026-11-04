@@ -1,7 +1,7 @@
 import type { Camera } from "./camera.ts";
 import { makeIssue, type Issue } from "./issues.ts";
 import type { Item } from "./items.ts";
-import { dot } from "./math.ts";
+import { cross, dot } from "./math.ts";
 import { FACES } from "./scene.ts";
 import { textOf } from "./spec.ts";
 
@@ -61,18 +61,33 @@ export interface LabelOptions {
 
 const r1 = (v: number) => Math.round(v * 10) / 10;
 
+/** Un rótulo de un nodo girado que cae en una cara de espaldas a la cámara o casi de canto se leería al revés o no se vería. */
+function labelsAway(items: Item[], cam: Camera, lang: string): Issue[] {
+  return items.flatMap((item) =>
+    item.details.flatMap((d, k) =>
+      d.kind === "label" && d.axes && dot(cross(d.axes[1], d.axes[0]), cam.view) < 0.2
+        ? [makeIssue(lang, "label-faces-away", `parts[${item.detailSource[k]}]`, { id: d.id })]
+        : [],
+    ),
+  );
+}
+
 /**
  * El tamaño que cada rótulo tiene en pantalla: `size × escala de la cámara × (ancho en pantalla / ancho del viewBox)`,
  * por el acortamiento de su cara (un rótulo tumbado en el piso se ve más bajo que uno de pie). Coincide con lo medido
  * en el navegador. Avisa si alguno queda bajo el mínimo incluso ampliado; si solo queda bajo en el celular, resume.
  */
 export function auditLabels(items: Item[], cam: Camera, viewBoxWidth: number, lang = "en", options: LabelOptions = {}): Issue[] {
+  return [...labelsAway(items, cam, lang), ...labelSizes(items, cam, viewBoxWidth, lang, options)];
+}
+
+function labelSizes(items: Item[], cam: Camera, viewBoxWidth: number, lang: string, options: LabelOptions): Issue[] {
   const widths = { ...LABEL_WIDTHS, ...options.widths };
   const min = { ...LABEL_MIN_PX, ...options.min };
   const labels = items.flatMap((item) =>
     item.details.flatMap((d, k) => {
       if (d.kind !== "label") return [];
-      const [, down] = FACES[d.face ?? "top"];
+      const [, down] = d.axes ?? FACES[d.face ?? "top"];
       const size = d.size ?? 6;
       const px = size * cam.scale * Math.hypot(dot(cam.right, down), dot(cam.down, down));
       const label = { id: d.id, text: textOf(d.text, lang) || d.id, size, phone: (px * widths.phone) / viewBoxWidth, zoomed: (px * widths.zoomed) / viewBoxWidth, source: item.detailSource[k] };

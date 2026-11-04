@@ -37,9 +37,10 @@ soporte) en coordenadas de mundo.
 |---|---|
 | `id` | Obligatorio. Nombra sus piezas y su grupo: la pieza `losa` del nodo `tapa` se llama `tapa.losa`. Dos hermanos no pueden llamarse igual. |
 | `at` | Origen del nodo, relativo a su padre. Las coordenadas de `parts` y de los hijos son **locales** a él. |
+| `rotate` | `[x, y, z]` en grados: gira el nodo alrededor de su propio `at`, y arrastra a sus piezas y a sus hijos. Ver [Girar un nodo](#girar-un-nodo-rotate). |
 | `parts`, `children` | Sus piezas (las de siempre) y sus subconjuntos. |
 | `name`, `note` | Nombre de la pieza y una línea sobre qué hace: aparecen en la lista de piezas y en la lectura al elegirla. |
-| `explode` | Cuánto se separa al desarmar, **relativo a su padre**. Usa diagonales cuando cuentan algo (las culatas de un V8 salen a 45°). |
+| `explode` | Cuánto se separa al desarmar, en el espacio de su padre (como `at`: si el padre está girado, gira con él). Usa diagonales cuando cuentan algo (las culatas de un V8 salen a 45°). |
 | `stage`, `step` | En qué etapa sale y el texto de ese paso («culatas fuera»). |
 | `repeat` | `{ count, step, from? }`: copia el subárbol entero. |
 | `use`, `with` | Toma el subárbol de `defs` o del catálogo. |
@@ -79,6 +80,153 @@ El catálogo por defecto de `renderFigure`, `validateSpec` y el CLI es el de [`i
 `groups`, que se suman a los de la figura. Otro catálogo se pasa en `renderFigure(spec, { catalog })` o
 `assemble(spec, { catalog })`. El giro (`enableOrbit`) recibe la spec ya armada con `assemble(spec, { catalog })`: nunca
 necesita el catálogo.
+
+## Girar un nodo (`rotate`)
+
+Un nodo ya sabe dónde está (`at`). Con `rotate` sabe también hacia dónde mira: sus tres ejes, como el `Transform` de un
+GameObject de Unity. Sirve para lo que no cae en línea recta: un brazo inclinado, una puerta entreabierta, una rueda con
+caída, una costilla, una biela a 30°.
+
+```json
+{ "id": "brazo", "at": [10, 0, 140], "rotate": [0, 20, 0], "children": [ … ], "parts": [ … ] }
+```
+
+`rotate: [x, y, z]` va en **grados** (por defecto `[0, 0, 0]`) y gira el nodo **alrededor de su propio `at`**, que es su
+origen local y no se mueve: pon el `at` en la bisagra, el hombro o el codo, y escribe las piezas desde ahí.
+
+| | Unity (`Transform`) | isofig (nodo) |
+|---|---|---|
+| Posición local | `localPosition` | `at` |
+| Rotación local | `localEulerAngles`, en grados | `rotate`, en grados |
+| Hijos | siguen al padre | las piezas y los hijos son locales al nodo ya girado |
+| Eje vertical | `y` | **`z`** (`x` e `y` son el piso) |
+| Orden de los giros | `z`, luego `x`, luego `y` | `x`, luego `y`, luego `z` |
+| Mano del sistema | izquierda | derecha: un ángulo positivo gira en sentido antihorario, visto desde la punta del eje |
+| Escala | `localScale` | no hay: se escribe en `size`, `r` y `h` |
+
+No copies los ángulos de un Unity a isofig tal cual: cambian la vertical, el orden y la mano.
+
+### El orden de los ejes: x, luego y, luego z
+
+Son giros **extrínsecos**: cada uno es alrededor de un eje fijo del padre, y no del eje que el giro anterior dejó
+inclinado. En matrices, `R = Rz · Ry · Rx`: primero se aplica `Rx` a lo que escribiste.
+
+Para verlo, párate sobre un lápiz que está de pie (a lo largo de `z`) y escribe `rotate: [90, 0, 90]`:
+
+1. **`x` primero.** El lápiz se echa hacia `−y` y queda tumbado en el piso, apuntando a `−y`.
+2. **`y` después.** Con 0° no pasa nada.
+3. **`z` al final.** El piso entero gira 90° en sentido antihorario visto desde arriba, y el lápiz, que apuntaba a `−y`,
+   apunta ahora a `+x`.
+
+Si el orden fuera `z` primero, el lápiz seguiría apuntando a `−y`. Con un solo ángulo distinto de cero el orden no
+importa; con dos o más, sí. Si dudas, **anida**: un nodo por giro. El hijo gira sobre los ejes de su padre ya girado, así
+que se lee «a partir de lo que ya hay»: un padre con `"rotate": [0, 0, 30]` y un hijo con `"rotate": [20, 0, 0]` inclina
+20° alrededor del eje x que el padre ya giró 30°.
+
+Los signos, con la regla de la mano derecha: `z` positivo lleva `x` hacia `y`; `y` positivo inclina lo que está de pie
+hacia `+x`; `x` positivo lo inclina hacia `−y`.
+
+### Se compone hacia abajo
+
+- Las coordenadas de `parts`, el `at` y el `explode` de los hijos, y los ejes de `cylinder`, `cone` y `capsule` (también
+  el `axis` de un `prism`) son **locales al nodo ya girado**. Un hijo con `rotate: [0, -70, 0]` dentro de un padre con
+  `rotate: [0, 35, 0]` queda a −35° del vertical: los giros se suman.
+- `explode` es un desplazamiento **en el espacio del padre**, igual que `at`. Si el padre está girado, la pieza sale
+  siguiendo su eje y no el del mundo: el antebrazo se separa a lo largo del brazo inclinado. El `rotate` del propio nodo
+  no cambia su `explode`. El despiece sigue siendo una traslación: en el navegador cada nodo se mueve por la suma de los
+  `explode` de sus ancestros ya llevados al mundo.
+- `repeat` copia el subárbol con su `rotate`; el `step` está en el espacio del padre.
+- La raíz también se puede girar (gira todo alrededor de su `at`); no se puede despiezar, así que `explode` en la raíz se
+  sigue ignorando.
+
+### Una puerta entreabierta
+
+La hoja gira 35° en `z` alrededor de la bisagra, que es el `at` del nodo (la cara interior de la jamba izquierda); su
+panel se escribe desde la bisagra, hacia `+x`.
+
+```json
+{
+  "id": "puerta",
+  "title": { "es": "Puerta entreabierta", "en": "Ajar door" },
+  "root": {
+    "id": "marco",
+    "parts": [
+      { "id": "jamba-i", "kind": "box", "at": [0, 0, 0], "size": [6, 8, 76] },
+      { "id": "jamba-d", "kind": "box", "at": [76, 0, 0], "size": [6, 8, 76] },
+      { "id": "dintel", "kind": "box", "at": [0, 0, 76], "size": [82, 8, 6] }
+    ],
+    "children": [{
+      "id": "hoja", "at": [6, 2, 0], "rotate": [0, 0, 35], "mount": ["jamba-i"],
+      "parts": [
+        { "id": "panel", "kind": "box", "at": [0, 0, 0], "size": [70, 4, 74], "radius": 1, "tone": "hi" },
+        { "id": "pomo", "kind": "cylinder", "at": [60, 4, 36], "r": 3, "h": 5, "axis": "y", "tone": "lit" }
+      ]
+    }]
+  }
+}
+```
+
+El pomo sale hacia `+y` del panel (`axis: "y"` es local) y, girado, apunta hacia donde mira la hoja.
+
+### Un brazo inclinado
+
+Dos tramos, cada uno un nodo. El hombro inclina 35° hacia `+x`; el codo, hijo del hombro y colgado de su punta
+(`at: [0, 0, 54]`), gira otros −70° en `y`, así que el antebrazo queda a −35° del vertical.
+
+```json
+{
+  "id": "brazo",
+  "title": { "es": "Brazo inclinado", "en": "Tilted arm" },
+  "root": {
+    "id": "banco",
+    "parts": [{ "id": "base", "kind": "box", "at": [0, 0, 0], "size": [50, 40, 10], "radius": 4, "tone": "lo" }],
+    "children": [{
+      "id": "hombro", "at": [25, 20, 10], "rotate": [0, 35, 0], "mount": ["base"],
+      "parts": [
+        { "id": "eje", "kind": "sphere", "at": [0, 0, 0], "r": 6, "mount": ["hombro.hueso"] },
+        { "id": "hueso", "kind": "capsule", "at": [0, 0, 4], "r": 4, "h": 46, "tone": "hi" }
+      ],
+      "children": [{
+        "id": "codo", "at": [0, 0, 54], "rotate": [0, -70, 0], "mount": ["hombro.hueso"],
+        "parts": [
+          { "id": "bola", "kind": "sphere", "at": [0, 0, 0], "r": 5, "mount": ["codo.hueso"] },
+          { "id": "hueso", "kind": "capsule", "at": [0, 0, 4], "r": 3.2, "h": 34, "tone": "hi" },
+          { "id": "pinza", "kind": "sphere", "at": [0, 0, 44], "r": 5, "tone": "lit", "mount": ["codo.hueso"] }
+        ]
+      }]
+    }]
+  }
+}
+```
+
+`examples/sistema-oseo/spec.json` lo usa en el esqueleto: los brazos se separan 7° del tronco desde el hombro y los pies
+abren 10° desde el tobillo; al desarmar, el antebrazo y la mano salen a lo largo del brazo inclinado.
+
+### Qué cambia al dibujar
+
+- **Cilindros, conos y cápsulas** giran su centro y su eje; una **esfera**, su centro.
+- **Cajas y prismas** se dibujan girados de verdad (con sus esquinas redondeadas y su bisel): el ensamblado les pone una
+  base interna, `frame`, que no se escribe a mano. Su caja envolvente, para el orden de pintado y la auditoría, es la de
+  sus 8 vértices girados; el encuadre de la cámara y el halo de `shadow` siguen su huella real.
+- **`dots`, `line` y `ticks`** giran sus puntos y sus direcciones.
+- **Un `label`** sigue pegado a su cara: se lee a lo largo de la cara girada, con la misma inclinación. Si la cara girada
+  queda de espaldas a la cámara de la figura, o casi de canto, el texto se leería al revés o no se vería, y `check` lo
+  dice (`label-faces-away`).
+- **Desde cualquier cámara.** El giro de la figura (`isofig/orbit`) y `drawScene` dibujan lo girado con su propio orden de
+  pintado desde cualquier azimut; nada de esto necesita configurarse.
+- **Sin `rotate`, nada cambia**: el SVG sale idéntico, byte a byte, al de antes (también con `[0, 0, 0]` o con vueltas
+  enteras).
+
+### Límites
+
+- Un tramo girado es una forma distinta para cada inclinación: las piezas que antes eran iguales y compartían un dibujo
+  (los dedos de las dos manos, espejados) ya no lo comparten, y la figura pesa un poco más (el esqueleto, +1,4 KB gzip).
+- `groups.*.extent`, `spin.center` y `tracks.path` están en coordenadas del **mundo**, no se giran con el nodo; los que
+  genera el despiece sí van ya en el mundo. Una pieza del catálogo con sus propios `groups` (un `pool` con `extent`)
+  conviene dejarla sin girar.
+- Cada giro es un nodo con tres ángulos: no hay animación del giro (`rotate` es estático; lo que se anima son los
+  `bind`, en traslaciones y giros de plano de un grupo).
+- Los ángulos van en grados. `isofig check` avisa (`rotate-radians`) cuando `rotate` parece estar en radianes.
 
 ## El despiece
 

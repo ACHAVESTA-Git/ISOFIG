@@ -98,8 +98,8 @@ JSON with names and notes in English and Spanish.
 </p>
 
 <p align="center"><sub><code>examples/muscle-car/spec.json</code>: a Camaro-style muscle car, a schematic of our own with no logos.
-13 named parts and 9 steps, <b>27.4 KB gzip</b>. Hood, doors and glass come off first, then the interior and the V8, and
-the wheels with their brakes last, leaving the bare chassis. Pick "V8 engine" and the camera goes in.</sub></p>
+13 named parts and 9 steps, <b>27.4 KB gzip</b>. Hood, doors and glass come off first, then the interior, the wheels and
+the drivetrain, and the V8 leaves out the front last, leaving the bare chassis. Pick "V8 engine" and the camera goes in.</sub></p>
 
 <p align="center">
   <img src="docs/assets/sistema-oseo-luxe-dark.png" width="32%" alt="A human skeleton in anatomical position on a display stand">

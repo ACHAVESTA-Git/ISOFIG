@@ -6,7 +6,8 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { assemble } from "../src/core/tree.ts";
 import { renderFigure } from "../src/core/render.ts";
-import { buildItems } from "../src/core/items.ts";
+import { buildItems, meshOf } from "../src/core/items.ts";
+import { hullOf } from "../src/core/order.ts";
 import { drawScene, poseOf } from "../src/core/scene.ts";
 import { makeCamera, project } from "../src/core/camera.ts";
 import type { FigureSpec, Text } from "../src/core/spec.ts";
@@ -35,13 +36,13 @@ const PIEZAS = [
 const PASOS = [
   ["capó y maletera arriba", "hood and trunk lid up"],
   ["puertas fuera", "doors out"],
-  ["vidrios fuera", "glass off"],
+  ["vidrios arriba", "glass up"],
   ["carrocería arriba", "body up"],
   ["asientos y tablero arriba", "seats and dashboard up"],
-  ["motor y radiador arriba", "engine and radiator up"],
+  ["ruedas y frenos fuera", "wheels and brakes out"],
   ["caja y cardán arriba", "gearbox and driveshaft up"],
   ["diferencial arriba y escape abajo", "differential up, exhaust down"],
-  ["ruedas y frenos fuera", "wheels and brakes out"],
+  ["motor y radiador salen por delante", "engine and radiator out the front"],
 ];
 
 const textIn = (t: Text | undefined, lang: string): string => (typeof t === "string" ? t : ((t as Record<string, string> | undefined)?.[lang] ?? ""));
@@ -94,7 +95,7 @@ test("lo que se repite comparte nombre: cuatro ruedas, cuatro frenos, los dos ca
   assert.equal(new Set(named("Frenos", /^freno-(izq|der)-[01]$/)).size, 4);
   assert.deepEqual(named("Capó y maletera", /^carroceria\.(capo|maletera)$/).sort(), ["carroceria.capo", "carroceria.maletera"]);
   assert.equal(new Set(named("Vidrios", /vidrio$|parabrisas$|luneta$/)).size, 4);
-  assert.equal(new Set(named("Puertas", /^carroceria\.puerta-(izq|der)$/)).size, 2);
+  assert.equal(new Set(named("Puertas", /^puerta-(izq|der)$/)).size, 2);
 });
 
 test("el despiece son nueve pasos, de fuera hacia dentro, y cada uno se narra", () => {
@@ -106,14 +107,15 @@ test("el despiece son nueve pasos, de fuera hacia dentro, y cada uno se narra", 
     assert.equal(textIn(texts[0], lang), lang === "es" ? "Armado" : "Assembled");
     PASOS.forEach((p, i) => assert.equal(textIn(texts[i + 1], lang), (lang === "es" ? `Paso ${i + 1} de ${PASOS.length}: ` : `Step ${i + 1} of ${PASOS.length}: `) + p[k]));
   }
-  // Primero el capó, la maletera y las puertas; al final, las ruedas y los frenos; el chasis no se mueve.
+  // Primero el capó, la maletera y las puertas; al final, el motor sale por delante; el chasis no se mueve.
   const stageOf = (group: string) => flat.bind!.filter((b) => b.group === group && b.param === "explode" && b.win).map((b) => b.win![1]).sort((a, b) => a - b);
   assert.deepEqual(stageOf("carroceria.capo"), [1, 4]);
-  assert.deepEqual(stageOf("carroceria.puerta-izq"), [2, 4]);
+  assert.deepEqual(stageOf("puerta-izq"), [2]);
+  assert.deepEqual(stageOf("parabrisas"), [3]);
   assert.deepEqual(stageOf("carroceria"), [4]);
-  assert.deepEqual(stageOf("motor"), [6]);
-  assert.deepEqual(stageOf("rueda-der-0"), [9]);
-  assert.deepEqual(stageOf("freno-izq-1"), [9]);
+  assert.deepEqual(stageOf("rueda-der-0"), [6]);
+  assert.deepEqual(stageOf("freno-izq-1"), [6]);
+  assert.deepEqual(stageOf("motor"), [9]);
   assert.deepEqual(stageOf("chasis"), []);
 });
 
@@ -171,4 +173,57 @@ test("el orden de pintado no tiene ciclos ni armado ni desarmado, ni girando has
   for (const azimuth of [base - 40, base - 28, base - 14, base + 14, base + 28, base + 40]) {
     assert.deepEqual(drawScene(flat, "es", { azimuth }).cycles, [], `azimut ${azimuth}`);
   }
+});
+
+// Las siluetas de cada grupo en pantalla, en la pose del despiece completo: es la imagen que vende, y tiene que leerse
+// como una vista explotada de taller (cada grupo con aire alrededor, sin tapar a otro).
+const FAMILIAS: [string, RegExp][] = [
+  ["Carrocería", /^carroceria\.(?!capo|maletera)/], ["Capó", /^carroceria\.capo\./], ["Maletera", /^carroceria\.maletera\./],
+  ["Puertas", /^puerta-/], ["Vidrios", /^(parabrisas|luneta)\./], ["Interior", /^interior\./], ["Motor", /^motor\./],
+  ["Caja", /^caja\./], ["Cardán", /^cardan\./], ["Diferencial", /^diferencial\./], ["Escape", /^escape\./],
+  ["Ruedas", /^rueda-/], ["Frenos", /^freno-/], ["Chasis", /^chasis\./],
+];
+
+test("en el despiece completo ningún grupo tapa a otro: la carrocería y el motor quedan despejados", () => {
+  const spec = load();
+  const flat = assemble(spec);
+  const { items } = buildItems(flat.parts);
+  const W = spec.width!, H = spec.height!;
+  const cam = drawScene(flat, "es").cam;
+  const pose = poseOf(flat, "explode", flat.params!.find((p) => p.id === "explode")!.max as number);
+  const CW = 4;
+  const gw = Math.ceil(W / CW), gh = Math.ceil(H / CW);
+  const masks = FAMILIAS.map(() => new Uint8Array(gw * gh));
+  for (const it of items) {
+    const f = FAMILIAS.findIndex(([, re]) => re.test(it.id));
+    assert.ok(f >= 0, `${it.id} sin familia`);
+    const d = [0, 1, 2].map((i) => (pose.get(it.group ?? "")?.[i] ?? 0) + (pose.get(it.outer ?? "")?.[i] ?? 0));
+    const poly = hullOf(meshOf(it.solid as Parameters<typeof meshOf>[0], cam).v.map((p) => project(cam, [p[0] + d[0], p[1] + d[1], p[2] + d[2]])));
+    for (let gy = 0; gy < gh; gy++) {
+      const y = (gy + 0.5) * CW;
+      const xs: number[] = [];
+      poly.forEach((a, i) => {
+        const b = poly[(i + 1) % poly.length];
+        if ((a[1] <= y && b[1] > y) || (b[1] <= y && a[1] > y)) xs.push(a[0] + ((y - a[1]) / (b[1] - a[1])) * (b[0] - a[0]));
+      });
+      xs.sort((a, b) => a - b);
+      for (let k = 0; k + 1 < xs.length; k += 2)
+        for (let gx = Math.max(0, Math.floor(xs[k] / CW)); gx <= Math.min(gw - 1, Math.floor(xs[k + 1] / CW)); gx++) masks[f][gy * gw + gx] = 1;
+    }
+  }
+  const area = masks.map((m) => m.reduce((a, b) => a + b, 0));
+  const overlap = (a: string, b: string) => {
+    const i = FAMILIAS.findIndex(([n]) => n === a), j = FAMILIAS.findIndex(([n]) => n === b);
+    let o = 0;
+    for (let k = 0; k < masks[i].length; k++) o += masks[i][k] & masks[j][k];
+    return o / Math.min(area[i], area[j]);
+  };
+  const names = FAMILIAS.map(([n]) => n);
+  for (const a of names) for (const b of names) {
+    if (a < b) assert.ok(overlap(a, b) <= 0.4, `${a} tapa a ${b}: ${(overlap(a, b) * 100).toFixed(0)} %`);
+  }
+  // La carrocería sube por encima del interior y del chasis; el motor sale entero por delante.
+  for (const b of names.filter((n) => n !== "Carrocería")) assert.ok(overlap("Carrocería", b) <= 0.06, `la carrocería tapa a ${b}: ${(overlap("Carrocería", b) * 100).toFixed(0)} %`);
+  for (const b of ["Chasis", "Interior", "Caja", "Cardán", "Diferencial", "Escape", "Frenos"]) assert.ok(overlap("Motor", b) <= 0.06, `el motor se encima con ${b}`);
+  assert.ok(overlap("Capó", "Maletera") === 0 && overlap("Interior", "Chasis") <= 0.05);
 });

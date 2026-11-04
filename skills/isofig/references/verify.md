@@ -24,6 +24,8 @@ npx isofig check figure.ts --lang es --strict                       # messages (
 | Code | Means | Do |
 |---|---|---|
 | `label-unreadable` | A label under 9 px even enlarged | Raise `size` to the one reported, shorten, or use a `labelPlate` |
+| `label-faces-away` | A label on a turned face (`rotate`) that looks away from the camera or edge-on: it would read mirrored | Put it on a face that faces the camera, or turn the node differently |
+| `rotate-radians` | A node `rotate` that looks like radians (`[0, 1.5708, 0]`) | Angles are degrees: write `[0, 90, 0]` |
 | `label-small-mobile` (note) | Small on a phone, fine enlarged | Nothing: that is what "Enlarge" is for |
 | `readout-long` | Readout past 70 characters | Shorten it; else `--isofig-readout-lines` |
 | `preset-same-view` | The preset changes nothing the reader sees | Change a value that moves something, add `press`, or delete it |
