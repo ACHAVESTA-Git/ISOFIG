@@ -309,6 +309,7 @@
   cursor: pointer;
 }
 .isofig-chip:focus-visible,
+.isofig-orbitable:focus-visible,
 .isofig-param input:focus-visible {
   outline: 2px solid var(--isofig-focus);
   outline-offset: 2px;

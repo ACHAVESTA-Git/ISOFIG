@@ -1,7 +1,7 @@
-import { depthOf, fitCamera, makeCamera, project, screenBasis, type Camera, type CameraOptions } from "./camera.ts";
-import { add, centerOf, dot, mul, type Box3, type Vec3 } from "./math.ts";
-import { buildItems, endsOf, isRound, linesOf, meshOf, type Item } from "./items.ts";
-import { axisOf } from "./mesh.ts";
+import { depthOf, facesViewer, fitCamera, makeCamera, project, screenBasis, type Camera, type CameraOptions } from "./camera.ts";
+import { add, centerOf, cross, dot, mul, sub, type Box3, type Vec3 } from "./math.ts";
+import { buildItems, endsOf, isRound, linesOf, meshOf, type Detail, type Item } from "./items.ts";
+import { axisOf, type Mesh } from "./mesh.ts";
 import { hullOf, paintOrder, shapesApart, type Ordered, type Prior, type Shape } from "./order.ts";
 import { drawMesh, drawRound, SHADES, stadium } from "./shade.ts";
 import { customPaints, paintAttr } from "./palette/paint.ts";
@@ -42,11 +42,40 @@ const INLINE: Record<string, string> = {
   tx: "fill:var(--fx);font-family:var(--isofig-mono);font-weight:600",
 };
 
-function itemBody(c: Camera, item: Item, lang: string, inline = false): string {
+/**
+ * Lo grabado en una cara que ya no mira al lector no se ve a través de la pieza ni sale en espejo. Un punto está en la
+ * cara de la malla que lo contiene (a menos de medio punto de su plano); si no cae en ninguna, o la pieza es redonda, se dibuja.
+ */
+function engraved(c: Camera, mesh: Mesh | undefined, details: Detail[]): Detail[] {
+  const front = (p: Vec3): boolean => {
+    let back = false;
+    for (const f of mesh?.faces ?? []) {
+      if (Math.abs(dot(f.n, sub(p, mesh!.v[f.idx[0]]))) >= 0.5) continue;
+      if (facesViewer(c, f.n)) return true;
+      back = true;
+    }
+    return !back;
+  };
+  return details.flatMap((d): Detail[] => {
+    if (d.kind === "label") {
+      const [along, down] = FACES[d.face ?? "top"];
+      return facesViewer(c, cross(down, along)) ? [d] : [];
+    }
+    if (d.kind === "dots") {
+      const points = d.points.filter(front);
+      return points.length ? [{ ...d, points }] : [];
+    }
+    return (d.kind === "ticks" ? front(d.from) : d.points.some(front)) ? [d] : [];
+  });
+}
+
+function itemBody(c: Camera, item: Item, lang: string, inline = false, draft?: boolean): string {
   const cls = (k: string) => (inline ? `style="${INLINE[k]}"` : `class="${k}"`);
   const solid = item.solid;
-  const drawn = isRound(solid) ? drawRound(c, endsOf(solid), solid.r) : drawMesh(c, meshOf(solid, c));
-  const lines = linesOf(item.details);
+  const mesh = isRound(solid) ? undefined : meshOf(solid, c);
+  const drawn = isRound(solid) ? drawRound(c, endsOf(solid), solid.r, draft) : drawMesh(c, mesh!);
+  const shown = item.details.length ? engraved(c, mesh, item.details) : item.details;
+  const lines = linesOf(shown);
   const proj = (pts: Vec3[]) => pts.map((p) => project(c, p));
   let body = "";
   for (const s of SHADES) {
@@ -57,7 +86,7 @@ function itemBody(c: Camera, item: Item, lang: string, inline = false): string {
   if (lines.fine.length) body += `<path ${cls("l")} d="${pathOf(lines.fine.map(proj), false)}"/>`;
   if (lines.bold.length) body += `<path ${cls("lb")} d="${pathOf(lines.bold.map(proj), false)}"/>`;
   if (lines.dots.length) body += `<path ${cls("d")} d="${dotsOf(proj(lines.dots))}"/>`;
-  for (const d of item.details) if (d.kind === "label") body += labelSvg(c, d, lang, cls("tx"));
+  for (const d of shown) if (d.kind === "label") body += labelSvg(c, d, lang, cls("tx"));
   return body;
 }
 
@@ -67,13 +96,13 @@ const r2 = (v: number) => Math.round(v * 2) / 2;
  * Las piezas idénticas (un depósito de fichas, una fila de carritos) se dibujan una vez en <defs> y se repiten con
  * <use>: cada una se calcula relativa a su propia esquina, así dos piezas iguales dan el mismo texto.
  */
-function artOf(id: string, c: Camera, items: Item[], order: number[], lang: string, custom: Set<string>): { defs: string; art: string } {
+function artOf(id: string, c: Camera, items: Item[], order: number[], lang: string, custom: Set<string>, draft?: boolean): { defs: string; art: string } {
   const placed = order.map((k) => {
     const item = items[k];
     const [ax, ay] = project(c, item.box.min);
     const tone = TONES.includes(item.tone) ? item.tone : "mid";
     const local = { ...c, ox: c.ox - ax, oy: c.oy - ay };
-    return { item, ax: r2(ax), ay: r2(ay), tone, key: itemBody(local, item, lang, true), local };
+    return { item, ax: r2(ax), ay: r2(ay), tone, key: draft ? "" : itemBody(local, item, lang, true), local };
   });
   const count = new Map<string, number>();
   for (const p of placed) count.set(p.key, (count.get(p.key) ?? 0) + 1);
@@ -87,7 +116,7 @@ function artOf(id: string, c: Camera, items: Item[], order: number[], lang: stri
     // Una pieza que anima un modelo y además se despieza va dentro de un <g> con el grupo del despiece.
     const [open, close] = p.item.outer ? [`<g data-g="${esc(p.item.outer)}">`, "</g>"] : ["", ""];
     if ((count.get(p.key) ?? 0) < 2 || p.key.length < 200) {
-      art += `${open}<g class="${p.tone}"${paint}${g}${hidden}>${itemBody(c, p.item, lang)}</g>${close}`;
+      art += `${open}<g class="${p.tone}"${paint}${g}${hidden}>${itemBody(c, p.item, lang, false, draft)}</g>${close}`;
       continue;
     }
     let ref = ids.get(p.key);
@@ -207,8 +236,12 @@ export function movesBetween(from: number[], to: number[]): number[] {
 
 
 export interface View extends CameraOptions {
-  /** Escala fija: al girar, la figura no cambia de tamaño. */
+  /** Escala máxima: al girar, la figura no crece más que en la vista inicial, pero se achica lo justo para caber. */
   scale?: number;
+  /** Valor del parámetro de `reorder`: solo se calcula el orden de pintado de la pose que se ve (las demás salen sin movidas). */
+  pose?: number;
+  /** Dibujo de borrador para el arrastre: sin piezas idénticas compartidas y con menos capas en las piezas redondas. */
+  draft?: boolean;
   /** Prefijo de los ids de `<defs>`; por defecto, el id de la spec (ver `RenderOptions.instance`). */
   instance?: string;
 }
@@ -290,7 +323,10 @@ export function drawScene(spec: FlatSpec, lang: string, view: View = {}): Scene 
   let reorder: Scene["reorder"];
   if (spec.reorder) {
     const { param, at } = spec.reorder;
-    const poses = at.map((value) => {
+    // Misma regla que el runtime: la última pose cuyo valor ya se alcanzó.
+    const shown = at.reduce((k, v, i) => (view.pose! >= v - 0.05 ? i : k), -1);
+    const poses = at.map((value, i) => {
+      if (view.pose !== undefined && i !== shown) return [value];
       const pose = poseOf(spec, param, value);
       const moves = items.map((it) => add(pose.get(it.group ?? "") ?? [0, 0, 0], pose.get(it.outer ?? "") ?? [0, 0, 0]));
       const boxes = items.map((it, k): Box3 => ({ min: add(it.box.min, moves[k]), max: add(it.box.max, moves[k]) }));
@@ -301,7 +337,7 @@ export function drawScene(spec: FlatSpec, lang: string, view: View = {}): Scene 
     });
     reorder = { param, poses };
   }
-  const { defs, art } = artOf(view.instance ?? spec.id, cam, items, order, lang, customPaints(spec));
+  const { defs, art } = artOf(view.instance ?? spec.id, cam, items, order, lang, customPaints(spec), view.draft);
   const spins: Record<string, number[]> = {};
   for (const [g, def] of Object.entries(spec.groups ?? {})) {
     if (!def.spin) continue;
