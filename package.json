@@ -34,6 +34,10 @@
       "types": "./dist/orbit/index.d.ts",
       "default": "./dist/orbit/index.js"
     },
+    "./kit": {
+      "types": "./dist/kit/index.d.ts",
+      "default": "./dist/kit/index.js"
+    },
     "./node": {
       "types": "./dist/node/index.d.ts",
       "default": "./dist/node/index.js"

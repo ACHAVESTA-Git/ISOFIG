@@ -17,6 +17,7 @@
     "src/cli",
     "src/orbit",
     "src/node",
+    "src/kit",
     "examples",
     "test"
   ]
