@@ -1,4 +1,4 @@
-import type { Axis } from "./mesh.ts";
+import type { Axis, Frame } from "./mesh.ts";
 import type { Vec2, Vec3 } from "./math.ts";
 import type { MapSpec } from "./map/types.ts";
 
@@ -47,6 +47,8 @@ export interface BoxPart extends PartBase {
   size: Vec3;
   radius?: number;
   bevel?: number;
+  /** Lo pone el ensamblado en una caja de un nodo con `rotate`: su base (u, v, w) en el mundo, con `o` en `at`. No se escribe a mano. */
+  frame?: Frame;
 }
 
 export interface CylinderPart extends PartBase {
@@ -101,6 +103,8 @@ export interface PrismPart extends PartBase {
   /** Eje de la extrusión: `y` o `x` para el perfil de un bloque en V o de una viga. */
   axis?: Axis;
   bevel?: number;
+  /** Lo pone el ensamblado en un prisma de un nodo con `rotate`: la base de su extrusión en el mundo. No se escribe a mano. */
+  frame?: Frame;
 }
 
 /** Detalles que se dibujan sobre otra pieza (`on`) y comparten su lugar en el orden de pintado. */
@@ -138,6 +142,8 @@ export interface LabelPart extends Omit<PartBase, "group"> {
   face?: "top" | "x" | "y";
   /** Dónde cae `at` en el texto: al inicio (por defecto), al centro o al final. */
   align?: "start" | "middle" | "end";
+  /** Lo pone el ensamblado en un rótulo de un nodo con `rotate`: hacia dónde se lee y hacia dónde cae «abajo», en el mundo. */
+  axes?: [Vec3, Vec3];
 }
 
 export type Part = BoxPart | CylinderPart | ConePart | PrismPart | SpherePart | CapsulePart | TicksPart | DotsPart | LinePart | LabelPart;
@@ -216,7 +222,12 @@ export interface Node {
   /** Texto del paso en que sale al desarmar («culatas fuera»); por defecto, su nombre. */
   step?: Text;
   at?: Vec3;
-  /** Desplazamiento al desarmar, relativo a su padre. */
+  /**
+   * Giro en grados `[x, y, z]` alrededor de su propio `at`, sobre los ejes de su padre y en ese orden (primero x, luego y y
+   * al final z: R = Rz·Ry·Rx). `z` es la vertical. Las piezas y los hijos son locales al nodo ya girado.
+   */
+  rotate?: Vec3;
+  /** Desplazamiento al desarmar, en el espacio de su padre (como `at`). */
   explode?: Vec3;
   /** Orden del despiece: los nodos con el mismo número salen juntos. Por defecto, de fuera hacia dentro. */
   stage?: number;

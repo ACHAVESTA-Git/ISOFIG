@@ -35,7 +35,8 @@ export function frameOf(o: Vec3, axis: Axis | Vec3 = "z"): Frame {
 /** Dirección unitaria de un eje con nombre o vector. */
 export const axisOf = (axis: Axis | Vec3 = "z"): Vec3 => frameOf([0, 0, 0], axis).w;
 
-const at = (f: Frame, s: number, t: number, h: number): Vec3 =>
+/** El punto (s, t, h) de la base `frame`: `s` sobre u, `t` sobre v y `h` sobre w. */
+export const framePoint = (f: Frame, s: number, t: number, h: number): Vec3 =>
   add(add(add(f.o, mul(f.u, s)), mul(f.v, t)), mul(f.w, h));
 
 export function roundedRect(w: number, d: number, r: number, steps: number): Vec2[] {
@@ -104,9 +105,9 @@ export function prism(ring: Vec2[], frame: Frame, h: number, bevel = 0, top?: Ve
   const v: Vec3[] = [];
   const faces: Face[] = [];
   const crownRing = top ?? (b > 0 ? inset(ring, b) : ring);
-  for (const [s, t] of ring) v.push(at(frame, s, t, 0));
-  for (const [s, t] of top ?? ring) v.push(at(frame, s, t, h - b));
-  if (b > 0) for (const [s, t] of crownRing) v.push(at(frame, s, t, h));
+  for (const [s, t] of ring) v.push(framePoint(frame, s, t, 0));
+  for (const [s, t] of top ?? ring) v.push(framePoint(frame, s, t, h - b));
+  if (b > 0) for (const [s, t] of crownRing) v.push(framePoint(frame, s, t, h));
   const crown = b > 0 ? 2 * n : n;
 
   if (areaOf(ring) > 1e-9) faces.push({ idx: [...Array(n).keys()].reverse(), n: mul(frame.w, -1), kind: "bottom" });

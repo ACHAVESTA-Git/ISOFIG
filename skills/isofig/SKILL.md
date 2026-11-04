@@ -58,7 +58,7 @@ Start with the simplest that tells the story: `bind` before a model, an assembly
 |---|---|---|---|
 | A mechanism that evolves with numbers (a queue fills, a breaker trips) | **Machine with a model** | `parts`, `groups`, `params`, `model` (a file with `init`/`step`/`view`) | `references/machines.md`, `references/models.md` |
 | A machine that only answers to its controls, or a loop that circulates | **Declarative machine** | `bind` (a parameter moves a group), `tracks` (a group travels a polyline in a loop, with `hide` for the stretch inside an object) | `references/models.md`, `references/maps.md` |
-| What a thing is made of, or how it is built (an engine, a car, a skeleton) | **Nested assembly with teardown** | `root`, `defs`, `explode`, `stage` (plain JSON, no model) | `references/assemblies.md` |
+| What a thing is made of, or how it is built (an engine, a car, a skeleton) | **Nested assembly with teardown** | `root`, `defs`, `explode`, `stage`, `rotate` (plain JSON, no model) | `references/assemblies.md` |
 | Who talks to whom, how a flow crosses a system, classes | **Map** | `map`: `nodes` (17 objects, containers), `links` (UML kinds), `flows`, `layout`; compiled to a `root` and `tracks` | `references/maps.md` |
 
 The formats mix: an assembly can carry a model (a wheel the model spins) and a machine can sit on a `bind`. A figure

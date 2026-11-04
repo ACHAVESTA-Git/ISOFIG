@@ -31,9 +31,10 @@ parts, 7 steps, an anatomical note on each). Open the one closest to your subjec
 |---|---|
 | `id` | Required and unique among siblings; it names the node's parts (`lid.slab`) and its group |
 | `at` | The node's origin relative to its parent: the coordinates of its `parts` and children are **local** |
+| `rotate` | `[x, y, z]` in **degrees**, around the node's own `at`: tilts or swings it with its parts and children (see "Tilting and hinging") |
 | `parts`, `children` | Its own parts and its sub-assemblies |
 | `name`, `note` | What it is and one line on what it does: they show in the parts list and the readout |
-| `explode` | How far it moves when taken apart, **relative to its parent** (diagonals when they say something) |
+| `explode` | How far it moves when taken apart, **in its parent's space** like `at` (diagonals when they say something) |
 | `stage`, `step` | The stage it leaves in, and that step's text |
 | `repeat` | `{ count, step, from? }`: copies the whole subtree; `{i}` in texts and ids |
 | `use`, `with` | Takes a subtree from `defs` (with `{key}` templates) or a piece from the kit |
@@ -43,6 +44,28 @@ The top-level `parts`, if present, are the fixed scenery in world coordinates (a
 `on` and `mount` look in the node first and then upwards; to reach another branch write the path from a common ancestor
 (`"bloque.bancada-izq.fundicion"`).
 
+## Tilting and hinging with `rotate`
+
+`"rotate": [0, 20, 0]` turns a node around its own `at`, like the Unity `Transform`: a tilted arm, a door ajar, a wheel
+with camber, a rib, a rod at 30°. Rules that matter when you write one:
+
+- **`z` is vertical** (Unity's is `y`): `z` swings something on the floor, `y` and `x` tilt what stands up. Angles are
+  **degrees**, positive counterclockwise seen from the tip of the axis (`z`: `x` toward `y`; `y`: up toward `+x`; `x`:
+  up toward `−y`). `rotate-radians` warns on `[0, 1.5708, 0]`.
+- **Order:** `x`, then `y`, then `z`, always around the parent's fixed axes (`R = Rz·Ry·Rx`). With two or more non-zero
+  angles, prefer **one nested node per turn**: the child turns around its already-turned parent and reads "from what is
+  there", so a shoulder at `[0, 35, 0]` with an elbow child at `[0, -70, 0]` leaves the forearm at −35°.
+- **Put the `at` on the hinge** (door edge, shoulder, ankle) and write the parts from there, so the turn does not
+  detach the piece. A node turns around its `at`, never around its center.
+- Everything inside is **local to the turned node**: `parts`, children's `at` and `explode`, and the axes of
+  `cylinder`, `cone`, `capsule` and `prism`. A child's `explode` is in the parent's turned space, so the forearm of a
+  tilted arm leaves along the arm.
+- Boxes and prisms are drawn truly turned; labels follow their face (check them in the capture: a label on a face turned
+  away from the camera warns with `label-faces-away`). Mirrored tilts are different drawings, so they weigh a little more
+  than copies of one shape. No `rotate` means a byte-identical figure.
+- Example: `examples/sistema-oseo/spec.json` hangs each arm from its shoulder at 7° and toes the feet out 10° from the
+  ankle. Not animated, and `groups.*.extent`, `spin.center` and `tracks.path` stay in world coordinates.
+
 ## Writing a good assembly
 
 1. **Name the real sub-assemblies.** The teardown follows your tree: banks, heads, valves. If the tree has no meaning
@@ -50,7 +73,7 @@ The top-level `parts`, if present, are the fixed scenery in world coordinates (a
 2. **Give every node that comes off a `name` and a `note`.** The note says what it does, not what it looks like:
    "closes the cylinders, carries valves and cams".
 3. **Choose directions that say something.** A V8's heads leave at 45°, along the line of their cylinders; a lid goes up.
-   `explode` is relative to the parent, so a child travels with it.
+   `explode` is relative to the parent (and to its turn, if it has a `rotate`), so a child travels with it.
 4. **Let the stages be automatic first:** what is furthest out in its direction of travel leaves first, a child never
    after its parent. Set `stage` only when the story needs another order (then nodes sort by that number, equal numbers
    leave together), and `step` for the text of that step ("heads off").

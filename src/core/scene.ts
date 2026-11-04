@@ -1,7 +1,7 @@
 import { depthOf, fitCamera, makeCamera, project, screenBasis, type Camera, type CameraOptions } from "./camera.ts";
-import { add, centerOf, dot, mul, type Box3, type Vec3 } from "./math.ts";
-import { buildItems, endsOf, isRound, linesOf, meshOf, type Item } from "./items.ts";
-import { axisOf } from "./mesh.ts";
+import { add, centerOf, dot, mul, type Box3, type Vec2, type Vec3 } from "./math.ts";
+import { buildItems, endsOf, framedPoints, isRound, linesOf, meshOf, type Item } from "./items.ts";
+import { axisOf, circle } from "./mesh.ts";
 import { hullOf, paintOrder, shapesApart, type Ordered, type Prior, type Shape } from "./order.ts";
 import { drawMesh, drawRound, SHADES, stadium } from "./shade.ts";
 import { customPaints, paintAttr } from "./palette/paint.ts";
@@ -20,7 +20,7 @@ export const FACES: Record<NonNullable<LabelPart["face"]>, [Vec3, Vec3]> = {
 
 /** El texto se escribe en coordenadas de la cara: la matriz lleva su eje de lectura y su «abajo» a pantalla. */
 function labelSvg(c: Camera, l: LabelPart, lang: string, cls = `class="tx"`): string {
-  const [along, down] = FACES[l.face ?? "top"];
+  const [along, down] = l.axes ?? FACES[l.face ?? "top"];
   const k = c.scale;
   const [e, f] = project(c, l.at);
   const m = [k * dot(c.right, along), k * dot(c.down, along), k * dot(c.right, down), k * dot(c.down, down), e, f];
@@ -107,15 +107,18 @@ function shadowSvg(c: Camera, items: Item[]): string {
     .map(({ box: { min, max }, solid }) => {
       const pad = 3;
       const z = min[2];
-      // Una pieza redonda lleva un halo redondo: el contorno de su huella (un círculo o un estadio) en el piso.
+      // Una pieza redonda lleva un halo redondo: el contorno de su huella (un círculo o un estadio) en el piso; una girada, el de su huella.
+      const foot = framedPoints(solid);
       const ring: Vec3[] = isRound(solid)
         ? stadium(...endsOf(solid), solid.r + pad).map(([x, y]): Vec3 => [x, y, z])
-        : [
-            [min[0] - pad, min[1] - pad, z],
-            [max[0] + pad, min[1] - pad, z],
-            [max[0] + pad, max[1] + pad, z],
-            [min[0] - pad, max[1] + pad, z],
-          ];
+        : foot
+          ? hullOf(foot.flatMap(([x, y]) => circle(pad, 8).map(([u, v]): Vec2 => [x + u, y + v]))).map(([x, y]): Vec3 => [x, y, z])
+          : [
+              [min[0] - pad, min[1] - pad, z],
+              [max[0] + pad, min[1] - pad, z],
+              [max[0] + pad, max[1] + pad, z],
+              [min[0] - pad, max[1] + pad, z],
+            ];
       return ring.map((p) => project(c, p));
     });
   return polys.length ? `<path class="h" d="${pathOf(polys, true)}"/>` : "";
@@ -130,7 +133,7 @@ function fitPoints(spec: FigureSpec, items: Item[], view: Camera): Vec3[] {
     const s = it.solid;
     const corners: Vec3[] = isRound(s)
       ? endsOf(s).flatMap((p) => [view.right, view.down].flatMap((v) => [add(p, mul(v, s.r)), add(p, mul(v, -s.r))]))
-      : [min, max, [min[0], max[1], min[2]], [max[0], min[1], max[2]], [min[0], min[1], max[2]], [max[0], max[1], min[2]]];
+      : (framedPoints(s) ?? [min, max, [min[0], max[1], min[2]], [max[0], min[1], max[2]], [min[0], min[1], max[2]], [max[0], max[1], min[2]]]);
     const own = extentOf(it.group);
     const outer = extentOf(it.outer);
     const moves = [[0, 0, 0] as Vec3, ...own, ...outer, ...own.flatMap((a) => outer.map((b) => add(a, b)))];
@@ -152,7 +155,7 @@ function shapeOf(c: Camera, item: Item): Omit<Shape, "hull"> {
     [pts, normals] = [endsOf(s), s.kind === "capsule" ? [axisOf(s.axis)] : []];
   } else {
     const mesh = meshOf(s, c);
-    [pts, normals] = [mesh.v, s.kind === "prism" ? mesh.faces.map((f) => f.n) : s.kind === "box" ? [] : [axisOf(s.axis)]];
+    [pts, normals] = [mesh.v, s.kind === "prism" ? mesh.faces.map((f) => f.n) : s.kind === "box" ? (s.frame ? [s.frame.u, s.frame.v, s.frame.w] : []) : [axisOf(s.axis)]];
   }
   for (const n of normals) {
     if (isWorldAxis(n) || axes.some((m) => Math.abs(dot(m, n)) > 1 - 1e-9)) continue;
@@ -238,7 +241,7 @@ export function drawScene(spec: FlatSpec, lang: string, view: View = {}): Scene 
   const options = { ...spec.camera, ...(view.azimuth !== undefined ? { azimuth: view.azimuth } : {}), ...(view.elevation !== undefined ? { elevation: view.elevation } : {}) };
   const cam = fitCamera(options, fitPoints(spec, items, makeCamera(options)), W, H, spec.pad ?? 24, view.scale);
   const names = items.map((i) => i.id);
-  const oriented = items.some((i) => isRound(i.solid) || i.solid.kind === "prism" || ((i.solid.kind === "cylinder" || i.solid.kind === "cone") && !isWorldAxis(axisOf(i.solid.axis))));
+  const oriented = items.some((i) => isRound(i.solid) || i.solid.kind === "prism" || (i.solid.kind === "box" && i.solid.frame) || ((i.solid.kind === "cylinder" || i.solid.kind === "cone") && !isWorldAxis(axisOf(i.solid.axis))));
   // La forma de cada pieza se calcula una vez; en cada pose solo se traslada (y su silueta, en pantalla).
   const base: (Shape | undefined)[] = [];
   const shapeAt = (k: number): Shape => {
