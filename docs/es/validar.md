@@ -44,7 +44,7 @@ no lanza: devuelve sus errores.
 | Código | Qué |
 |---|---|
 | `spec-not-object`, `type-invalid` | La spec, o un campo que debe ser lista u objeto, no lo es |
-| `id-invalid` | El `id` de la figura no es letras, números y guiones |
+| `id-invalid`, `instance-invalid` | El `id` de la figura, o el `instance` que se pasa a `renderFigure`, no es letras, números y guiones |
 | `parts-missing` | Sin `parts`, sin `root`, sin `map` |
 | `part-id-missing`, `kind-missing`, `kind-unknown` | Una pieza sin id o sin kind, o con un kind que no existe (el mensaje lista los kinds) |
 | `field-missing` | A una pieza le falta un campo sin el que no se dibuja (`size` de una caja, `on` de un detalle…) |

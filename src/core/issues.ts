@@ -48,6 +48,11 @@ const CATALOG = {
     en: (v, q) => `id ${q(v.id)}: use letters, numbers and hyphens.`,
     es: (v, q) => `id ${q(v.id)}: usa letras, números y guiones.`,
   },
+  "instance-invalid": {
+    severity: "error",
+    en: (v, q) => `instance ${q(v.id)}: use letters, numbers and hyphens.`,
+    es: (v, q) => `instance ${q(v.id)}: usa letras, números y guiones.`,
+  },
   "title-missing": {
     severity: "warning",
     en: () => "The figure has no title: the SVG <title> would be empty.",

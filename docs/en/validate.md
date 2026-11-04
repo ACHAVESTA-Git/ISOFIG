@@ -44,7 +44,7 @@ returns its errors.
 | Code | What |
 |---|---|
 | `spec-not-object`, `type-invalid` | The spec, or a field that must be a list or an object, is not |
-| `id-invalid` | The figure `id` is not letters, numbers and hyphens |
+| `id-invalid`, `instance-invalid` | The figure `id`, or the `instance` passed to `renderFigure`, is not letters, numbers and hyphens |
 | `parts-missing` | No `parts`, no `root`, no `map` |
 | `part-id-missing`, `kind-missing`, `kind-unknown` | A part without id or kind, or with a kind that does not exist (the message lists the kinds) |
 | `field-missing` | A part lacks a field it cannot be drawn without (`size` of a box, `on` of a detail…) |

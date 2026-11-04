@@ -8,6 +8,8 @@ export interface OrbitOptions {
   range?: number;
   minElevation?: number;
   maxElevation?: number;
+  /** Nombre de la copia en el DOM (ver `RenderOptions.instance`); por defecto, el que ya tiene el SVG. */
+  instance?: string;
 }
 
 export type Orbit = OrbitHandle;
@@ -21,6 +23,8 @@ const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v
 export function enableOrbit(el: HTMLElement, spec: FigureSpec, options: OrbitOptions = {}): Orbit {
   const svg = el.querySelector<SVGSVGElement>(".isofig-art")!;
   const lang = options.lang ?? "en";
+  // El SVG nombra su título `<instance>-t`: al redibujar, los ids de <defs> siguen siendo los de esta copia.
+  const instance = options.instance ?? svg.getAttribute("aria-labelledby")?.replace(/-t$/, "") ?? spec.id;
   const base = { az: spec.camera?.azimuth ?? 45, el: spec.camera?.elevation ?? 30 };
   const range = options.range ?? 40;
   const minEl = options.minElevation ?? 12;
@@ -33,7 +37,7 @@ export function enableOrbit(el: HTMLElement, spec: FigureSpec, options: OrbitOpt
 
   const paint = () => {
     frame = 0;
-    const s = drawScene(spec, lang, { azimuth: az, elevation: elv, scale });
+    const s = drawScene(spec, lang, { azimuth: az, elevation: elv, scale, instance });
     const scene = svg.querySelector(".isofig-scene");
     if (scene) scene.outerHTML = `<g class="isofig-scene">${s.markup}</g>`;
     retarget(el, s.basis, s.spins);
