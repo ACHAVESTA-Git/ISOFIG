@@ -3,8 +3,8 @@
 ## docker compose
 
 ```sh
-docker compose config --format json | npx isofig import compose - -o figures/stack.json
-npx isofig build figures/stack.json --format page --lang es -o vista.html
+docker compose config --format json | npx --no-install isofig import compose - -o figures/stack.json
+npx --no-install isofig build figures/stack.json --format page --lang es -o vista.html
 ```
 
 `docker compose config` resuelve el archivo (variables, `extends`, perfiles) y entrega JSON, así isofig no
@@ -27,8 +27,8 @@ flujo o un modelo.
 ## Mermaid
 
 ```sh
-npx isofig import mermaid diagrama.mmd -o figures/mapa.json      # o «-» para leer de la entrada estándar
-npx isofig build figures/mapa.json --format page --lang es -o vista.html
+npx --no-install isofig import mermaid diagrama.mmd -o figures/mapa.json      # o «-» para leer de la entrada estándar
+npx --no-install isofig build figures/mapa.json --format page --lang es -o vista.html
 ```
 
 Un subconjunto de `flowchart` / `graph` (formas, flechas con texto, `&`, subgrafos) y de `classDiagram` (clases con sus

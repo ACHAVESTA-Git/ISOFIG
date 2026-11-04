@@ -41,16 +41,16 @@ import bucket from "../figures/bucket";
 that presses a non-action fails the build. `transition:persist` works (give both pages the same name) and `<ClientRouter />`
 needs no extra code.
 
-Weight to expect: about 2 KB of bootstrap with the page, then the runtime (about 4.2 KB) and the model on demand, the
+Weight to expect: about 2 KB of bootstrap with the page, then the runtime (about 4.3 KB) and the model on demand, the
 orbit (several KB) only when someone turns the figure, and about 0.8 KB for the enlarge dialog when the chip is
 pressed.
 
 ## Angular (19 or later)
 
 ```sh
-npm i isofig
-npx isofig add angular src/app/isofig        # copies the component into your project: the only way to install it
-npx isofig build figures/bucket.ts --format module --lang en -o src/app/figures/bucket.figure.ts
+npm i github:ACHAVESTA-Git/ISOFIG#v0.10.0
+npx --no-install isofig add angular src/app/isofig        # copies the component into your project: the only way to install it
+npx --no-install isofig build figures/bucket.ts --format module --lang en -o src/app/figures/bucket.figure.ts
 ```
 
 Add `"isofig/theme.css"` to `styles` in `angular.json`, then:

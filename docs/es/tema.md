@@ -67,7 +67,7 @@ sobrescribas: cambia la variable pública que corresponde.
   tinta. Si una pieza es `lit` y además está en un estado, gana el estado.
 - Una pieza con `paint` usa la tinta de su pintura (`--isofig-paint-<nombre>-ink`), salvo que esté en un estado.
 
-Elige una tinta que contraste al menos 4,5:1 con el color de encima en los dos temas (por ejemplo, `npx isofig palette
+Elige una tinta que contraste al menos 4,5:1 con el color de encima en los dos temas (por ejemplo, `npx --no-install isofig palette
 --report` mide las pinturas del tema).
 
 ## Lectura estable

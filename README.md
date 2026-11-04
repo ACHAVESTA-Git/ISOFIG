@@ -16,7 +16,7 @@ with Astro and Angular adapters, and with a Claude Code plugin that writes, chec
   <img src="docs/assets/motor-v8-luxe-dark-exploded.png" width="32%" alt="The V8 fully exploded: heads, block, crankshaft, eight pistons and rods">
 </p>
 
-<p align="center"><sub><code>examples/motor-v8/spec.json</code>: 215 parts in plain JSON, <b>16.6 KB gzip</b> for the whole
+<p align="center"><sub><code>examples/motor-v8/spec.json</code>: 215 parts in plain JSON, <b>16.4 KB gzip</b> for the whole
 figure. The "Take apart" slider, the parts list and the step readout come from the nesting of the JSON: there is no
 model and no code. Shown in the optional <a href="docs/en/luxe.md">luxe style</a>.</sub></p>
 
@@ -150,10 +150,10 @@ a single offline HTML file, in both styles and both themes.
 ### 1. Install
 
 ```sh
-npm i github:ACHAVESTA-Git/ISOFIG
+npm i github:ACHAVESTA-Git/ISOFIG#v0.10.0
 ```
 
-Node 22.18 or later. The package builds itself on install. (`npm i isofig` once it is on the npm registry.)
+Node 22.18 or later. The package builds itself on install. The name `isofig` on the npm registry does not belong to this project yet: until it is published there, install only from this repository.
 
 ### 2. Write a figure as JSON
 
@@ -175,8 +175,8 @@ Node 22.18 or later. The package builds itself on install. (`npm i isofig` once 
 ### 3. Check it and preview it
 
 ```sh
-npx isofig check box.json --strict
-npx isofig build box.json --format page -o box.html   # open box.html: the "Take apart" slider is already there
+npx --no-install isofig check box.json --strict
+npx --no-install isofig build box.json --format page -o box.html   # open box.html: the "Take apart" slider is already there
 ```
 
 ### 4. Put it on a page
@@ -197,8 +197,8 @@ dialog download when the reader gets close or uses them. [Astro guide](docs/en/a
 **Angular 19+** (standalone, signals, zoneless)
 
 ```sh
-npx isofig add angular src/app/isofig
-npx isofig build figures/box.json --format module -o src/app/figures/box.figure.ts
+npx --no-install isofig add angular src/app/isofig
+npx --no-install isofig build figures/box.json --format module -o src/app/figures/box.figure.ts
 ```
 
 [Angular guide](docs/en/angular.md).
@@ -235,7 +235,7 @@ npx isofig build figures/box.json --format module -o src/app/figures/box.figure.
 }
 ```
 
-Already have Mermaid? `npx isofig import mermaid diagram.mmd -o map.json`.
+Already have Mermaid? `npx --no-install isofig import mermaid diagram.mmd -o map.json`.
 
 ### A model in a few lines
 
@@ -266,7 +266,7 @@ announcements without repetition (`ctx.say`) and buttons (`ctx.pressed`).
 ```
 
 ```sh
-npx isofig palette --base "#e2231a" --report   # roles derived from your brand color, with the contrast table
+npx --no-install isofig palette --base "#e2231a" --report   # roles derived from your brand color, with the contrast table
 ```
 
 The `lit` tone stays the one strong accent of a figure. `check` warns when a figure uses more than six colors, when
@@ -335,7 +335,7 @@ Minified and gzipped, checked on every push by `npm run size` against `size-budg
 | `isofig/orbit` (360° turn) | when the figure is touched or turned | 10 KB |
 | `isofig/theme.css` | inline, once per page with a figure | 3.0 KB |
 | `isofig/themes/luxe.css` | if you import it | 1.7 KB |
-| A figure (SVG and data) | in the HTML | 7–34 KB |
+| A figure (SVG and data) | in the HTML | 7–35 KB |
 
 The core (`isofig`), the kit and the map compiler run at build time and are not sent to the browser.
 
@@ -343,7 +343,8 @@ The core (`isofig`), the kit and the map compiler run at build time and are not 
 
 - Every figure is a `<figure>` with an SVG `role="img"`, a title and a description; maps also describe their objects
   and links in words.
-- Native controls: `input[type=range]` with `aria-valuetext`, switches, radio groups and buttons.
+- Native controls: `input[type=range]` with `aria-valuetext`, switches, radio groups and buttons. With the drawing
+  focused, ← and → turn it 15° and ↑ and ↓ raise or lower the camera.
 - Motion: a pause button (WCAG 2.2.2), `prefers-reduced-motion` followed live, animation that stops offscreen. With
   reduced motion the camera jumps to the part you pick instead of traveling.
 - The parts list is a radio group with its legend, and the readout says which part is picked.
@@ -376,8 +377,9 @@ data), [ADR 0002](docs/adr/0002-especificacion-anidada-y-despiece.md) (nested sp
 ## FAQ
 
 **Is it real 3D?** The geometry is 3D (boxes, cylinders, cones, prisms, spheres and capsules, along any axis) and is
-projected, shaded and depth-sorted at build time. Turning the figure redraws it in the browser from another angle. It is not a free 3D
-camera, and that is on purpose: it keeps the figure light and readable.
+projected, shaded and depth-sorted at build time. The figure turns a full 360° by drag or arrow keys, and the browser
+redraws it from every angle. Every node also turns on its three axes with `rotate`, like a Unity Transform. What it
+leaves out on purpose is physics, textures and photorealism: that keeps the figure light and readable.
 
 **Is it only for software?** No. The same JSON draws a car or a skeleton: see [Beyond software](#beyond-software).
 Anything made of parts that fit together, from an engine to a bone, works the same way.
@@ -400,6 +402,7 @@ AI can check its own work and fix it.
 ## Roadmap
 
 - 1.0: the warnings marked ↑ in the [validation guide](docs/en/validate.md) become errors, and the package goes to npm.
+- Teardown with rotation: hinges that swing open as the figure comes apart (a door, a hood); today teardown only translates.
 - More map objects and importers (OpenAPI, Kubernetes manifests).
 - Adapters for other frameworks.
 

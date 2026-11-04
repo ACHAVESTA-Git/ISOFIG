@@ -8,8 +8,10 @@ compatibility: Node 22.18+. Astro 5+ or Angular 19+. Playwright or Chrome for th
 # isofig
 
 You write a **spec** (data, JSON or TypeScript), never drawing code. The isofig core turns it into light SVG at build
-time; a runtime of about 4.2 KB gzip animates it. Answer in the user's language and write the figure's texts in it
-(`{ es, en }` when the project is bilingual). If `isofig` is not installed in the project, run `npm i isofig` first.
+time; a runtime of about 4.3 KB gzip animates it. Answer in the user's language and write the figure's texts in it
+(`{ es, en }` when the project is bilingual). If `isofig` is not installed in the project, run
+`npm i github:ACHAVESTA-Git/ISOFIG#v0.10.0` first. Never `npm i isofig`: that name on the npm registry is not published
+by this project. Run the CLI as `npx --no-install isofig`, which uses the installed copy and never downloads one.
 Its guides are in `node_modules/isofig/docs/en/` (Spanish in `docs/es/`); this skill's detail is in `references/`.
 
 ## The idea
@@ -95,13 +97,13 @@ chemistry (no brand logos, notes that can be verified, a teaching schematic and 
 - **A sketch, a whiteboard photo or a screenshot of a diagram.** Read the image yourself: list the components, what
   flows between them and what decides the flow; ask one question only if the mechanism is ambiguous. Then invent the
   object from that list. Never trace the picture: its boxes and arrows are the *concept*, not the object.
-- **A docker compose file.** `docker compose config --format json | npx isofig import compose - -o spec.json` gives a
+- **A docker compose file.** `docker compose config --format json | npx --no-install isofig import compose - -o spec.json` gives a
   first map (each service the object its image suggests, ribbons for `depends_on`, published ports entering from an
   Internet globe, volumes as buckets). Edit the JSON: change an object with `is`, group services in a container, add
   a `flow`.
 - **A topology, an order flow or a UML diagram** (or a Mermaid `flowchart` / `classDiagram`). Write a `map` instead of
   parts: nodes with `is` (a real object from the catalog: `phone`, `server`, `database`, `queue`, `class`…),
-  containers with `children`, `links`, and `flows` for the packets. `npx isofig import mermaid diagram.mmd -o map.json`
+  containers with `children`, `links`, and `flows` for the packets. `npx --no-install isofig import mermaid diagram.mmd -o map.json`
   gives a first one. Every node is still an object, never a labelled box; keep a map to about 6 colours and under 20
   nodes. Guide: `node_modules/isofig/docs/en/maps.md`.
 - **A real system (Kubernetes, a queue, an API).** Collect the true numbers first, then follow the workflow.
@@ -134,7 +136,7 @@ Options, ids and the catalog: `node_modules/isofig/docs/en/kit.md`.
 - **Color never carries meaning alone.** Name the parts, let a map draw its legend (`legendOf` for the rest), and remember that the
   green accent looks light grey under color blindness: in a machine the subject also stands out because it moves.
 - **Only theme variables, no literal colors.** A brand color goes in `palette: { base, use }`; measure it with
-  `npx isofig palette --base "#hex" --report`. Set tables and details: `references/color-and-text.md`.
+  `npx --no-install isofig palette --base "#hex" --report`. Set tables and details: `references/color-and-text.md`.
 
 ## Text
 
@@ -170,14 +172,14 @@ Details and a full example: `references/models.md`.
 
 A figure is not done until both pass.
 
-1. `npx isofig check <spec> --model <model> --presets --strict` ends with **no warnings** (notes are fine). Every
+1. `npx --no-install isofig check <spec> --model <model> --presets --strict` ends with **no warnings** (notes are fine). Every
    warning marked ↑ in `docs/en/validate.md` becomes an error in 1.0: treat all as errors. With no model, drop
    `--model` and `--presets` (`--presets` needs a model).
 2. Screenshots at **390 and 1280 px, light and dark, and with the "Enlarge" chip open**, and then **look at every
    one**:
 
 ```sh
-npx isofig build figure.ts --format page --model model.ts --advance 4 -o preview.html
+npx --no-install isofig build figure.ts --format page --model model.ts --advance 4 -o preview.html
 node ${CLAUDE_SKILL_DIR}/scripts/capture.mjs preview.html --out shots   # needs Playwright in the project
 ```
 
@@ -192,7 +194,7 @@ capture details: `references/verify.md`.
 
 - **Astro:** `<Figure spec={spec} lang="en" />` from `isofig/astro`; register the model in a `<script>` of the same
   component with `models({ name: () => import("./name.model.ts") })` from `isofig/astro/client`.
-- **Angular 19+:** `npx isofig add angular src/app/isofig`, generate with `--format module`, use
+- **Angular 19+:** `npx --no-install isofig add angular src/app/isofig`, generate with `--format module`, use
   `<isofig-figure [figure] [model]>`.
 - **Maps:** the compiler is its own module, `isofig/map`. The CLI and `<Figure>` add it themselves; if you call
   `renderFigure(spec, { resolveMap })` or `assemble(spec, { resolveMap })` by hand, import `resolveMap` from `isofig/map`

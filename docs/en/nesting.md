@@ -290,8 +290,8 @@ round parts). A part inside another part's box (a piston in its bank) goes first
 ## Checking it
 
 ```sh
-npx isofig check engine.json --lang en                     # tree shape, use, references, audit
-npx isofig build engine.json --format page -o engine.html --set explode=4 --set pick=3
+npx --no-install isofig check engine.json --lang en                     # tree shape, use, references, audit
+npx --no-install isofig build engine.json --format page -o engine.html --set explode=4 --set pick=3
 ```
 
 `--set` also reaches `explode` and `pick`: use it to capture each step and each picked part. Look at the captures

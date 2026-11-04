@@ -4,3 +4,9 @@ dist/
 !docs/**/*.png
 examples/**/preview*.html
 examples/galeria/
+
+# Locales y secretos
+.env
+.env.*
+.DS_Store
+worktrees/
