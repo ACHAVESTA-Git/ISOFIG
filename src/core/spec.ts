@@ -1,5 +1,6 @@
 import type { Axis } from "./mesh.ts";
 import type { Vec2, Vec3 } from "./math.ts";
+import type { MapSpec } from "./map/types.ts";
 
 export type { Vec2, Vec3, Axis };
 
@@ -33,6 +34,11 @@ export interface PartBase {
   paint?: string;
   /** Grupo que la lleva además del suyo: lo pone el ensamblado cuando una pieza animada por un modelo se despieza. */
   outer?: string;
+  /**
+   * Una pieza del piso (una bandeja, una cinta pegada al suelo): se pinta antes que todo lo que se apoya o pasa sobre
+   * ella, sin pelear el orden con las piezas que se alzan. Los mapas la usan para sus bandejas y sus rutas.
+   */
+  ground?: boolean;
 }
 
 export interface BoxPart extends PartBase {
@@ -255,6 +261,8 @@ export interface FigureSpec {
   bind?: BindSpec[];
   /** Grupos que recorren una polilínea sin modelo (los paquetes de un mapa). */
   tracks?: TrackSpec[];
+  /** Una topología, un mapa de flujo o un diagrama UML: se compila a un árbol `root` y a `tracks` (ver `docs/es/mapas.md`). */
+  map?: MapSpec;
   readout?: Text;
   presets?: PresetSpec[];
   /** Nombre con el que la página registra el modelo en el runtime. */

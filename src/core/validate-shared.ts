@@ -89,7 +89,7 @@ export function checkVector(rep: Reporter, v: unknown, path: string, field: stri
 // Los nombres de campos van como palabras sueltas: `"from", "x"` en una lista confunde a quien busca imports con una expresión regular.
 export const words = (list: string): string[] => list.split(" ");
 
-const BASE = ["id", "kind", "tone", "group", "hidden", "repeat", "float", "mount", "shadow", "paint", "outer"];
+const BASE = ["id", "kind", "tone", "group", "hidden", "repeat", "float", "mount", "shadow", "paint", "outer", "ground"];
 
 export const FIGURE_KEYS = [
   "id", "title", "hint", "caption", "alt", "width", "height", "pad", "camera", "parts", "groups", "params", "bind",

@@ -1,0 +1,74 @@
+{
+  "id": "mapa-uml",
+  "title": { "es": "Dominio de una tienda", "en": "A shop's domain" },
+  "hint": { "es": "Cada clase es un archivador; ábrelo con «Desarmar»", "en": "Each class is a filing cabinet; open it with “Take apart”" },
+  "caption": {
+    "es": "Un cliente hace muchos pedidos; el pedido se compone de líneas, que apuntan a un producto, y se paga con un pago abstracto que puede ser con tarjeta o contra entrega. El pedido usa un notificador para avisar.",
+    "en": "A customer places many orders; an order is made of lines that point to a product, and is paid with an abstract payment that can be by card or cash on delivery. The order uses a notifier to send notices."
+  },
+  "map": {
+    "layout": "layers",
+    "nodes": [
+      {
+        "id": "dominio",
+        "is": "package",
+        "name": "tienda.dominio",
+        "children": [
+          {
+            "id": "Cliente", "is": "class", "explode": true,
+            "name": { "es": "Cliente", "en": "Customer" },
+            "fields": [{ "es": "- nombre: Texto", "en": "- name: Text" }, { "es": "- correo: Correo", "en": "- email: Email" }],
+            "methods": [{ "es": "+ hacerPedido()", "en": "+ placeOrder()" }]
+          },
+          {
+            "id": "Pedido", "is": "class", "explode": true,
+            "name": { "es": "Pedido", "en": "Order" },
+            "fields": [{ "es": "- fecha: Fecha", "en": "- date: Date" }, { "es": "- estado: Estado", "en": "- status: Status" }],
+            "methods": [{ "es": "+ total(): Dinero", "en": "+ total(): Money" }, "+ confirmar()"]
+          },
+          {
+            "id": "Linea", "is": "class", "explode": true,
+            "name": { "es": "LineaDePedido", "en": "OrderLine" },
+            "fields": [{ "es": "- cantidad: Entero", "en": "- quantity: Int" }],
+            "methods": [{ "es": "+ subtotal(): Dinero", "en": "+ subtotal(): Money" }]
+          },
+          {
+            "id": "Producto", "is": "class", "explode": true,
+            "name": { "es": "Producto", "en": "Product" },
+            "fields": [{ "es": "- nombre: Texto", "en": "- name: Text" }, { "es": "- precio: Dinero", "en": "- price: Money" }]
+          },
+          {
+            "id": "Pago", "is": "class", "abstract": true, "explode": true,
+            "name": { "es": "Pago", "en": "Payment" },
+            "fields": [{ "es": "# monto: Dinero", "en": "# amount: Money" }],
+            "methods": [{ "es": "+ cobrar()", "en": "+ charge()" }]
+          },
+          {
+            "id": "Tarjeta", "is": "class", "explode": true,
+            "name": { "es": "PagoConTarjeta", "en": "CardPayment" },
+            "fields": [{ "es": "- tarjeta: Tarjeta", "en": "- card: Card" }],
+            "methods": [{ "es": "+ cobrar()", "en": "+ charge()" }]
+          },
+          {
+            "id": "Efectivo", "is": "class", "explode": true,
+            "name": { "es": "PagoContraEntrega", "en": "CashOnDelivery" },
+            "methods": [{ "es": "+ cobrar()", "en": "+ charge()" }]
+          },
+          {
+            "id": "Notificador", "is": "interface", "explode": true,
+            "name": { "es": "Notificador", "en": "Notifier" },
+            "methods": [{ "es": "+ avisar(p: Pedido)", "en": "+ notify(o: Order)" }]
+          }
+        ]
+      }
+    ],
+    "links": [
+      { "from": "Cliente", "to": "Pedido", "kind": "associates", "mult": ["1", "*"], "label": { "es": "hace", "en": "places" } },
+      { "from": "Pedido", "to": "Linea", "kind": "composes", "mult": ["1", "*"] },
+      { "from": "Linea", "to": "Producto", "kind": "associates", "arrow": "end", "mult": ["*", "1"] },
+      { "from": "Pedido", "to": "Pago", "kind": "associates", "arrow": "end", "mult": ["1", "1"], "label": { "es": "se paga con", "en": "paid with" } },
+      { "from": ["Tarjeta", "Efectivo"], "to": "Pago", "kind": "inherits" },
+      { "from": "Pedido", "to": "Notificador", "kind": "depends", "label": { "es": "avisa", "en": "notifies" } }
+    ]
+  }
+}

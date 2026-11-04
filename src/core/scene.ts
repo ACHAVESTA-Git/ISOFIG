@@ -1,8 +1,8 @@
-import { fitCamera, project, screenBasis, type Camera, type CameraOptions } from "./camera.ts";
-import { add, dot, mul, type Box3, type Vec3 } from "./math.ts";
+import { depthOf, fitCamera, project, screenBasis, type Camera, type CameraOptions } from "./camera.ts";
+import { add, centerOf, dot, mul, type Box3, type Vec3 } from "./math.ts";
 import { buildItems, linesOf, meshOf, type Item } from "./items.ts";
 import { axisOf } from "./mesh.ts";
-import { hullOf, paintOrder, shapesApart, type Shape } from "./order.ts";
+import { hullOf, paintOrder, shapesApart, type Ordered, type Shape } from "./order.ts";
 import { drawMesh, SHADES } from "./shade.ts";
 import { customPaints, paintAttr } from "./palette/paint.ts";
 import { dotsOf, escapeHtml as esc, pathOf } from "./serialize.ts";
@@ -247,9 +247,23 @@ export function drawScene(spec: FlatSpec, lang: string, view: View = {}): Scene 
       return cache[k];
     });
   };
+  // Lo que viaja por un recorrido cruza otras piezas y tiene que verse siempre: queda fuera del orden y se pinta al final.
+  // Las piezas del piso (`ground`: bandejas, cintas) van al principio, de abajo hacia arriba y de lejos a cerca: no se
+  // alzan sobre nada, y así no entran en las dudas del orden.
+  const travels = new Set((spec.tracks ?? []).map((t) => t.group));
+  const idx = items.map((_, k) => k);
+  const flies = idx.filter((k) => travels.has(items[k].group ?? ""));
+  const floor = idx.filter((k) => !flies.includes(k) && items[k].solid.ground);
+  const standing = idx.filter((k) => !flies.includes(k) && !items[k].solid.ground);
+  const ranked = (boxes: Box3[], shapes?: (() => Shape | undefined)[]): Ordered => {
+    const sub = paintOrder(cam, standing.map((k) => boxes[k]), standing.map((k) => names[k]), shapes && standing.map((k) => shapes[k]));
+    const depth = (k: number) => depthOf(cam, centerOf(boxes[k]));
+    const low = [...floor].sort((a, b) => boxes[a].min[2] - boxes[b].min[2] || depth(a) - depth(b) || a - b);
+    return { order: [...low, ...sub.order.map((i) => standing[i]), ...flies], cycles: sub.cycles };
+  };
   const rest = items.map((): Vec3 => [0, 0, 0]);
   const atRest = shapesAt(rest);
-  const { order, cycles } = paintOrder(cam, items.map((i) => i.box), names, atRest);
+  const { order, cycles } = ranked(items.map((i) => i.box), atRest);
   const index = new Map(items.map((it, k) => [it, k]));
   const apart = (a: Item, b: Item) => {
     const sa = atRest?.[index.get(a)!]();
@@ -263,7 +277,7 @@ export function drawScene(spec: FlatSpec, lang: string, view: View = {}): Scene 
       const pose = poseOf(spec, param, value);
       const moves = items.map((it) => add(pose.get(it.group ?? "") ?? [0, 0, 0], pose.get(it.outer ?? "") ?? [0, 0, 0]));
       const boxes = items.map((it, k): Box3 => ({ min: add(it.box.min, moves[k]), max: add(it.box.max, moves[k]) }));
-      const moved = paintOrder(cam, boxes, names, shapesAt(moves));
+      const moved = ranked(boxes, shapesAt(moves));
       cycles.push(...moved.cycles.map((c) => `${c} (${param} = ${value})`));
       return [value, ...movesBetween(order, moved.order)];
     });
