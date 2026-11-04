@@ -41,8 +41,10 @@ Todas aceptan: `id`, `tone` (`lo` base, `mid` estructura, `hi` sujeto, `lit` el 
 | `prism` | `plan: [x, y][]` (convexa, antihoraria), `z`, `h`, `bevel` | Cualquier planta convexa. Las cóncavas se arman con varias piezas. |
 
 - `bevel` corta el canto de la tapa: entre 0,4 y 1,6 se ve como una pieza fabricada.
-- `repeat: { count, step }` crea copias desplazadas. `{i}` en `id` o `group` se reemplaza por el índice; si `id`
-  no lo lleva, se agrega `-i`.
+- `repeat: { count, step, from }` crea copias desplazadas. `{i}` en `id` o `group` se reemplaza por el índice; si `id`
+  no lo lleva, se agrega `-i`. `from` es el primer valor de `{i}` (0 por defecto): la copia número k se desplaza
+  `step × k` y se llama `from + k`, así dos filas se reparten los números de un mismo grupo (`fila-0…13` y
+  `fila-14…27`).
 - `hidden: true` empieza invisible (para un depósito de piezas que el modelo muestra).
 - `mount: ["otra"]` dice que la pieza va encajada en otra a propósito, y la auditoría no lo cuenta como choque.
 - `float: true` dice que la pieza cuelga o vuela a propósito.
@@ -136,6 +138,9 @@ opacidad.
 - **Apoyo:** toda pieza visible toca otra o el piso, salvo `float`.
 - **Choques:** dos piezas que se hunden más de 0,8 unidades una en otra, salvo `mount`.
 - **Peso:** gzip por encima de `budget`. `renderFigure` no lo mide (el gzip necesita Node): lo hacen `isofig check` y `checkBudget(spec, measure(html))` de `isofig/node`.
+- **Rótulos:** los que no se leen ni en la vista ampliada (ver [validar.md](validar.md#rótulos-legibles)).
+
+La spec misma se valida antes de dibujar: [validar.md](validar.md).
 
 La auditoría trabaja sobre cajas: es rápida y gruesa. Revisa siempre la figura a 4× en los dos temas.
 

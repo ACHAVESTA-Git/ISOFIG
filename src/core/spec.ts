@@ -14,8 +14,12 @@ export interface PartBase {
   tone?: Tone;
   group?: string;
   hidden?: boolean;
-  /** Copias desplazadas; `{i}` en `id` o `group` se reemplaza por el índice. */
-  repeat?: { count: number; step: Vec3 };
+  /**
+   * Copias desplazadas; `{i}` en `id` o `group` se reemplaza por el índice. `from` es el primer valor de `{i}` (0 por
+   * defecto): la copia número k va a `step × k` y se llama `from + k`, así dos filas pueden repartirse los números de
+   * un mismo grupo (`fila-0…13` y `fila-14…27`).
+   */
+  repeat?: { count: number; step: Vec3; from?: number };
   /** La pieza cuelga o flota a propósito: la auditoría no exige apoyo. */
   float?: boolean;
   /** Ids de piezas en las que esta va encajada a propósito (no cuenta como choque). */

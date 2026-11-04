@@ -41,8 +41,10 @@ All accept: `id`, `tone` (`lo` base, `mid` structure, `hi` subject, `lit` the si
 | `prism` | `plan: [x, y][]` (convex, counterclockwise), `z`, `h`, `bevel` | Any convex plan. Concave ones are built from several parts. |
 
 - `bevel` cuts the edge of the top: between 0.4 and 1.6 it looks like a manufactured part.
-- `repeat: { count, step }` creates offset copies. `{i}` in `id` or `group` is replaced by the index; if `id`
-  doesn't include it, `-i` is appended.
+- `repeat: { count, step, from }` creates offset copies. `{i}` in `id` or `group` is replaced by the index; if `id`
+  doesn't include it, `-i` is appended. `from` is the first value of `{i}` (0 by default): copy number k moves
+  `step × k` and is named `from + k`, so two rows can share out the numbers of one group (`row-0…13` and
+  `row-14…27`).
 - `hidden: true` starts invisible (for a stock of parts the model reveals).
 - `mount: ["other"]` says the part is deliberately fitted into another, and the audit doesn't count it as a collision.
 - `float: true` says the part hangs or flies on purpose.
@@ -136,6 +138,9 @@ opacity.
 - **Support:** every visible part touches another or the floor, except `float`.
 - **Collisions:** two parts that sink more than 0.8 units into each other, except `mount`.
 - **Weight:** gzip above `budget`. `renderFigure` does not measure it (gzip needs Node): `isofig check` and `checkBudget(spec, measure(html))` from `isofig/node` do.
+- **Labels:** the ones that cannot be read even in the enlarged view (see [validate.md](validate.md#legible-labels)).
+
+The spec itself is validated before drawing: [validate.md](validate.md).
 
 The audit works on boxes: it is fast and coarse. Always review the figure at 4× in both themes.
 

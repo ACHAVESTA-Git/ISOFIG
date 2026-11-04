@@ -4,18 +4,26 @@ import { stripTypeScriptTypes } from "node:module";
 import { dirname, extname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
-import { renderFigure } from "../core/render.ts";
+import type { Model } from "../runtime/index.ts";
+import { checkModel } from "../core/check.ts";
 import { fromCompose } from "../core/importers/compose.ts";
-import { checkBudget, measure } from "../node/index.ts";
+import { formatIssue, makeIssue, messageLang, PREFIXES, type Issue } from "../core/issues.ts";
+import { renderFigure } from "../core/render.ts";
+import { budgetIssues, measure } from "../node/index.ts";
 import type { FigureSpec } from "../core/spec.ts";
+import { validateSpec } from "../core/validate.ts";
 
 const HELP = `isofig: isometric figures from a spec
 
   isofig build <spec> [-o file] [--format html|module|json|page] [--lang en] [--n 1] [--model file]
-  isofig check <spec> [--lang en] [--strict]
+  isofig check <spec> [--lang en|es] [--strict] [--model file [--presets] [--seconds 12]]
   isofig add angular <dir>    copy the standalone Angular component into your app
   isofig import compose <file.json|-> [-o spec.json]
                               a figure from \`docker compose config --format json\`
+
+  check   validates the spec, audits the drawing and, with --model, runs the model for --seconds simulated
+          seconds (and every preset with --presets) to find groups, controls and presets that do nothing.
+          --lang en|es sets the language of the messages and of their prefixes; --strict also fails on warnings
 
   html    the <figure> markup (default)
   module  a TS module exporting { id, html, data }, for Angular
@@ -45,6 +53,13 @@ async function loadSpec(file: string): Promise<FigureSpec> {
   const spec = mod.default ?? mod.spec;
   if (!spec) throw new Error(`${file} must export default (or export const spec) a FigureSpec`);
   return spec;
+}
+
+async function loadModel(file: string): Promise<Model<any, any>> {
+  const mod = await import(pathToFileURL(resolve(file)).href);
+  const model = mod.default ?? mod.model;
+  if (!model) throw new Error(`${file} must export default (or export const model) a Model`);
+  return model;
 }
 
 function sourceOf(file: string): string {
@@ -137,6 +152,8 @@ async function main() {
       orbit: { type: "boolean", default: false },
       set: { type: "string", multiple: true },
       strict: { type: "boolean", default: false },
+      presets: { type: "boolean", default: false },
+      seconds: { type: "string" },
       help: { type: "boolean", short: "h" },
     },
   });
@@ -170,25 +187,45 @@ async function main() {
     console.log(`isofig: ${target}`);
     return;
   }
+  const lang = messageLang(values.lang);
   const spec = await loadSpec(file);
+  // Lo que se imprime: «error:», «warning:» y «info:» (con --lang es, «aviso:» y «nota:»), con el código al final.
+  const print = (issues: Issue[]) => {
+    for (const i of issues) console.error(`${PREFIXES[lang][i.severity]}: ${formatIssue(i)} [${i.code}]`);
+  };
+  const invalid = validateSpec(spec, { lang }).filter((i) => i.code === "spec-not-object");
+  if (invalid.length) {
+    print(invalid);
+    process.exit(1);
+  }
   // --set param=valor fija el arranque de un control, para previsualizar cada estado sin tocar la spec.
+  const notes: Issue[] = [];
   for (const pair of values.set ?? []) {
     const [id, v] = pair.split("=");
     const p = spec.params?.find((q) => q.id === id);
     if (p) p.value = Number(v);
-    else console.warn(`aviso: --set ${id}: la spec no tiene ese parámetro`);
+    else notes.push(makeIssue(lang, "set-unknown-param", "", { id }));
   }
   const r = renderFigure(spec, { lang: values.lang, n: values.n, orbit: values.orbit });
   const size = measure(r.html);
-  const warnings = [...r.warnings, ...checkBudget(spec, size, values.lang)];
-  for (const e of r.errors) console.error(`error: ${e}`);
-  for (const w of warnings) console.warn(`aviso: ${w}`);
-  console.error(`${spec.id}: ${(size.bytes / 1024).toFixed(1)} KB, ${(size.gzip / 1024).toFixed(1)} KB gzip`);
+  const issues = [...notes, ...r.issues, ...budgetIssues(spec, size, lang)];
 
   if (command === "check") {
-    if (r.errors.length || (values.strict && warnings.length)) process.exit(1);
+    if (values.presets && !values.model) {
+      issues.push(makeIssue(lang, "presets-need-model", ""));
+    } else if (values.model && !r.errors.length) {
+      const seconds = Number(values.seconds);
+      issues.push(...checkModel(spec, await loadModel(values.model), { lang, presets: values.presets, ...(seconds > 0 ? { seconds } : {}) }));
+    }
+    print(issues);
+    console.error(`${spec.id}: ${(size.bytes / 1024).toFixed(1)} KB, ${(size.gzip / 1024).toFixed(1)} KB gzip`);
+    const errors = issues.some((i) => i.severity === "error");
+    const warnings = issues.some((i) => i.severity === "warning");
+    if (errors || (values.strict && warnings)) process.exit(1);
     return;
   }
+  print(issues.filter((i) => i.severity !== "info"));
+  console.error(`${spec.id}: ${(size.bytes / 1024).toFixed(1)} KB, ${(size.gzip / 1024).toFixed(1)} KB gzip`);
   if (command !== "build") {
     console.log(HELP);
     process.exit(1);

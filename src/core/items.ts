@@ -17,10 +17,16 @@ export interface Item {
   shadow?: boolean;
   solid: Solid;
   details: Detail[];
+  /** Índice, en `spec.parts`, de la pieza de la que sale cada detalle (en el mismo orden que `details`). */
+  detailSource: number[];
+  /** Índice, en `spec.parts`, de la pieza de la que sale este sólido. */
+  source: number;
   box: Box3;
 }
 
 const isSolid = (p: Part): p is Solid => p.kind === "box" || p.kind === "cylinder" || p.kind === "prism";
+const DETAILS = new Set(["ticks", "dots", "line", "label"]);
+const KNOWN = new Set(["box", "cylinder", "prism", ...DETAILS]);
 
 function shift(p: Part, d: Vec3): Part {
   switch (p.kind) {
@@ -39,23 +45,42 @@ function shift(p: Part, d: Vec3): Part {
   }
 }
 
-export function expand(parts: Part[]): Part[] {
-  const out: Part[] = [];
-  for (const p of parts) {
-    const n = p.repeat?.count ?? 1;
-    for (let i = 0; i < n; i++) {
-      const sub = (s: string | undefined) => (s === undefined ? s : s.replaceAll("{i}", String(i)));
-      const moved = p.repeat ? shift(p, mul(p.repeat.step, i)) : p;
-      const id = p.repeat && !p.id.includes("{i}") ? `${p.id}-${i}` : sub(p.id)!;
-      const copy = { ...moved, id, repeat: undefined } as Part;
+/** Reemplaza `{i}` por el número de la copia. */
+export const fillIndex = (s: string | undefined, i: number): string | undefined => (s === undefined ? s : s.replaceAll("{i}", String(i)));
+
+/** Las copias de una pieza: la número `k` se desplaza `step × k` y su `{i}` vale `from + k` (`from` es 0 por defecto). */
+export function copiesOf(p: { repeat?: { count: number; from?: number } }): { k: number; i: number }[] {
+  const n = p.repeat?.count ?? 1;
+  const from = p.repeat?.from ?? 0;
+  const out: { k: number; i: number }[] = [];
+  for (let k = 0; k < n; k++) out.push({ k, i: from + k });
+  return out;
+}
+
+/** El id de la copia `i`: sin `{i}` en un `repeat`, se le añade `-i`. */
+export const copyId = (p: { id: string; repeat?: unknown }, i: number): string =>
+  p.repeat && !p.id.includes("{i}") ? `${p.id}-${i}` : fillIndex(p.id, i)!;
+
+/** Las piezas ya repetidas, cada una con el índice de la pieza de la spec de la que sale (para decir dónde falla algo). */
+export function expandIndexed(parts: Part[]): { part: Part; source: number }[] {
+  const out: { part: Part; source: number }[] = [];
+  parts.forEach((p, source) => {
+    // Una pieza sin `kind` conocido no se dibuja (`validateSpec` dice cuál es): ni se repite, o un `repeat` disparatado la multiplicaría.
+    if (!p || typeof p !== "object" || !KNOWN.has(p.kind)) return;
+    for (const { k, i } of copiesOf(p)) {
+      const sub = (s: string | undefined) => fillIndex(s, i);
+      const moved = p.repeat ? shift(p, mul(p.repeat.step, k)) : p;
+      const copy = { ...moved, id: copyId(p, i), repeat: undefined } as Part;
       if ("on" in copy) copy.on = sub(copy.on)!;
       if (copy.mount) copy.mount = copy.mount.map((m) => sub(m)!);
       if (isSolid(copy)) copy.group = sub(copy.group);
-      out.push(copy);
+      out.push({ part: copy, source });
     }
-  }
+  });
   return out;
 }
+
+export const expand = (parts: Part[]): Part[] => expandIndexed(parts).map((e) => e.part);
 
 export function solidBox(p: Solid): Box3 {
   if (p.kind === "box") return { min: [...p.at], max: add(p.at, p.size) };
@@ -69,14 +94,16 @@ export function solidBox(p: Solid): Box3 {
   return { min: add(at, lo), max: add(at, hi) };
 }
 
-export function buildItems(parts: Part[]): { items: Item[]; errors: string[] } {
-  const errors: string[] = [];
-  const all = expand(parts);
+/**
+ * Arma las piezas. Es tolerante: lo que no tiene un `kind` conocido o un anfitrión se salta, y `validateSpec` es quien
+ * dice por qué (así una spec rota da mensajes claros en vez de un fallo a medias).
+ */
+export function buildItems(parts: Part[]): { items: Item[] } {
+  const all = expandIndexed(parts);
   const items: Item[] = [];
   const byId = new Map<string, Item>();
-  for (const p of all) {
+  for (const { part: p, source } of all) {
     if (!isSolid(p)) continue;
-    if (byId.has(p.id)) errors.push(`id repetido: ${p.id}`);
     const item: Item = {
       id: p.id,
       tone: p.tone ?? "mid",
@@ -87,18 +114,22 @@ export function buildItems(parts: Part[]): { items: Item[]; errors: string[] } {
       shadow: p.shadow,
       solid: p,
       details: [],
+      detailSource: [],
+      source,
       box: solidBox(p),
     };
     items.push(item);
     byId.set(p.id, item);
   }
-  for (const p of all) {
-    if (isSolid(p)) continue;
+  for (const { part: p, source } of all) {
+    if (isSolid(p) || !DETAILS.has(p.kind)) continue;
     const host = byId.get(p.on);
-    if (!host) errors.push(`«${p.id}» va sobre «${p.on}», que no existe`);
-    else host.details.push(p);
+    if (host) {
+      host.details.push(p);
+      host.detailSource.push(source);
+    }
   }
-  return { items, errors };
+  return { items };
 }
 
 export function meshOf(p: Solid, c: Camera): Mesh {
