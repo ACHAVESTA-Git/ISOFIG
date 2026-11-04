@@ -1,7 +1,9 @@
-import { audit } from "./audit.ts";
+import { audit, auditLabels } from "./audit.ts";
+import { formatIssue, makeIssue, type Issue } from "./issues.ts";
 import { drawScene } from "./scene.ts";
 import { escapeHtml as esc } from "./serialize.ts";
 import { textOf, type FigureSpec } from "./spec.ts";
+import { validateSpec } from "./validate.ts";
 
 export interface RenderOptions {
   lang?: string;
@@ -34,8 +36,11 @@ export interface Rendered {
   data: RuntimeData;
   /** Tamaño del HTML en bytes UTF-8. El gzip y el presupuesto de peso los mide `measure()` de `isofig/node`. */
   bytes: number;
+  /** Los avisos y errores como texto (`parts[3].size: …`); `info` no entra. */
   warnings: string[];
   errors: string[];
+  /** Todo lo que se encontró, con código estable, gravedad y `path` (incluye las notas `info`). */
+  issues: Issue[];
 }
 
 type Label = "play" | "pause" | "fig" | "presets" | "orbit" | "left" | "right" | "reset" | "drag" | "zoom" | "close";
@@ -63,15 +68,35 @@ const num = (v: unknown): number => {
   return Number.isFinite(n) ? n : 0;
 };
 
+/** Lo que devuelve una figura que no se pudo dibujar: sus errores y nada más. */
+function failed(lang: string, issues: Issue[]): Rendered {
+  const data: RuntimeData = { id: "", autoplay: false, tau: 0.18, basis: [], spins: {}, params: [], bind: undefined, readout: "", lang };
+  return { html: "", svg: "", data, bytes: 0, warnings: only(issues, "warning"), errors: only(issues, "error"), issues };
+}
+
+const only = (issues: Issue[], severity: Issue["severity"]) => issues.filter((i) => i.severity === severity).map(formatIssue);
+
 export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Rendered {
   const lang = options.lang ?? "en";
+  const issues = validateSpec(spec, { lang });
+  // Con la estructura rota, o con una cuenta que no termina, no hay nada que dibujar: solo los errores.
+  if (issues.some((i) => i.code === "spec-not-object" || i.code === "type-invalid" || i.code === "count-too-large")) return failed(lang, issues);
+  // Una spec rota no lanza: da sus errores. Si el dibujo falla por algo que la validación no explica, se dice aquí.
+  try {
+    return draw(spec, options, lang, issues);
+  } catch (e) {
+    if (!issues.some((i) => i.severity === "error")) issues.push(makeIssue(lang, "draw-failed", "", { reason: e instanceof Error ? e.message : String(e) }));
+    return failed(lang, issues);
+  }
+}
+
+function draw(spec: FigureSpec, options: RenderOptions, lang: string, issues: Issue[]): Rendered {
   const labels = LABELS[lang] ?? LABELS["en"];
   const W = spec.width ?? 640;
   const H = spec.height ?? 400;
-  const { markup, basis, spins, items, cycles, errors } = drawScene(spec, lang);
+  const { markup, basis, spins, items, cycles, cam } = drawScene(spec, lang);
 
   const id = spec.id;
-  if (!/^[a-z0-9][a-z0-9-]*$/i.test(id)) errors.push(`id «${id}»: usa letras, números y guiones`);
   const title = textOf(spec.title, lang);
   const caption = textOf(spec.caption, lang);
   const alt = textOf(spec.alt, lang);
@@ -177,9 +202,10 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
     `<script type="application/json" class="isofig-data">${JSON.stringify(data).replace(/</g, "\\u003c")}</script></figure>`;
 
   const bytes = new TextEncoder().encode(html).length;
-  const warnings = [
-    ...cycles.map((name) => `orden de pintado ambiguo cerca de «${name}»`),
-    ...audit(items),
-  ];
-  return { html, svg, data, bytes, warnings, errors };
+  issues.push(
+    ...cycles.map((near) => makeIssue(lang, "paint-order-ambiguous", "", { near })),
+    ...audit(items, lang),
+    ...auditLabels(items, cam, W, lang),
+  );
+  return { html, svg, data, bytes, warnings: only(issues, "warning"), errors: only(issues, "error"), issues };
 }

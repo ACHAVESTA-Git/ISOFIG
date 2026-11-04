@@ -10,7 +10,7 @@ const TONES = ["lo", "mid", "hi", "lit"];
 
 const PLANES = { xy: [[1, 0, 0], [0, 1, 0]], xz: [[1, 0, 0], [0, 0, 1]], yz: [[0, 1, 0], [0, 0, 1]] } as const;
 
-const FACES: Record<NonNullable<LabelPart["face"]>, [Vec3, Vec3]> = {
+export const FACES: Record<NonNullable<LabelPart["face"]>, [Vec3, Vec3]> = {
   top: [[0, 1, 0], [1, 0, 0]],
   x: [[0, 1, 0], [0, 0, -1]],
   y: [[-1, 0, 0], [0, 0, -1]],
@@ -138,14 +138,13 @@ export interface Scene {
   spins: Record<string, number[]>;
   items: Item[];
   cycles: string[];
-  errors: string[];
 }
 
 /** Dibuja la escena de una spec desde una cámara. No depende de Node: el modo órbita la llama en el navegador. */
 export function drawScene(spec: FigureSpec, lang: string, view: View = {}): Scene {
   const W = spec.width ?? 640;
   const H = spec.height ?? 400;
-  const { items, errors } = buildItems(spec.parts);
+  const { items } = buildItems(spec.parts);
   const options = { ...spec.camera, ...(view.azimuth !== undefined ? { azimuth: view.azimuth } : {}), ...(view.elevation !== undefined ? { elevation: view.elevation } : {}) };
   const cam = fitCamera(options, fitPoints(spec, items), W, H, spec.pad ?? 24, view.scale);
   const { order, cycles } = paintOrder(cam, items.map((i) => i.box), items.map((i) => i.id));
@@ -165,6 +164,5 @@ export function drawScene(spec: FigureSpec, lang: string, view: View = {}): Scen
     spins,
     items,
     cycles,
-    errors,
   };
 }
