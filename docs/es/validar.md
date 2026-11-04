@@ -66,6 +66,7 @@ no lanza: devuelve sus errores.
 | `bind` | `bind-unknown-param` ↑, `bind-unknown-group` ↑, `bind-spin-no-pivot` ↑, `bind-no-effect`, `bind-with-model` |
 | Desvíos y lectura | `preset-unknown-param` ↑, `preset-value-invalid` ↑, `preset-value-out-of-range` ↑, `preset-value-off-step` ↑, `preset-press-invalid` ↑, `preset-no-effect`, `preset-label-missing`, `preset-note-missing`, `readout-unknown-param`, `readout-long` |
 | Auditoría | `part-floats`, `parts-overlap`, `paint-order-ambiguous`, `label-unreadable`, y `weight-over-budget`, que necesita Node: lo dan `isofig check` y `budgetIssues(spec, measure(html), lang)` de `isofig/node` |
+| Color ([color.md](color.md)) | `paint-unknown` ↑, `paint-is-state`, `palette-base-invalid`, `palette-use-invalid`, y sobre el dibujo `palette-roles-unmet`, `palette-too-many-colors`, `paint-indistinct`, `paint-text-contrast` |
 | `check` | `model-group-unknown` ↑, `group-never-driven`, `model-param-unknown` ↑, `preset-same-view`, `set-unknown-param` |
 
 **Notas** (`info`, nunca hacen fallar `--strict`): `alt-missing`, `label-small-mobile`, `group-static`, `param-never-read`,

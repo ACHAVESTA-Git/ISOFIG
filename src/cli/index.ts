@@ -12,6 +12,7 @@ import { renderFigure } from "../core/render.ts";
 import { budgetIssues, measure } from "../node/index.ts";
 import type { FigureSpec } from "../core/spec.ts";
 import { validateSpec } from "../core/validate.ts";
+import { runPalette } from "./palette.ts";
 
 const HELP = `isofig: isometric figures from a spec
 
@@ -20,6 +21,9 @@ const HELP = `isofig: isometric figures from a spec
   isofig add angular <dir>    copy the standalone Angular component into your app
   isofig import compose <file.json|-> [-o spec.json]
                               a figure from \`docker compose config --format json\`
+  isofig palette [--base "#2fb58b"] [--format css|json] [--report] [-o file]
+                              map roles derived from a brand color, with a contrast,
+                              ΔE and color-blindness table on stderr (--report)
 
   check   validates the spec, audits the drawing and, with --model, runs the model for --seconds simulated
           seconds (and every preset with --presets) to find groups, controls and presets that do nothing.
@@ -154,10 +158,16 @@ async function main() {
       strict: { type: "boolean", default: false },
       presets: { type: "boolean", default: false },
       seconds: { type: "string" },
+      base: { type: "string" },
+      report: { type: "boolean", default: false },
       help: { type: "boolean", short: "h" },
     },
   });
   const [command, file] = positionals;
+  if (command === "palette" && !values.help) {
+    process.exitCode = runPalette({ base: values.base, format: values.format, report: values.report, out: values.out });
+    return;
+  }
   if (values.help || !command || !file) {
     console.log(HELP);
     return;

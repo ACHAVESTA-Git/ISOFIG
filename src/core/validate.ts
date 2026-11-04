@@ -1,4 +1,5 @@
 import type { Issue } from "./issues.ts";
+import { validatePalette } from "./palette/validate.ts";
 import { validateBind, validateParams, validatePresets, validateReadout } from "./validate-controls.ts";
 import { validateParts } from "./validate-parts.ts";
 import {
@@ -123,5 +124,6 @@ export function validateSpec(spec: unknown, options: ValidateOptions = {}): Issu
   validateBind(rep, spec["bind"], byId, generated ? undefined : groups, spins, Boolean(spec["model"]));
   validatePresets(rep, spec["presets"], byId);
   validateReadout(rep, spec["readout"], spec["params"], byId);
+  validatePalette(rep, spec);
   return issues;
 }
