@@ -88,9 +88,11 @@ Si algún nodo trae `explode`, la figura gana sola:
   `explode` y los de sus ancestros, cada uno en la ventana de su etapa: al pasar al paso 3 se mueve lo de la etapa 3, y
   lo que va dentro de ello se mueve con él.
 - **La lista de piezas** («Pieza»): un botón por nombre, en el orden del árbol; dos nodos con el mismo nombre (las dos
-  culatas) son una sola entrada. Al elegir una, el resto se atenúa y la lectura muestra su `name` y su `note`. Elegir
-  un nodo muestra sus piezas y las de dentro que no se desarman por su cuenta: lo que sale aparte es otra pieza. Con la
-  figura armada, el resto se vuelve translúcido y se ve la pieza dentro (los pistones en su bancada).
+  culatas) son una sola entrada. Al elegir una, la cámara se acerca a ella con una animación, la pieza pasa al primer
+  plano (se pinta encima de todo) y el resto queda al 35 %, translúcido pero a la vista; la lectura muestra su `name` y
+  su `note`, y «Todo» vuelve al encuadre completo. Elegir un nodo muestra sus piezas y las de dentro que no se desarman
+  por su cuenta: lo que sale aparte es otra pieza. Con la figura armada se ve la pieza dentro (los pistones en su
+  bancada), y el acercamiento sigue a la pieza si mueves «Desarmar» o giras la figura.
 - **La lectura**: «Paso 3 de 7: culatas fuera», o «Culata · cierra los cilindros…» con una pieza elegida. El lector de
   pantalla oye el paso al moverlo (`aria-valuetext`) y la lista es un grupo de botones de radio con su leyenda.
 

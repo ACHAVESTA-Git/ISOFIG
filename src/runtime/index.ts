@@ -99,7 +99,13 @@ export function register(name: string, model: Model<any, any>): void {
   waiting.delete(name);
 }
 
-const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+const clamp01 = (v: number) => clamp(v, 0, 1);
+/** Opacidad de lo que no es la pieza elegida: se aparta sin desaparecer, para no perder dónde va. */
+const DIM = 0.35;
+/** Unión de dos cajas `[x0, y0, x1, y1]`. */
+const join = (a: number[] | undefined, c: number[]): number[] =>
+  a ? [Math.min(a[0], c[0]), Math.min(a[1], c[1]), Math.max(a[2], c[2]), Math.max(a[3], c[3])] : c;
 
 /** `{id}` con el texto de su valor si lo hay, que a su vez puede nombrar otro parámetro (una pasada más). */
 const fill = (d: FigureData, p: Params, text = d.readout): string =>
@@ -123,7 +129,8 @@ const bindModel = (d: FigureData, m?: Model<any, any>): Model<{ s: unknown; t: n
       let x = p[b.param] ?? 0;
       const g = (groups[b.group] = { ...groups[b.group] });
       if (b.keep) {
-        if (x && !b.keep.includes(x)) g.o = (g.o ?? 1) * 0.2;
+        // Siempre con valor: sin él, el grupo se quedaría atenuado al elegir otra pieza o volver a «Todo».
+        g.o = (g.o ?? 1) * (x && !b.keep.includes(x) ? DIM : 1);
         continue;
       }
       if (b.win) x = clamp01((x - b.win[0]) / (b.win[1] - b.win[0]));
@@ -208,11 +215,20 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
   let base: Element[] = [];
   let pose = 0;
   let eased = 0;
+  // La pieza elegida que el DOM ya pinta encima y el encuadre que se muestra: elegir una pieza acerca la cámara.
+  let front = 0;
+  const svg = el.querySelector<SVGSVGElement>(".isofig-art");
+  const full = (svg?.getAttribute("viewBox") ?? "").split(" ").map(Number);
+  let vb = full;
+  const pick = d.bind?.find((b) => b.keep)?.param;
+  // Caja de cada grupo sin su desplazamiento: `getBBox` no cuenta el `transform` del propio nodo.
+  let boxes = new Map<string, number[]>();
   // Al girar la figura (isofig/orbit) el SVG se redibuja: se vuelven a buscar las piezas y conservan su estado.
   const collect = () => {
     scene = el.querySelector(".isofig-scene");
     base = [...(scene?.querySelectorAll(":scope>:is(g,use)") ?? [])];
-    pose = 0;
+    pose = front = 0;
+    boxes = new Map();
     const before = new Map(groups);
     groups.clear();
     el.querySelectorAll<SVGElement>("[data-g]").forEach((node) => {
@@ -295,7 +311,6 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     const view = m.view(state, params, ctx);
     const k = reduced || jump ? 1 : 1 - Math.exp(-dt / d.tau);
     jump = false;
-    let moving = false;
     for (const [name, g] of groups) {
       const v = view.groups?.[name];
       if (v) {
@@ -309,6 +324,46 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
           }
         }
       }
+    }
+    const moving = draw(k);
+    const text = view.readout ?? "";
+    if (readout && readout.textContent !== text) readout.textContent = text;
+    const news = view.say || (performance.now() < offerUntil && offer);
+    if (news && budget > 0) speak(news);
+    if (visible && (playing || moving)) wake();
+    else last = 0;
+  };
+  /** Encuadre de la pieza elegida en su pose de destino, o el completo con «Todo». */
+  const aim = (f: number): number[] => {
+    const b = d.basis;
+    let u: number[] | undefined;
+    for (const bd of d.bind ?? []) {
+      const g = groups.get(bd.group);
+      if (!f || !g || !bd.keep?.includes(f)) continue;
+      if (!boxes.has(bd.group))
+        for (const n of g.els)
+          try {
+            const r = (n as SVGGraphicsElement).getBBox();
+            if (r.width || r.height) boxes.set(bd.group, join(boxes.get(bd.group), [r.x, r.y, r.x + r.width, r.y + r.height]));
+          } catch {}
+      const box = boxes.get(bd.group);
+      const [x, y, z] = g.goal;
+      const e = b[0] * x + b[1] * y + b[2] * z;
+      const h = b[3] * x + b[4] * y + b[5] * z;
+      if (box) u = join(u, [box[0] + e, box[1] + h, box[2] + e, box[3] + h]);
+    }
+    if (!u) return full;
+    const [x0, y0, x1, y1] = u;
+    const [fx, fy, fw, fh] = full;
+    // La pieza ocupa unos dos tercios del cuadro, con el formato de la figura y sin acercarse más de 3×.
+    const w = clamp(Math.max(x1 - x0, ((y1 - y0) * fw) / fh) * 1.5, fw / 3, fw);
+    const h = (w * fh) / fw;
+    return [clamp((x0 + x1 - w) / 2, fx, fx + fw - w), clamp((y0 + y1 - h) / 2, fy, fy + fh - h), w, h];
+  };
+  // Escribe en el SVG el estado de cada grupo, el orden de pintado y el encuadre, `k` más cerca de su meta.
+  const draw = (k: number): boolean => {
+    let moving = false;
+    for (const [name, g] of groups) {
       for (let i = 0; i < 5; i++) {
         const gap = g.goal[i] - g.cur[i];
         g.cur[i] = g.snap || Math.abs(gap) < 1e-3 ? g.goal[i] : g.cur[i] + gap * k;
@@ -327,28 +382,41 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
       }
     }
     const r = d.reorder;
-    if (r && scene) {
+    let next = 0;
+    if (r) {
       const goal = params[r.param] ?? 0;
       eased = Math.abs(goal - eased) < 1e-3 ? goal : eased + (goal - eased) * k;
       if (eased !== goal) moving = true;
       // Al salir, la pieza cambia de orden cuando ya llegó; al volver, en cuanto arranca: así nunca se pinta encima.
-      let next = 0;
       r.poses.forEach((q, i) => {
         if (eased >= q[0] - 0.05) next = i + 1;
       });
-      if (next !== pose) {
-        pose = next;
-        for (const n of base) scene.append(n);
-        const q = r.poses[pose - 1] ?? [];
-        for (let i = 1; i < q.length; i += 2) scene.insertBefore(base[q[i]], base[q[i + 1]] ?? null);
+    }
+    const f = pick ? params[pick] : 0;
+    if (scene && (next !== pose || f !== front)) {
+      pose = next;
+      front = f;
+      for (const n of base) scene.append(n);
+      const q = r?.poses[pose - 1] ?? [];
+      for (let i = 1; i < q.length; i += 2) scene.insertBefore(base[q[i]], base[q[i + 1]] ?? null);
+      // La pieza elegida se pinta encima de todo: aunque esté dentro del bloque, se ve entera entre las atenuadas.
+      if (f) {
+        const top = new Set<Element | null>();
+        for (const b of d.bind!) if (b.keep?.includes(f)) for (const n of groups.get(b.group)?.els ?? []) top.add(n.closest(".isofig-scene>*"));
+        for (const n of [...scene.children]) if (top.has(n)) scene.append(n);
       }
     }
-    const text = view.readout ?? "";
-    if (readout && readout.textContent !== text) readout.textContent = text;
-    const news = view.say || (performance.now() < offerUntil && offer);
-    if (news && budget > 0) speak(news);
-    if (visible && (playing || moving)) wake();
-    else last = 0;
+    if (svg && pick) {
+      const goal = aim(f);
+      vb = vb.map((v, i) => {
+        if (Math.abs(goal[i] - v) < 0.05) return goal[i];
+        moving = true;
+        return v + (goal[i] - v) * k;
+      });
+      const box = vb.map((v) => +v.toFixed(2)).join(" ");
+      if (svg.getAttribute("viewBox") !== box) svg.setAttribute("viewBox", box);
+    }
+    return moving;
   };
   const wake = () => {
     if (!frame) frame = requestAnimationFrame(tick);
@@ -443,6 +511,8 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     d.spins = spins;
     d.reorder = reorder;
     collect();
+    // En el mismo cuadro del giro: si espera al siguiente, mientras se arrastra se ve la pose en reposo.
+    draw(0);
     wake();
   });
   // El primer cuadro se dibuja aunque el observador no haya avisado todavía (o nunca avise, como en un headless).
