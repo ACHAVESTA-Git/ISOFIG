@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.1 · 2026-11-04
+
+- `npm i github:ACHAVESTA-Git/ISOFIG` builds the package: a `prepare` script compiles `dist/` when npm installs it from git (npm does not run `prepack` there).
+
 ## 0.9.0 · 2026-11-04
 
 The upgrade before going public: nested JSON with teardown, maps made of real objects, color with guarantees, an

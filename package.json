@@ -1,6 +1,6 @@
 {
   "name": "isofig",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Explain technical ideas as small, crafted isometric machines: build-time SVG, a tiny animation runtime, Astro and Angular adapters, and a Claude Code skill.",
   "type": "module",
   "license": "MIT",
@@ -101,6 +101,7 @@
     "size": "npm run build --silent && node scripts/size.ts",
     "test": "node --no-warnings --test \"test/**/*.test.ts\"",
     "prepack": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\" && npm run build",
+    "prepare": "npm run build",
     "prepublishOnly": "npm run check && npm test",
     "example": "node src/cli/index.ts build examples/token-bucket/spec.ts --format page -o examples/token-bucket/preview.html --model examples/token-bucket/model.ts",
     "gallery": "node scripts/galeria.mjs",
