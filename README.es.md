@@ -16,7 +16,7 @@ Angular, y un plugin de Claude Code que escribe las figuras, las valida y las mi
   <img src="docs/assets/motor-v8-luxe-dark-exploded.png" width="32%" alt="El V8 desarmado del todo: culatas, bloque, cigüeñal, ocho pistones y bielas">
 </p>
 
-<p align="center"><sub><code>examples/motor-v8/spec.json</code>: 215 piezas en JSON puro, <b>16,6 KB gzip</b> la figura
+<p align="center"><sub><code>examples/motor-v8/spec.json</code>: 215 piezas en JSON puro, <b>16,4 KB gzip</b> la figura
 entera. El control «Desarmar», la lista de piezas y la lectura de cada paso salen del anidamiento del JSON: no hay
 modelo ni código. Se muestra con el <a href="docs/es/lujo.md">estilo de lujo</a> opcional.</sub></p>
 
@@ -335,7 +335,7 @@ Minificado y con gzip, comprobado en cada push por `npm run size` contra `size-b
 | `isofig/orbit` (giro de 360°) | al tocar o girar la figura | 10 KB |
 | `isofig/theme.css` | en línea, una vez por página con figura | 3,0 KB |
 | `isofig/themes/luxe.css` | si lo importas | 1,7 KB |
-| Una figura (SVG y datos) | en el HTML | 7–34 KB |
+| Una figura (SVG y datos) | en el HTML | 7–35 KB |
 
 El núcleo (`isofig`), el kit y el compilador de mapas corren al compilar y no llegan al navegador.
 
@@ -343,7 +343,8 @@ El núcleo (`isofig`), el kit y el compilador de mapas corren al compilar y no l
 
 - Cada figura es un `<figure>` con un SVG `role="img"`, título y descripción; los mapas además describen en palabras
   sus objetos y enlaces.
-- Controles nativos: `input[type=range]` con `aria-valuetext`, interruptores, grupos de opciones y botones.
+- Controles nativos: `input[type=range]` con `aria-valuetext`, interruptores, grupos de opciones y botones. Con el
+  dibujo enfocado, ← y → lo giran 15° y ↑ y ↓ cambian la altura de la cámara.
 - Movimiento: botón de pausa (WCAG 2.2.2), `prefers-reduced-motion` seguido en vivo y animación que se detiene fuera de
   pantalla. Con el movimiento reducido, la cámara salta a la pieza que eliges en vez de viajar.
 - La lista de piezas es un grupo de opciones con su leyenda, y la lectura dice qué pieza está elegida.
@@ -376,8 +377,10 @@ como datos), [ADR 0002](docs/adr/0002-especificacion-anidada-y-despiece.md) (spe
 ## Preguntas frecuentes
 
 **¿Es 3D de verdad?** La geometría es 3D (cajas, cilindros, conos, prismas, esferas y cápsulas, en cualquier eje) y se
-proyecta, se sombrea y se ordena en profundidad al compilar. Al girar la figura, el navegador la vuelve a dibujar desde otro
-ángulo. No es una cámara 3D libre, y es a propósito: así la figura sigue ligera y se lee bien.
+proyecta, se sombrea y se ordena en profundidad al compilar. La figura da la vuelta completa (360°) arrastrándola o con
+las flechas, y el navegador la vuelve a dibujar desde cada ángulo. Cada nodo gira además en sus tres ejes con `rotate`,
+como un Transform de Unity. Lo que no hay, a propósito, es física, texturas ni fotorrealismo: así la figura sigue ligera
+y se lee bien.
 
 **¿Es solo para software?** No. El mismo JSON dibuja un auto o un esqueleto: mira
 [Más allá del software](#más-allá-del-software). Cualquier cosa hecha de piezas que encajan, desde un motor hasta un
@@ -403,6 +406,7 @@ estables, así que la IA puede revisar su propio trabajo y corregirlo.
 
 - 1.0: los avisos marcados con ↑ en la [guía de validación](docs/es/validar.md) pasan a ser errores, y el paquete se
   publica en npm.
+- Despiece con giro: bisagras que se abren al desarmar (una puerta, un capó), hoy el despiece solo traslada.
 - Más objetos de mapa e importadores (OpenAPI, manifiestos de Kubernetes).
 - Adaptadores para otros frameworks.
 
