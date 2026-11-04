@@ -429,3 +429,17 @@ test("el CLI: --lang cambia el idioma y el prefijo, --strict falla con avisos, c
   assert.match(ok.stderr, /^nota: model\.readout: La lectura más larga/m);
   assert.equal(cli("check", spec, "--presets").status, 1);
 });
+
+test("en defs, un número puede ser «{clave}» como enseña la guía; un with que lo llena con texto se avisa en la plantilla", () => {
+  const spec = (alto: unknown) =>
+    ({
+      id: "mesa",
+      title: "Mesa",
+      alt: "Una mesa",
+      defs: { pata: { parts: [{ id: "c", kind: "cylinder", at: [0, 0, 0], r: 4, h: "{alto}" }] } },
+      root: { id: "mesa", parts: [{ id: "tablero", kind: "box", at: [0, 0, 30], size: [60, 40, 4] }], children: [{ id: "p1", use: "pata", with: { alto: alto }, at: [4, 4, 0] }] },
+    }) as unknown as FigureSpec;
+  const errors = (s: FigureSpec) => validateSpec(s).filter((i) => i.severity === "error").map((i) => `${i.code} ${i.path}`);
+  assert.deepEqual(errors(spec(30)), []);
+  assert.deepEqual(errors(spec("treinta")), ["number-invalid defs.pata.parts[0].h"]);
+});
