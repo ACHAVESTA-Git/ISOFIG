@@ -49,6 +49,9 @@ export interface FigureData {
   params: { id: string; value: number; unit: string; spoken: string; options?: string[]; texts?: string[] }[];
   presets?: { values: Record<string, number>; note: string; reset?: boolean; press?: string[] }[];
   bind?: { group: string; param: string; move?: number[]; spin?: number; fade?: boolean; win?: number[]; keep?: number[] }[];
+  /** Recorridos sin modelo: ver `tracks` en la spec. */
+  tracks?: { g: string; p: number[][]; T: number; d?: number; l?: 0; h?: number[][] }[];
+  rest?: number;
   readout: string;
   lang: string;
   /** Con movimiento reducido, segundos que se simulan de golpe al montar y tras cada control o desvío. */
@@ -108,12 +111,13 @@ const fill = (d: FigureData, p: Params, text = d.readout): string =>
 /**
  * Los `bind` de la spec sobre el modelo (si lo hay): varios enlaces al mismo grupo se suman, cada uno con su ventana
  * del parámetro, y una elección atenúa los grupos que no son la pieza elegida. Así se desarma una figura sin modelo.
+ * Lleva también el reloj de los `tracks`: los grupos que viajan por una polilínea, con o sin modelo.
  */
-const bindModel = (d: FigureData, m?: Model<any, any>): Model<any> => ({
-  init: (...a) => m?.init(...a),
-  step: (...a) => m?.step?.(...a),
-  view(s, p, c) {
-    const v: View = m ? m.view(s, p, c) : {};
+const bindModel = (d: FigureData, m?: Model<any, any>): Model<{ s: unknown; t: number }> => ({
+  init: (p, c) => ({ s: m?.init(p, c), t: c.reducedMotion ? (d.rest ?? 0) : 0 }),
+  step: (o, dt, p, c) => ((o.s = m?.step?.(o.s, dt, p, c) ?? o.s), (o.t += dt), o),
+  view(o, p, c) {
+    const v: View = m ? m.view(o.s, p, c) : {};
     const groups: Record<string, GroupView> = { ...v.groups };
     for (const b of d.bind ?? []) {
       let x = p[b.param] ?? 0;
@@ -126,6 +130,17 @@ const bindModel = (d: FigureData, m?: Model<any, any>): Model<any> => ({
       if (b.move) g.t = b.move.map((v, i) => (g.t?.[i] ?? 0) + v * x) as GroupView["t"];
       if (b.spin) g.r = (g.r ?? 0) + b.spin * x;
       if (b.fade) g.o = (g.o ?? 1) * clamp01(x);
+    }
+    // Un recorrido: el grupo avanza por su polilínea según el arco; aparece y se apaga en los extremos.
+    for (const k of d.tracks ?? []) {
+      const u = (o.t - (k.d ?? 0)) / k.T;
+      const f = k.l === 0 ? Math.min(u, 1) : u - Math.floor(u);
+      let i = 1;
+      while (i < k.p.length - 1 && k.p[i][3] < f) i++;
+      const a = k.p[i - 1];
+      const b = k.p[i];
+      const w = (f - a[3]) / (b[3] - a[3]);
+      groups[k.g] = { t: [0, 1, 2].map((j) => a[j] + (b[j] - a[j]) * w) as GroupView["t"], o: u < 0 || k.h?.some(([x, y]) => f > x && f < y) ? 0 : Math.min(1, f * 12, k.l === 0 ? 1 : (1 - f) * 12), snap: true };
     }
     return { ...v, groups, readout: v.readout ?? fill(d, p, fill(d, p)) };
   },

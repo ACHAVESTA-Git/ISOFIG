@@ -6,6 +6,7 @@ import { escapeHtml as esc } from "./serialize.ts";
 import { textOf, type FigureSpec, type FlatSpec } from "./spec.ts";
 import { assembleTree, type Catalog } from "./tree.ts";
 import { catalog as kit } from "../kit/index.ts";
+import { trackData, type TrackData } from "./tracks.ts";
 import { validateSpec } from "./validate.ts";
 
 export interface RenderOptions {
@@ -38,6 +39,9 @@ export interface RuntimeData {
   params: { id: string; value: number; unit: string; spoken: string; options?: string[]; texts?: string[] }[];
   presets?: { values: Record<string, number>; note: string; reset?: boolean; press?: string[] }[];
   bind: FigureSpec["bind"];
+  /** Recorridos sin modelo (ver `tracks` en la spec) y el segundo en que se queda el reloj con movimiento reducido. */
+  tracks?: TrackData[];
+  rest?: number;
   readout: string;
   lang: string;
   settle?: number;
@@ -166,11 +170,15 @@ function draw(spec: FlatSpec, options: RenderOptions, lang: string, issues: Issu
     ...(p.press?.length ? { press: p.press } : {}),
   }));
   const template = textOf(spec.readout, lang);
+  const tracks = trackData(spec.tracks);
+  for (const g of new Set(tracks.data.map((t) => t.g))) {
+    if (!items.some((i) => i.group === g)) issues.push(makeIssue(lang, "track-group-unknown", "tracks", { group: g }));
+  }
   const readout = fillReadout(template, params);
   const data: RuntimeData = {
     id,
     model: spec.model,
-    autoplay: spec.autoplay ?? Boolean(spec.model),
+    autoplay: spec.autoplay ?? (Boolean(spec.model) || tracks.data.length > 0),
     tau: spec.motion?.tau ?? 0.18,
     basis,
     spins,
@@ -181,6 +189,7 @@ function draw(spec: FlatSpec, options: RenderOptions, lang: string, issues: Issu
     ...(presets.length ? { presets } : {}),
     ...(spec.motion?.settle ? { settle: num(spec.motion.settle) } : {}),
     ...(reorder ? { reorder } : {}),
+    ...(tracks.data.length ? { tracks: tracks.data, rest: tracks.rest } : {}),
   };
 
   const play = data.autoplay || spec.model

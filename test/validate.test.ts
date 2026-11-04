@@ -128,15 +128,15 @@ test("los campos nuevos de 0.9 no dan «clave desconocida» aunque su rama aún 
     $schema: "https://example.com/schema.json",
     palette: { roles: ["steel"] },
     defs: { mast: { id: "mast" } },
-    tracks: [{ group: "cart", points: [[0, 0, 0], [10, 0, 0]] }],
+    tracks: [{ group: "cart", path: [[0, 0, 0], [10, 0, 0]], period: 4, delay: 1, loop: false }],
     motion: { tau: 0.2, settle: 4 },
     params: [{ id: "go", label: "Go", kind: "action", min: 0, max: 9, value: 0 }],
     presets: [{ label: "Go", values: {}, note: "n", press: ["go"] }],
-    parts: [{ ...box, paint: "steel", repeat: { count: 2, step: [0, 5, 0], from: 3 } }],
+    parts: [{ ...box, paint: "steel", group: "cart", repeat: { count: 2, step: [0, 5, 0], from: 3 } }],
   };
   assert.deepEqual(validateSpec(spec), []);
   // Con un árbol anidado o un mapa las piezas se aplanan al compilar: no se exigen ni se miran aquí.
-  assert.deepEqual(validateSpec({ ...base, root: { id: "r", children: [] }, map: { kind: "flow" } }), []);
+  assert.deepEqual(validateSpec({ ...base, root: { id: "r", children: [] }, map: { layout: "flow", nodes: [] } }), []);
   assert.deepEqual(codes({ ...base, root: { id: "r" }, groups: { x: {} }, params: [{ id: "p", label: "p", min: 0, max: 1, value: 0 }], bind: [{ group: "x", param: "p", fade: true }] }), []);
 });
 

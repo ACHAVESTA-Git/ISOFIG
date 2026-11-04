@@ -430,6 +430,68 @@ const CATALOG = {
     es: (v) => `La lectura mide ${v.length} caracteres (la tarjeta admite ${v.max}): en el celular salta de línea y la tarjeta se mueve mientras la figura corre.`,
   },
 
+  // Mapas y recorridos
+  "track-path-short": {
+    severity: "error",
+    en: (v) => `The track of group ${v.group} needs at least 2 distinct points in path, got ${v.got}.`,
+    es: (v) => `El recorrido del grupo ${v.group} necesita al menos 2 puntos distintos en path; tiene ${v.got}.`,
+  },
+  "track-period-invalid": {
+    severity: "error",
+    en: (v) => `The period of the track of group ${v.group} must be a positive number of seconds, got ${v.got}.`,
+    es: (v) => `El period del recorrido del grupo ${v.group} debe ser un número positivo de segundos; llegó ${v.got}.`,
+  },
+  "track-delay-invalid": {
+    severity: "warning",
+    en: (v) => `The delay of the track of group ${v.group} must be 0 or more seconds, got ${v.got}: it is treated as 0.`,
+    es: (v) => `El delay del recorrido del grupo ${v.group} debe ser 0 o más segundos; llegó ${v.got}, y se trata como 0.`,
+  },
+  "track-group-unknown": {
+    severity: "warning",
+    en: (v, q) => `A track moves the group ${q(v.group)}, which no part has: nothing would travel.`,
+    es: (v, q) => `Un recorrido mueve el grupo ${q(v.group)}, que ninguna pieza tiene: no viajaría nada.`,
+  },
+  "map-node-id-duplicate": {
+    severity: "error",
+    en: (v, q) => `Duplicate node id ${q(v.id)} in the map (first used at ${v.first}).`,
+    es: (v, q) => `id de nodo repetido ${q(v.id)} en el mapa (ya aparece en ${v.first}).`,
+  },
+  "map-glyph-unknown": {
+    severity: "error",
+    en: (v, q) => `The node ${q(v.id)} is ${q(v.got)}, which is not in the catalog (${v.known}). A node with children is a container and can be anything.`,
+    es: (v, q) => `El nodo ${q(v.id)} es ${q(v.got)}, que no está en el catálogo (${v.known}). Un nodo con children es un contenedor y puede ser cualquier cosa.`,
+  },
+  "map-node-unknown": {
+    severity: "error",
+    en: (v, q) => `${q(v.field)} names ${q(v.id)}, which is not a node of the map.`,
+    es: (v, q) => `${q(v.field)} nombra ${q(v.id)}, que no es un nodo del mapa.`,
+  },
+  "map-flow-short": {
+    severity: "warning",
+    en: () => "A flow needs at least two nodes in path to have somewhere to go.",
+    es: () => "Un flujo necesita al menos dos nodos en path para tener adónde ir.",
+  },
+  "map-cell-collision": {
+    severity: "warning",
+    en: (v, q) => `${q(v.id)} and ${q(v.first)} are in the same grid cell: they would overlap.`,
+    es: (v, q) => `${q(v.id)} y ${q(v.first)} están en la misma celda de la cuadrícula: se encimarían.`,
+  },
+  "map-paint-unknown": {
+    severity: "warning",
+    en: (v, q) => `${q(v.field)} uses the paint ${q(v.got)}, which is not a role (${v.known}).`,
+    es: (v, q) => `${q(v.field)} usa la pintura ${q(v.got)}, que no es un rol (${v.known}).`,
+  },
+  "map-label-small": {
+    severity: "warning",
+    en: (v) => `The map labels would measure ${v.zoomed} px in the enlarged view (minimum ${v.min}): there are too many nodes for one figure; split the map.`,
+    es: (v) => `Los rótulos del mapa medirían ${v.zoomed} px en la vista ampliada (mínimo ${v.min}): hay demasiados nodos para una figura; divide el mapa.`,
+  },
+  "map-route-blocked": {
+    severity: "warning",
+    en: (v, q) => `No clear route from ${q(v.a)} to ${q(v.b)}: the link crosses other nodes.`,
+    es: (v, q) => `No hay ruta libre de ${q(v.a)} a ${q(v.b)}: el enlace cruza otros nodos.`,
+  },
+
   // Auditoría de la escena (piezas, orden de pintado, peso, rótulos)
   "part-floats": {
     severity: "warning",
@@ -572,6 +634,7 @@ const EXPECTED: Record<string, { en: string; es: string }> = {
   "below-half": { en: "a number below half of the smaller side", es: "un número menor que la mitad del lado menor" },
   seconds: { en: "a positive number of seconds", es: "un número positivo de segundos" },
   vector: { en: "a list of numbers", es: "una lista de números" },
+  boolean: { en: "true or false", es: "true o false" },
 };
 
 const QUOTES: Record<"en" | "es", Q> = { en: (s) => `'${s}'`, es: (s) => `«${s}»` };
