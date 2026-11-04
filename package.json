@@ -18,6 +18,14 @@
     "claude-code",
     "skill"
   ],
+  "homepage": "https://github.com/ACHAVESTA-Git/ISOFIG#readme",
+  "bugs": {
+    "url": "https://github.com/ACHAVESTA-Git/ISOFIG/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ACHAVESTA-Git/ISOFIG.git"
+  },
   "bin": {
     "isofig": "./dist/cli/index.js"
   },
@@ -53,10 +61,11 @@
   ],
   "files": [
     "dist",
+    ".claude-plugin",
     "src/astro",
     "src/angular",
     "src/theme",
-    "skill",
+    "skills",
     "docs/es",
     "docs/en",
     "examples/token-bucket/spec.ts",
