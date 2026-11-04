@@ -1,5 +1,62 @@
 # Changelog
 
+## 0.9.0 · 2026-11-04
+
+The upgrade before going public: nested JSON with teardown, maps made of real objects, color with guarantees, an
+optional luxe style and a Claude Code plugin.
+
+### Nested specs and teardown
+- Nested specs: `root`/`defs` with local coordinates, subtree `repeat`, `use` from `defs` (with `{key}` templates) or a catalog (`isofig/kit` by default), and `on`/`mount` resolved from the node upwards; `assemble()` flattens them, and `renderFigure`, `drawScene`, `validateSpec` and the CLI take them as is.
+- Declarative teardown: any node with `explode` gives the figure a stepped "Take apart" control, a parts list that fades the rest, and a readout per step; stages run outside-in or by `stage`.
+- `bind`: several binds on one group add up, each with its own `win`dow; `keep` fades groups by choice; binds also apply on top of a model. Params take `texts` per value.
+- Paint order is also computed per teardown pose (`reorder`, diffs only), and the runtime reorders the DOM at each threshold.
+- New solids: `prism` with `axis: "x" | "y"`, `cylinder` with a vector axis, and `cone`.
+- Examples: a racing V8 (215 parts) and a liquid-fuel rocket engine, in plain JSON.
+
+### Maps, flows and UML
+- Added `map` for topologies, flow maps and UML: 17 real objects (phone, rack, database as a stack of disks, queue as a conveyor, class as a filing cabinet with drawers…), nested containers, `flow`/`layers`/`grid` layouts, orthogonal ribbons, UML ends and multiplicities, animated packets, a legend and labels sized to read enlarged. Compiled by `isofig/map`; `renderFigure` takes `resolveMap` and `<Figure>` and the CLI pass it.
+- Added `tracks`: groups that travel along a polyline with no model (`group`, `path`, `period`, `delay`, `loop`, `hide`).
+- Added `isofig import mermaid` (flowchart and classDiagram); `isofig import compose` now builds a map with the same compiler.
+- Added `ground` parts. Examples: an online shop topology, an order flow map and a shop's domain in UML.
+
+### Color and style
+- `paint` on parts and nodes: a role (`client`, `edge`, `compute`, `data`, `messaging`, `storage`, `external`) or a material (`aluminium`, `steel`, `iron`, `copper`, `brass`, `rubber`, `carbon`, `glass`, `lacquer`), in OKLCH with light and dark values; states and `lit` still win, and figures without `paint` render byte for byte as before.
+- Measured guarantees in `src/core/palette` (OKLab, WCAG contrast, Machado color-blindness simulation, no dependencies): engraved text ≥ 4.5:1, edges ≥ 3:1, ΔE ≥ 10 (≥ 6 color blind) between any two paints of a set, in both themes.
+- `palette: { base, use }` derives the roles from a brand color; `isofig palette --base <color> [--format css|json] [--report]`; `legendOf(spec, lang)`.
+- Added `isofig/themes/luxe.css`, an optional luxe style (Atelier light, Nocturne dark) switched on with the `isofig-luxe` class; 1.7 KB gzipped, no web fonts, same guarantees.
+- Theme tokens, dark variants and `--isofig-paint-*` sit in `:where()`: a project's `.isofig { … }` wins in any load order. Engraved text uses `--isofig-on-accent` and `--isofig-ink-on-color`; overriding `--fx` is no longer needed.
+- The card is a size container; the readout reserves `--isofig-readout-lines`, so the card no longer jumps while the figure runs.
+
+### Runtime
+- Presets take `press` (action ids pressed after the values). Models get `ctx.pressed(id)`, `ctx.changed(id)` and `ctx.say(text)`, which announces once with the 0.7/0.8.3 rules; `view.say` still works.
+- `motion.settle`: with reduced motion, seconds simulated at once on mount and after every control or preset. The runtime follows live changes of `prefers-reduced-motion`.
+- "Enlarge" chip: `zoomOnDemand(() => import("isofig/zoom"))` opens the live SVG in a focus-trapped dialog at ≥ 1150 px, where labels read at ≥ 11 px on a phone. `isofig/zoom` is 0.8 KB gzip; `renderFigure(spec, { zoom: false })` removes it.
+- `unmountAll` clears `data-isofig-live`, so `transition:persist` figures mount again; `mountAll` releases figures that left the page.
+- `isofig/orbit` takes the assembled spec (`assemble(spec)`) and keeps instance ids; it is 8.6 KB gzip and no longer ships the palette tables.
+
+### Validation
+- `validateSpec(spec, { lang })`: errors and warnings with stable codes, a JSON `path` and English or Spanish messages, for parts, controls, trees, maps, tracks and colors. `renderFigure` calls it, no longer throws on a broken spec, and returns `Rendered.issues`.
+- `isofig check <spec> --model <model> --presets` runs the model and every preset and reports groups, presets and parameters that do nothing.
+- The audit warns about labels under 9 px even in the enlarged view and notes those small on a phone.
+- `repeat.from`: first value of `{i}`.
+- Warnings that become errors in 1.0 are marked ↑ in the docs.
+
+### Astro, kit and package
+- `<Figure>` takes `orbit`, `load="visible|idle|eager"`, `instance`, `overrides`, `zoom` and `theme`; it loads the runtime, model and orbit with `import()` when the reader gets close, works with `transition:persist`, and inlines the theme CSS once per page, only where a figure is drawn. `isofig/astro/client` registers lazy models with `models()`.
+- `RenderOptions.instance` changes DOM ids and radio names so the same figure can appear several times on a page. `applyOverrides(spec, overrides)` validates and merges values, presets, hidden controls and texts.
+- Added `isofig/kit`: `bench`, `plinth`, `labelPlate`, `ruler`, `screws`, `pool` and `groupsOf`, plus a `catalog` so JSON can say `"use": "bench"`.
+- The core no longer imports `node:zlib` or `Buffer`: `measure(html)` and `checkBudget` live in `isofig/node`. `./angular` is no longer exported (`isofig add angular <dir>`). Published examples import from the package name.
+- `package.json`: `prepack`, `prepublishOnly`, `keywords`, `sideEffects`, `repository`, `homepage`, `bugs`; `CHANGELOG.md` and the examples are published.
+
+### Claude Code plugin
+- Packaged as a Claude Code plugin: `claude plugin marketplace add ACHAVESTA-Git/ISOFIG`, then `claude plugin install isofig@isofig`. The skill moved from `skill/` to `skills/isofig/`.
+- One rewritten skill: when (and when not) to use isofig, machines, assemblies, maps, color and text rules measured by `check`, models with `ctx.say`/`pressed`/`settle`, and a mandatory check-and-look loop with a capture script.
+
+### CLI, tests and CI
+- Unknown commands, `--format` values and malformed `--set` fail before reading the spec (exit 1, with help); `--version`; help and prefixes follow `--lang`; the `stripTypeScriptTypes` warning is silenced; the page bundler handles `export async function`, `export *` and `export … from`.
+- `npm run size` with `size-budget.json`; CI on Node 22.18, 24 and 26 with a packed-package test and Astro 5 and 7 builds; happy-dom runtime tests; per-example SVG snapshots (`UPDATE_SNAPSHOTS=1 npm test`).
+- `npm run gallery` (every example in one offline HTML) and `npm run screenshots`.
+
 ## 0.8.3 · 2026-10-15
 
 - `say`: at most two announcements per reader interaction; then the model stays quiet until the reader touches the figure again (models that name a changing id no longer talk forever).

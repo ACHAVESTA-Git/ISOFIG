@@ -1,4 +1,8 @@
-.isofig {
+/*
+ * Todos los tokens van en :where(): especificidad 0. Un `.isofig { --isofig-accent: … }` tuyo gana siempre, se cargue
+ * antes o después de este archivo, y también en oscuro.
+ */
+:where(.isofig) {
   --isofig-paper: #f6f6f2;
   --isofig-card: #fbfbf8;
   --isofig-ink: #1d1e1c;
@@ -24,7 +28,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :where(:root:not([data-theme="light"])) .isofig {
+  :where(:root:not([data-theme="light"]) .isofig) {
     --isofig-ok: #5fd6ae;
     --isofig-warn: #e8b85a;
     --isofig-fail: #f07a5f;
@@ -44,7 +48,7 @@
   }
 }
 
-:where(:root[data-theme="dark"]) .isofig {
+:where(:root[data-theme="dark"] .isofig) {
     --isofig-ok: #5fd6ae;
     --isofig-warn: #e8b85a;
     --isofig-fail: #f07a5f;
@@ -70,6 +74,7 @@
 }
 
 .isofig-card {
+  container: isofig-card / inline-size;
   background: var(--isofig-card);
   border-radius: var(--isofig-radius);
   padding: 14px 16px;
@@ -91,11 +96,67 @@
   font-weight: 600;
 }
 
+/*
+ * Pie de la tarjeta: la pista ocupa lo que mide su texto (como mucho el 34 %) y la lectura el resto. Ninguna de las dos
+ * columnas depende del valor que muestra la lectura, así que el texto no se reacomoda mientras la figura corre.
+ */
+.isofig-bottom {
+  display: grid;
+  grid-template-columns: fit-content(34%) minmax(0, 1fr);
+  align-items: start;
+  line-height: 1.5;
+}
+
+/*
+ * La lectura reserva altura: --isofig-readout-lines líneas (tuyo; sin valor, 2, o 3 y 4 en tarjetas estrechas, ver abajo)
+ * para que la tarjeta no crezca ni encoja al cambiar el texto. Solo con data-live, es decir, si la figura tiene
+ * lectura o modelo: una figura sin lectura no deja un hueco.
+ */
 .isofig-readout {
+  --rl: 2;
   font-family: var(--isofig-mono);
   font-variant-numeric: tabular-nums;
   color: var(--isofig-ink);
   text-align: right;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+}
+.isofig-readout[data-live] {
+  min-height: calc(var(--isofig-readout-lines, var(--rl)) * 1.5em);
+  min-height: calc(var(--isofig-readout-lines, var(--rl)) * 1lh);
+}
+
+/*
+ * Tarjeta estrecha (se mide el ancho de la tarjeta, no el de la pantalla): la lectura pasa arriba, a todo el ancho y a la
+ * izquierda; la pista baja y se atenúa. En el DOM la pista sigue primero, solo cambia el orden visual. Con menos ancho caben
+ * menos caracteres por línea, así que se reservan más líneas.
+ */
+@container isofig-card (max-width: 40rem) {
+  .isofig-bottom {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+  .isofig-readout {
+    order: -1;
+    text-align: left;
+    font-size: 0.8125rem;
+  }
+  .isofig-hint {
+    font-size: 0.72rem;
+  }
+}
+@container isofig-card (max-width: 28rem) {
+  .isofig-readout { --rl: 3; }
+}
+@container isofig-card (max-width: 20rem) {
+  .isofig-readout { --rl: 4; }
+}
+/* La misma lectura, movida a la barra del diálogo de Ampliar, que ocupa todo el ancho de la pantalla. */
+@media (max-width: 899px) {
+  .isofig-zoombar .isofig-readout { --rl: 3; }
+}
+@media (max-width: 359px) {
+  .isofig-zoombar .isofig-readout { --rl: 4; }
 }
 
 .isofig-art {
@@ -130,8 +191,12 @@
   stroke-linejoin: round;
 }
 .isofig-art .lit { --fe: color-mix(in oklab, var(--isofig-accent), var(--isofig-edge) 45%); }
-/* Sobre una cara de color (acento o estado) el texto grabado va en tinta oscura en los dos temas. */
-.isofig-art :is(.lit, [data-state]) { --fx: var(--isofig-ink-on-color); }
+/*
+ * Tinta del texto grabado sobre una cara de color, en los dos temas. Sobre el acento (.lit) usa --isofig-on-accent, la
+ * misma que el selector marcado; sobre un estado (ok, warn, fail) usa --isofig-ink-on-color. Si ambos coinciden, gana el estado.
+ */
+.isofig-art .lit { --fx: var(--isofig-on-accent); }
+.isofig-art [data-state] { --fx: var(--isofig-ink-on-color); }
 
 .isofig-art .t { fill: var(--ft); stroke: var(--ft); }
 .isofig-art .b { fill: var(--fb); stroke: var(--fb); }
@@ -152,6 +217,73 @@
   font-weight: 600;
   letter-spacing: 0.02em;
 }
+
+/*
+ * Pinturas (`paint`): materiales para máquinas y roles para mapas, en OKLCH, cada una con la tinta de su texto
+ * grabado. Salen de src/core/palette; `isofig palette --report` mide sus garantías. light-dark() sigue a
+ * color-scheme, que aquí acompaña al tema. El canto se tiñe con la pintura; un estado del modelo gana sobre ella.
+ * Como los demás tokens, van en :where(): un `.isofig { --isofig-paint-steel: … }` o un `color-scheme` tuyo gana siempre.
+ */
+:where(.isofig) {
+  color-scheme: light;
+  --isofig-paint-client: light-dark(oklch(80% .075 250), oklch(43% .085 248));
+  --isofig-paint-client-ink: light-dark(#1d1e1c, #f4f4ef);
+  --isofig-paint-edge: light-dark(oklch(69% .075 286), oklch(32% .09 284));
+  --isofig-paint-edge-ink: light-dark(#1d1e1c, #f4f4ef);
+  --isofig-paint-compute: light-dark(oklch(89% .055 208), oklch(53% .085 200));
+  --isofig-paint-compute-ink: light-dark(#1d1e1c, #f4f4ef);
+  --isofig-paint-data: light-dark(oklch(93% .075 92), oklch(79% .09 90));
+  --isofig-paint-data-ink: #1d1e1c;
+  --isofig-paint-messaging: light-dark(oklch(77% .075 348), oklch(40% .09 354));
+  --isofig-paint-messaging-ink: light-dark(#1d1e1c, #f4f4ef);
+  --isofig-paint-storage: light-dark(oklch(84% .075 56), oklch(52% .09 40));
+  --isofig-paint-storage-ink: light-dark(#1d1e1c, #f4f4ef);
+  --isofig-paint-external: light-dark(oklch(63% .012 85), oklch(26% .012 85));
+  --isofig-paint-external-ink: light-dark(#1d1e1c, #f4f4ef);
+  --isofig-paint-aluminium: light-dark(oklch(91% .006 250), oklch(82% .006 246));
+  --isofig-paint-aluminium-ink: #1d1e1c;
+  --isofig-paint-steel: light-dark(oklch(71% .02 245), oklch(58% .024 239));
+  --isofig-paint-steel-ink: light-dark(#1d1e1c, #f4f4ef);
+  --isofig-paint-iron: light-dark(oklch(50% .012 240), oklch(45% .01 246));
+  --isofig-paint-iron-ink: light-dark(#1d1e1c, #f4f4ef);
+  --isofig-paint-copper: light-dark(oklch(60% .11 50), oklch(56% .097 45));
+  --isofig-paint-copper-ink: light-dark(#1d1e1c, #f4f4ef);
+  --isofig-paint-brass: light-dark(oklch(80% .1 88), oklch(77% .085 90));
+  --isofig-paint-brass-ink: #1d1e1c;
+  --isofig-paint-rubber: light-dark(oklch(23% .006 60), oklch(22% .005 66));
+  --isofig-paint-rubber-ink: #f4f4ef;
+  --isofig-paint-carbon: light-dark(oklch(37% .018 260), oklch(33% .026 255));
+  --isofig-paint-carbon-ink: light-dark(#1d1e1c, #f4f4ef);
+  --isofig-paint-glass: light-dark(oklch(81% .05 200), oklch(73% .065 195));
+  --isofig-paint-glass-ink: #1d1e1c;
+  --isofig-paint-lacquer: light-dark(oklch(52% .16 27), oklch(42% .128 29));
+  --isofig-paint-lacquer-ink: light-dark(#1d1e1c, #f4f4ef);
+}
+@media (prefers-color-scheme: dark) {
+  :where(:root:not([data-theme="light"]) .isofig) { color-scheme: dark; }
+}
+:where(:root[data-theme="dark"] .isofig) { color-scheme: dark; }
+.isofig-art [data-paint] {
+  --c: var(--sc, var(--pc));
+  --fe: color-mix(in oklab, var(--c), var(--isofig-edge) 50%);
+}
+.isofig-art [data-paint]:not([data-state]) { --fx: var(--pi); }
+.isofig-art [data-paint="client"] { --pc: var(--isofig-paint-client); --pi: var(--isofig-paint-client-ink); }
+.isofig-art [data-paint="edge"] { --pc: var(--isofig-paint-edge); --pi: var(--isofig-paint-edge-ink); }
+.isofig-art [data-paint="compute"] { --pc: var(--isofig-paint-compute); --pi: var(--isofig-paint-compute-ink); }
+.isofig-art [data-paint="data"] { --pc: var(--isofig-paint-data); --pi: var(--isofig-paint-data-ink); }
+.isofig-art [data-paint="messaging"] { --pc: var(--isofig-paint-messaging); --pi: var(--isofig-paint-messaging-ink); }
+.isofig-art [data-paint="storage"] { --pc: var(--isofig-paint-storage); --pi: var(--isofig-paint-storage-ink); }
+.isofig-art [data-paint="external"] { --pc: var(--isofig-paint-external); --pi: var(--isofig-paint-external-ink); }
+.isofig-art [data-paint="aluminium"] { --pc: var(--isofig-paint-aluminium); --pi: var(--isofig-paint-aluminium-ink); }
+.isofig-art [data-paint="steel"] { --pc: var(--isofig-paint-steel); --pi: var(--isofig-paint-steel-ink); }
+.isofig-art [data-paint="iron"] { --pc: var(--isofig-paint-iron); --pi: var(--isofig-paint-iron-ink); }
+.isofig-art [data-paint="copper"] { --pc: var(--isofig-paint-copper); --pi: var(--isofig-paint-copper-ink); }
+.isofig-art [data-paint="brass"] { --pc: var(--isofig-paint-brass); --pi: var(--isofig-paint-brass-ink); }
+.isofig-art [data-paint="rubber"] { --pc: var(--isofig-paint-rubber); --pi: var(--isofig-paint-rubber-ink); }
+.isofig-art [data-paint="carbon"] { --pc: var(--isofig-paint-carbon); --pi: var(--isofig-paint-carbon-ink); }
+.isofig-art [data-paint="glass"] { --pc: var(--isofig-paint-glass); --pi: var(--isofig-paint-glass-ink); }
+.isofig-art [data-paint="lacquer"] { --pc: var(--isofig-paint-lacquer); --pi: var(--isofig-paint-lacquer-ink); }
 
 .isofig-controls {
   display: flex;
@@ -186,6 +318,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  max-width: 100%;
   padding: 4px 12px;
   border-radius: 999px;
   background: var(--isofig-chip);
@@ -195,10 +328,18 @@
   min-height: 24px;
   width: 120px;
 }
+/* En un control estrecho cede el deslizante: el valor y su unidad nunca se parten ni se cortan. */
+.isofig-param input[type="range"] {
+  flex: 0 5 120px;
+  min-width: 4.5rem;
+}
 .isofig-param .isofig-value {
+  flex: none;
   min-width: 4.5ch;
   font-family: var(--isofig-mono);
   font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .isofig figcaption {
@@ -234,8 +375,14 @@
   border-radius: 999px;
   cursor: pointer;
 }
+/* El radio es invisible pero ocupa sitio: sin ancho propio y sin ancla (su label), una lista larga de piezas ensanchaba la página. */
+.isofig-choice label {
+  position: relative;
+}
 .isofig-choice input {
   position: absolute;
+  width: 1px;
+  min-height: 1px;
   opacity: 0;
   pointer-events: none;
 }
@@ -295,4 +442,111 @@
   min-width: 36px;
   padding: 0 10px;
   font-size: 1rem;
+}
+
+/* ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ * Ampliar: el chip de la tarjeta y el diálogo de isofig/zoom. A 390 px los rótulos del dibujo miden de 2 a 5 px;
+ * el diálogo muestra el mismo SVG a --isofig-zoom-width (1150 px), o más ancho si sus rótulos lo piden
+ * (--isofig-zoom-need, que calcula isofig/zoom), con desplazamiento y pellizco.
+ * ─────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+.isofig-zoom {
+  display: inline-flex;
+  flex: none;
+  align-self: center;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  margin-block: -5px;
+  padding: 0 11px;
+}
+.isofig-zoom[hidden] {
+  display: none;
+}
+
+.isofig-zoombox[open] {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: var(--isofig-paper);
+  color: var(--isofig-ink);
+  font-family: var(--isofig-font);
+}
+.isofig-zoombox::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+@media (min-width: 900px) {
+  .isofig-zoombox[open] {
+    width: calc(100% - 48px);
+    height: calc(100% - 48px);
+    margin: auto;
+    border-radius: var(--isofig-radius);
+    box-shadow: 0 24px 64px -24px rgb(0 0 0 / 0.5);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .isofig-zoombox[open] {
+    animation: isofig-zoom-in 0.2s ease-out;
+  }
+}
+@keyframes isofig-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+/* Mientras el diálogo está abierto, la página de atrás no se desplaza (y la figura sigue a la vista del runtime). */
+html:has(.isofig-zoombox[open]) {
+  overflow: hidden;
+}
+
+.isofig-zoombar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 10px 16px;
+  background: var(--isofig-card);
+  font-size: 0.82rem;
+}
+.isofig-zoomtitle {
+  flex: 1;
+  font-weight: 600;
+}
+.isofig-zoomclose {
+  flex: none;
+}
+.isofig-zoombar .isofig-readout {
+  order: 1;
+  flex-basis: 100%;
+  text-align: left;
+}
+
+.isofig-zoompane {
+  display: flex;
+  flex: 1;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 16px;
+}
+.isofig-zoompane:focus-visible {
+  outline: 2px solid var(--isofig-focus);
+  outline-offset: -4px;
+}
+/* El margen automático centra el dibujo si cabe y lo deja al inicio si se desborda (así se puede desplazar). */
+.isofig-zoompane > .isofig-art {
+  flex: none;
+  width: max(var(--isofig-zoom-width, 1150px), var(--isofig-zoom-need, 0px));
+  margin: auto;
+  touch-action: pan-x pan-y pinch-zoom;
+}
+.isofig-zoomhold {
+  margin: 6px 0;
 }

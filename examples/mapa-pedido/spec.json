@@ -1,0 +1,32 @@
+{
+  "id": "mapa-pedido",
+  "title": { "es": "Qué pasa con un pedido", "en": "What happens to an order" },
+  "hint": { "es": "De izquierda a derecha, hasta el envío", "en": "Left to right, up to the shipment" },
+  "caption": {
+    "es": "El carrito pide el pago; si se aprueba, se reserva el stock y el pedido espera en la cola hasta que se envía el correo y sale el envío. Si el pago se rechaza, el cliente recibe un aviso y el stock no se toca.",
+    "en": "The cart asks for the payment; if it is approved the stock is reserved and the order waits in the queue until the email goes out and the shipment leaves. If the payment is rejected the customer gets a notice and the stock is untouched."
+  },
+  "map": {
+    "layout": "flow",
+    "nodes": [
+      { "id": "cart", "is": "browser", "name": { "es": "Carrito", "en": "Cart" } },
+      { "id": "pay", "is": "gateway", "name": { "es": "Pago", "en": "Payment" } },
+      { "id": "stock", "is": "database", "name": "Stock" },
+      { "id": "notice", "is": "phone", "name": { "es": "Aviso", "en": "Notice" } },
+      { "id": "queue", "is": "queue", "name": { "es": "Cola", "en": "Queue" } },
+      { "id": "mail", "is": "function", "name": { "es": "Correo", "en": "Email" } },
+      { "id": "ship", "is": "service", "name": { "es": "Envío", "en": "Shipping" } }
+    ],
+    "links": [
+      { "from": "cart", "to": "pay", "label": { "es": "pagar", "en": "pay" } },
+      { "from": "pay", "to": "stock", "label": { "es": "aprobado", "en": "approved" } },
+      { "from": "pay", "to": "notice", "label": { "es": "rechazado", "en": "rejected" }, "dashed": true },
+      { "from": "stock", "to": "queue", "label": { "es": "reservado", "en": "reserved" } },
+      { "from": "queue", "to": ["mail", "ship"] }
+    ],
+    "flows": [
+      { "id": "pedido", "path": ["cart", "pay", "stock", "queue", "ship"], "label": { "es": "pedido aprobado", "en": "approved order" } },
+      { "id": "rechazo", "path": ["cart", "pay", "notice"], "label": { "es": "pago rechazado", "en": "rejected payment" }, "paint": "client", "delay": 2.5 }
+    ]
+  }
+}

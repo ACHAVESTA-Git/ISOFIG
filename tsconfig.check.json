@@ -3,14 +3,25 @@
   "compilerOptions": {
     "noEmit": true,
     "rootDir": ".",
-    "noPropertyAccessFromIndexSignature": true
+    "noPropertyAccessFromIndexSignature": true,
+    "paths": {
+      "isofig": ["./src/core/index.ts"],
+      "isofig/runtime": ["./src/runtime/index.ts"],
+      "isofig/orbit": ["./src/orbit/index.ts"],
+      "isofig/node": ["./src/node/index.ts"]
+    }
   },
   "include": [
     "src/core",
     "src/runtime",
     "src/cli",
     "src/orbit",
+    "src/node",
+    "src/kit",
+    "src/zoom",
+    "src/astro",
     "examples",
+    "scripts",
     "test"
   ]
 }

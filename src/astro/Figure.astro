@@ -1,26 +1,55 @@
 ---
-import { renderFigure, type FigureSpec } from "isofig";
-import "isofig/theme.css";
+import type { HTMLAttributes } from "astro/types";
+import { applyOverrides, assemble, renderFigure, type Catalog, type FigureOverrides, type FigureSpec } from "isofig";
+import { catalog } from "isofig/kit";
+import { resolveMap } from "isofig/map";
+import { checkBudget, measure } from "isofig/node";
+import themeCss from "isofig/theme.css?inline";
+import { claimInstance, firstOnPage } from "./page.ts";
 
-interface Props {
+interface Props extends Omit<HTMLAttributes<"div">, "class"> {
   spec: FigureSpec;
   lang?: string;
   n?: number | string;
   class?: string;
+  /** Nombre de esta copia en el DOM. Si falta, `spec.id`, y `-2`, `-3`… si la figura se repite en la página. */
+  instance?: string;
+  /** Añade los controles y el arrastre para girar la figura. La spec viaja en la página, comprimida con el HTML. */
+  orbit?: boolean;
+  /** Cuándo se descarga el runtime: al acercarse el lector (`visible`), cuando el navegador está libre o ya. */
+  load?: "visible" | "idle" | "eager";
+  /** Valores iniciales, desvíos, controles ocultos y textos que este sitio cambia sin tocar la spec. */
+  overrides?: FigureOverrides;
+  /** `false` si el sitio ya carga `isofig/theme.css` por su cuenta: el componente no añade el CSS del tema. */
+  theme?: boolean;
+  /** `false` quita el chip «Ampliar» (su módulo, `isofig/zoom`, se descarga solo al pulsarlo). */
+  zoom?: boolean;
 }
 
-const { spec, lang = "en", n, class: className } = Astro.props;
-const figure = renderFigure(spec, { lang, n });
+const { spec: base, lang = "en", n, class: className, instance: asked, orbit = false, zoom = true, load = "visible", overrides, theme = true, ...rest } = Astro.props;
+const spec = overrides ? applyOverrides(base, overrides, { lang }) : base;
+
+// La primera copia de una figura conserva el id de la spec (el marcado de una figura que no se repite no cambia).
+const instance = claimInstance(Astro.request, spec.id, asked);
+
+const figure = renderFigure(spec, { lang, n, orbit, zoom, instance, resolveMap });
 if (figure.errors.length) throw new Error(`isofig «${spec.id}»: ${figure.errors.join("; ")}`);
-for (const w of figure.warnings) console.warn(`isofig «${spec.id}»: ${w}`);
+for (const w of [...figure.warnings, ...checkBudget(spec, measure(figure.html), lang)]) console.warn(`isofig «${spec.id}»: ${w}`);
+
+// El tema va en línea, una vez por página y solo donde hay figura: un `import` de CSS llegaría a toda página que
+// importe este componente aunque no lo dibuje, y un <link> en el cuerpo se descarga tras el cambio de página de
+// `<ClientRouter />` (la figura se vería sin estilo mientras llega). Con el HTML ya está aplicado.
+const style = theme && firstOnPage(Astro.request, "theme") ? `<style data-isofig-theme>${themeCss}</style>` : "";
+// El giro vuelve a dibujar la escena en el navegador y necesita la spec; el SVG ya trae todo lo demás. Un árbol viaja
+// ya armado: así el giro no descarga el aplanador, el catálogo del kit ni el validador.
+const orbitSpec = spec.root || spec.map ? assemble(spec, { catalog: catalog as Catalog, resolveMap }) : spec;
+const specJson = orbit ? `<script type="application/json" class="isofig-spec">${JSON.stringify(orbitSpec).replace(/</g, "\\u003c")}</script>` : "";
 ---
 
-<div class:list={["isofig-host", className]} set:html={figure.html} />
+<div class:list={["isofig-host", className]} data-isofig-load={load} {...rest} set:html={style + figure.html + specJson} />
 
 <script>
-  import { mountAll, unmountAll } from "isofig/runtime";
+  import { start } from "isofig/astro/client";
 
-  mountAll();
-  document.addEventListener("astro:page-load", () => mountAll());
-  document.addEventListener("astro:before-swap", () => unmountAll());
+  start();
 </script>

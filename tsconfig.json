@@ -26,6 +26,10 @@
     "src/core",
     "src/runtime",
     "src/cli",
-    "src/orbit"
+    "src/orbit",
+    "src/node",
+    "src/kit",
+    "src/zoom",
+    "src/astro/client.ts"
   ]
 }

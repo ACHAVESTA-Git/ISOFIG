@@ -1,5 +1,5 @@
 import { drawScene } from "../core/scene.ts";
-import type { FigureSpec } from "../core/spec.ts";
+import type { FlatSpec } from "../core/spec.ts";
 import { retarget, type OrbitHandle } from "../runtime/index.ts";
 
 export interface OrbitOptions {
@@ -8,6 +8,8 @@ export interface OrbitOptions {
   range?: number;
   minElevation?: number;
   maxElevation?: number;
+  /** Nombre de la copia en el DOM (ver `RenderOptions.instance`); por defecto, el que ya tiene el SVG. */
+  instance?: string;
 }
 
 export type Orbit = OrbitHandle;
@@ -17,10 +19,15 @@ const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v
 /**
  * Deja girar una figura ya montada: al arrastrar se redibuja la escena desde otra cámara (proyección, sombras y
  * orden de pintado nuevos) y el runtime sigue animando las piezas. Se carga solo cuando el lector toca la figura.
+ * Recibe la spec ya armada: una anidada (`root`) se aplana al compilar con `assemble(spec)` de `isofig`, para que el
+ * navegador no descargue el aplanador, el catálogo ni el validador; `<Figure orbit>` y la CLI lo hacen solos.
  */
-export function enableOrbit(el: HTMLElement, spec: FigureSpec, options: OrbitOptions = {}): Orbit {
+export function enableOrbit(el: HTMLElement, spec: FlatSpec, options: OrbitOptions = {}): Orbit {
+  if (spec.root) throw new Error(`isofig «${spec.id}»: el giro dibuja la spec ya armada; pásale assemble(spec) de «isofig».`);
   const svg = el.querySelector<SVGSVGElement>(".isofig-art")!;
   const lang = options.lang ?? "en";
+  // El SVG nombra su título `<instance>-t`: al redibujar, los ids de <defs> siguen siendo los de esta copia.
+  const instance = options.instance ?? svg.getAttribute("aria-labelledby")?.replace(/-t$/, "") ?? spec.id;
   const base = { az: spec.camera?.azimuth ?? 45, el: spec.camera?.elevation ?? 30 };
   const range = options.range ?? 40;
   const minEl = options.minElevation ?? 12;
@@ -33,10 +40,10 @@ export function enableOrbit(el: HTMLElement, spec: FigureSpec, options: OrbitOpt
 
   const paint = () => {
     frame = 0;
-    const s = drawScene(spec, lang, { azimuth: az, elevation: elv, scale });
+    const s = drawScene(spec, lang, { azimuth: az, elevation: elv, scale, instance });
     const scene = svg.querySelector(".isofig-scene");
     if (scene) scene.outerHTML = `<g class="isofig-scene">${s.markup}</g>`;
-    retarget(el, s.basis, s.spins);
+    retarget(el, s.basis, s.spins, s.reorder);
   };
   const set = (a: number, e: number) => {
     const na = clamp(a, base.az - range, base.az + range);

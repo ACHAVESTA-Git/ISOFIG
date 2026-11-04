@@ -10,7 +10,10 @@ import {
   input,
 } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
-import { mount, type FigureData, type Model } from "isofig/runtime";
+import { mount, zoomOnDemand, type FigureData, type Model } from "isofig/runtime";
+
+// El chip «Ampliar» descarga isofig/zoom solo cuando alguien lo pulsa.
+zoomOnDemand(() => import("isofig/zoom"));
 
 /** Lo que genera `isofig build <spec> --format module`. */
 export interface CompiledFigure {

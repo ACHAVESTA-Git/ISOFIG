@@ -1,0 +1,65 @@
+{
+  "id": "mapa-tienda",
+  "title": { "es": "Una tienda en línea", "en": "An online shop" },
+  "hint": { "es": "De izquierda a derecha: el camino de una compra", "en": "Left to right: the path of a purchase" },
+  "caption": {
+    "es": "Del celular al correo de confirmación: la CDN entrega lo estático, el balanceador reparte entre tres servidores dentro de la VPC, el caché responde lo repetido y la cola saca los correos del camino de la compra.",
+    "en": "From the phone to the confirmation email: the CDN serves what is static, the balancer spreads requests over three servers inside the VPC, the cache answers what repeats and the queue takes the emails off the purchase path."
+  },
+  "map": {
+    "layout": "flow",
+    "nodes": [
+      { "id": "phone", "is": "phone", "name": { "es": "Celular", "en": "Phone" } },
+      { "id": "laptop", "is": "laptop", "name": "Laptop" },
+      { "id": "cdn", "is": "cdn", "name": "CDN" },
+      { "id": "lb", "is": "balancer", "name": { "es": "Balanceador", "en": "Balancer" } },
+      {
+        "id": "vpc",
+        "is": "vpc",
+        "name": "tienda-vpc",
+        "children": [
+          {
+            "id": "apps",
+            "is": "subnet",
+            "name": { "es": "apps", "en": "apps" },
+            "children": [
+              { "id": "app-1", "is": "server", "name": "App 1" },
+              { "id": "app-2", "is": "server", "name": "App 2" },
+              { "id": "app-3", "is": "server", "name": "App 3" }
+            ]
+          },
+          {
+            "id": "data",
+            "is": "subnet",
+            "name": { "es": "datos", "en": "data" },
+            "children": [
+              { "id": "cache", "is": "cache", "name": "Redis" },
+              { "id": "pg", "is": "database", "name": "Postgres" },
+              { "id": "replica", "is": "database", "name": { "es": "Réplica", "en": "Replica" } }
+            ]
+          },
+          { "id": "queue", "is": "queue", "name": { "es": "Cola", "en": "Queue" } },
+          { "id": "worker", "is": "function", "name": "Worker" }
+        ]
+      },
+      { "id": "files", "is": "storage", "paint": "data", "name": { "es": "Objetos", "en": "Objects" } },
+      { "id": "mail", "is": "external", "name": { "es": "Correo", "en": "Mail" } }
+    ],
+    "links": [
+      { "from": ["phone", "laptop"], "to": "cdn" },
+      { "from": "cdn", "to": "lb" },
+      { "from": "lb", "to": ["app-1", "app-2", "app-3"] },
+      { "from": ["app-1", "app-2", "app-3"], "to": "cache", "label": { "es": "lee", "en": "reads" } },
+      { "from": ["app-1", "app-2", "app-3"], "to": "pg", "label": { "es": "escribe", "en": "writes" } },
+      { "from": "pg", "to": "replica", "dashed": true },
+      { "from": ["app-1", "app-2", "app-3"], "to": "queue", "label": { "es": "pedido", "en": "order" } },
+      { "from": ["app-1", "app-2", "app-3"], "to": "files" },
+      { "from": "queue", "to": "worker" },
+      { "from": "worker", "to": "mail" }
+    ],
+    "flows": [
+      { "id": "compra", "path": ["phone", "cdn", "lb", "app-1", "queue", "worker", "mail"], "label": { "es": "compra", "en": "purchase" }, "every": 3, "paint": "messaging" },
+      { "id": "cache", "path": ["laptop", "cdn", "lb", "app-2", "cache"], "label": { "es": "acierto de caché", "en": "cache hit" }, "paint": "data", "delay": 1 }
+    ]
+  }
+}

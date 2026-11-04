@@ -2,7 +2,7 @@
 
 En Angular la figura se compila antes de que la vea el bundler. La CLI de isofig convierte la spec en un
 módulo TypeScript con el HTML ya generado; un componente standalone lo muestra y lo anima. El núcleo de isofig no
-entra a tu bundle, solo el runtime (~1,7 KB gzip).
+entra a tu bundle, solo el runtime (~3,5 KB gzip, lo mide `npm run size`).
 
 Probado con Angular 22: standalone, signals, zoneless y `OnPush`.
 
@@ -13,13 +13,19 @@ npm i isofig
 npx isofig add angular src/app/isofig
 ```
 
-`add angular` copia `isofig-figure.ts` a tu proyecto. Es tuyo: puedes cambiarle el selector o los estilos.
+`add angular` copia `isofig-figure.ts` a tu proyecto; es la única forma de instalar el componente. El paquete no
+lo exporta como módulo (no existe `isofig/angular`), porque Angular solo compila el TypeScript que es parte de tu
+proyecto, no los `.ts` que están dentro de `node_modules`. La copia es tuya: puedes cambiarle el selector o los
+estilos. Importa `isofig/runtime`, que sí viene del paquete.
 
 Agrega el tema en `angular.json`, en `architect.build.options.styles`:
 
 ```json
-"styles": ["node_modules/isofig/src/theme/theme.css", "src/styles.css"]
+"styles": ["isofig/theme.css", "src/styles.css"]
 ```
+
+`isofig/theme.css` es la única ruta pública del tema. No apuntes a `node_modules/isofig/src/theme/theme.css`: es
+una ruta interna y puede cambiar.
 
 ## 2. Escribir la spec
 
@@ -100,7 +106,7 @@ escapan al generar el módulo.
 
 ## 7. Tema
 
-Igual que en Astro: sobrescribe las variables `--isofig-*` en tu `styles.css`. El oscuro sigue a
+Igual que en Astro (el tema es `isofig/theme.css`): sobrescribe las variables `--isofig-*` en tu `styles.css`. El oscuro sigue a
 `prefers-color-scheme` o a `data-theme="dark"` en `<html>`.
 
 ## Problemas frecuentes
@@ -109,5 +115,5 @@ Igual que en Astro: sobrescribe las variables `--isofig-*` en tu `styles.css`. E
 |---|---|
 | `TS2322 … readonly … not assignable` | Generaste el módulo con una versión vieja de la CLI. Vuelve a generarlo. |
 | `TS4111 Property 'x' comes from an index signature` en el modelo | Declara los parámetros: `Model<State, { x: number }>`. |
-| La figura se ve sin colores | Falta `theme.css` en `styles` de `angular.json`. |
+| La figura se ve sin colores | Falta `isofig/theme.css` en `styles` de `angular.json`. |
 | No anima | Revisa el input `model` y el movimiento reducido del sistema (arranca en pausa). |

@@ -1,0 +1,12 @@
+{
+  "limits": {
+    "runtime": 4096,
+    "zoom": 1024,
+    "orbit": 9216,
+    "kit": 3328,
+    "map": 22528,
+    "core": 43008,
+    "astro-client": 1536,
+    "theme.css": 4096
+  }
+}

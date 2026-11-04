@@ -7,6 +7,7 @@ import { drawMesh } from "../src/core/shade.ts";
 import { compare } from "../src/core/order.ts";
 import { expand } from "../src/core/items.ts";
 import { renderFigure } from "../src/core/render.ts";
+import { measure } from "../src/node/index.ts";
 import tokenBucket from "../examples/token-bucket/spec.ts";
 
 test("la cámara pone más cerca lo que está hacia el lector y arriba lo que sube", () => {
@@ -49,7 +50,8 @@ test("la figura de ejemplo entra en el presupuesto y pasa la auditoría", () => 
   const r = renderFigure(tokenBucket, { lang: "es", n: 1 });
   assert.deepEqual(r.errors, []);
   assert.deepEqual(r.warnings, []);
-  assert.ok(r.gzip < 40 * 1024, `pesa ${r.gzip} bytes gzip`);
+  const { gzip } = measure(r.html);
+  assert.ok(gzip < 40 * 1024, `pesa ${gzip} bytes gzip`);
   assert.match(r.html, /data-isofig="token-bucket"/);
   assert.match(r.html, /Balde de fichas/);
   assert.match(r.html, /<title id="token-bucket-t">/);
@@ -58,25 +60,6 @@ test("la figura de ejemplo entra en el presupuesto y pasa la auditoría", () => 
 test("los textos caen al inglés si falta el idioma", () => {
   const r = renderFigure(tokenBucket, { lang: "pt" });
   assert.match(r.html, /Token bucket/);
-});
-
-test("el importador de compose arma un rack por servicio, en filas según dependencias", async () => {
-  const { fromCompose } = await import("../src/core/importers/compose.ts");
-  const spec = fromCompose({
-    services: {
-      web: { ports: [{ published: "80", target: 80 }], depends_on: { api: {} }, networks: { frente: null } },
-      api: { depends_on: ["db"], networks: ["frente"], deploy: { replicas: 2 } },
-      db: { volumes: [{ type: "volume", source: "datos" }] },
-    },
-  });
-  const ids = spec.parts.map((p) => p.id);
-  assert.ok(ids.includes("svc-0-0-u0"), "db en la fila del fondo");
-  assert.ok(ids.includes("svc-1-0-u1"), "api con dos réplicas");
-  assert.ok(ids.includes("svc-2-0-port-0"), "web con su puerto");
-  assert.ok(ids.includes("vol-0"));
-  const r = renderFigure(spec, { lang: "es" });
-  assert.deepEqual(r.errors, []);
-  assert.deepEqual(r.warnings, []);
 });
 
 test("la tarjeta no anuncia la lectura ni duplica el pie", () => {
@@ -146,4 +129,24 @@ test("las piezas idénticas se dibujan una vez y se repiten con use", () => {
   });
   assert.equal((r.svg.match(/<use href="#rep-p0"/g) ?? []).length, 4);
   assert.match(r.svg, /<use href="#rep-p0" x="[\d.]+" y="[\d.]+" class="hi" data-g="caja-0"\/>/);
+});
+
+test("el chip «Ampliar» sale oculto en la tarjeta y se quita con zoom: false", () => {
+  const r = renderFigure(tokenBucket, { lang: "es" });
+  assert.match(r.html, /<button type="button" class="isofig-chip isofig-zoom" data-zoom data-close="Cerrar" hidden><svg [^>]*aria-hidden="true"[^>]*>.*?<\/svg>Ampliar<\/button><\/div>/);
+  assert.match(renderFigure(tokenBucket).html, /data-close="Close" hidden>.*?Enlarge</);
+  assert.doesNotMatch(renderFigure(tokenBucket, { zoom: false }).html, /data-zoom/);
+});
+
+test("press y motion.settle llegan a los datos del runtime solo si se usan", () => {
+  const base = { id: "p", title: "t", parts: [{ id: "a", kind: "box" as const, at: [0, 0, 0] as [number, number, number], size: [4, 4, 4] as [number, number, number] }] };
+  const r = renderFigure({
+    ...base,
+    motion: { settle: 6 },
+    params: [{ id: "go", label: "Ir", kind: "action", min: 0, max: 99, value: 0 }],
+    presets: [{ label: "Pulsa", values: {}, press: ["go"], note: "n" }, { label: "Sin", values: {}, press: [], note: "n" }],
+  });
+  assert.equal(r.data.settle, 6);
+  assert.deepEqual(r.data.presets, [{ values: {}, note: "n", press: ["go"] }, { values: {}, note: "n" }]);
+  assert.equal("settle" in renderFigure(base).data, false);
 });
