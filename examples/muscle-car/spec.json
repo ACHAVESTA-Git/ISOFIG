@@ -1,0 +1,467 @@
+{
+  "id": "muscle-car",
+  "title": {"es": "Muscle car tipo Camaro", "en": "Camaro-style muscle car"},
+  "hint": {"es": "Desármalo paso a paso o elige una pieza", "en": "Take it apart step by step, or pick a part"},
+  "caption": {
+    "es": "Esquema propio, inspirado en el Camaro de quinta y sexta generación: capó largo, cabina baja y retrasada, V8 delante y tracción trasera. Al desarmarlo sale primero lo de fuera (capó, puertas, vidrios, carrocería), luego el interior y el tren motriz, y al final las ruedas con sus frenos: queda el chasis solo.",
+    "en": "A schematic of our own, inspired by the fifth- and sixth-generation Camaro: long hood, low set-back cabin, front V8 and rear-wheel drive. Taking it apart removes the outside first (hood, doors, glass, body), then the interior and the drivetrain, and finally the wheels with their brakes, leaving the bare chassis."
+  },
+  "alt": {
+    "es": "Muscle car de dos puertas en vista isométrica que se desarma en nueve pasos: capó y maletera, puertas, vidrios, carrocería, asientos y tablero, motor V8, caja y cardán, diferencial y escape, y ruedas con frenos. Queda el chasis con su suspensión.",
+    "en": "A two-door muscle car in isometric view that comes apart in nine steps: hood and trunk lid, doors, glass, body, seats and dashboard, V8 engine, gearbox and driveshaft, differential and exhaust, and wheels with brakes. The chassis and its suspension remain."
+  },
+  "width": 760,
+  "height": 660,
+  "pad": 40,
+  "camera": {"azimuth": 38, "elevation": 30},
+  "motion": {"tau": 0.3},
+  "defs": {
+    "rueda-izq": {
+      "parts": [
+        {"id": "neumatico", "kind": "cylinder", "at": [-6.5, 0, 17], "r": 17, "h": 13, "axis": "x", "paint": "rubber", "tone": "lo", "bevel": 1.4},
+        {"id": "aro", "kind": "cylinder", "at": [-7.4, 0, 17], "r": 12.5, "h": 0.9, "axis": "x", "paint": "aluminium", "tone": "hi", "bevel": 0.4},
+        {"id": "fondo", "kind": "cylinder", "at": [-8, 0, 17], "r": 10.8, "h": 0.6, "axis": "x", "paint": "carbon", "tone": "lo"},
+        {"id": "plato", "kind": "cylinder", "at": [6.5, 0, 17], "r": 11.5, "h": 1.2, "axis": "x", "paint": "steel", "tone": "mid", "bevel": 0.4},
+        {"id": "costado", "kind": "line", "on": "neumatico", "points": [[-6.5, 15.2, 17], [-6.5, 14.82, 20.38], [-6.5, 13.69, 23.6], [-6.5, 11.88, 26.48], [-6.5, 9.48, 28.88], [-6.5, 6.6, 30.69], [-6.5, 3.38, 31.82], [-6.5, 0, 32.2], [-6.5, -3.38, 31.82], [-6.5, -6.6, 30.69], [-6.5, -9.48, 28.88], [-6.5, -11.88, 26.48], [-6.5, -13.69, 23.6], [-6.5, -14.82, 20.38], [-6.5, -15.2, 17], [-6.5, -14.82, 13.62], [-6.5, -13.69, 10.4], [-6.5, -11.88, 7.52], [-6.5, -9.48, 5.12], [-6.5, -6.6, 3.31], [-6.5, -3.38, 2.18], [-6.5, 0, 1.8], [-6.5, 3.38, 2.18], [-6.5, 6.6, 3.31], [-6.5, 9.48, 5.12], [-6.5, 11.88, 7.52], [-6.5, 13.69, 10.4], [-6.5, 14.82, 13.62], [-6.5, 15.2, 17]]},
+        {"id": "costado-int", "kind": "line", "on": "neumatico", "points": [[6.5, 15.2, 17], [6.5, 14.82, 20.38], [6.5, 13.69, 23.6], [6.5, 11.88, 26.48], [6.5, 9.48, 28.88], [6.5, 6.6, 30.69], [6.5, 3.38, 31.82], [6.5, 0, 32.2], [6.5, -3.38, 31.82], [6.5, -6.6, 30.69], [6.5, -9.48, 28.88], [6.5, -11.88, 26.48], [6.5, -13.69, 23.6], [6.5, -14.82, 20.38], [6.5, -15.2, 17], [6.5, -14.82, 13.62], [6.5, -13.69, 10.4], [6.5, -11.88, 7.52], [6.5, -9.48, 5.12], [6.5, -6.6, 3.31], [6.5, -3.38, 2.18], [6.5, 0, 1.8], [6.5, 3.38, 2.18], [6.5, 6.6, 3.31], [6.5, 9.48, 5.12], [6.5, 11.88, 7.52], [6.5, 13.69, 10.4], [6.5, 14.82, 13.62], [6.5, 15.2, 17]]},
+        {"id": "labio", "kind": "line", "on": "aro", "points": [[-7.4, 11.9, 17], [-7.4, 11.6, 19.65], [-7.4, 10.72, 22.16], [-7.4, 9.3, 24.42], [-7.4, 7.42, 26.3], [-7.4, 5.16, 27.72], [-7.4, 2.65, 28.6], [-7.4, 0, 28.9], [-7.4, -2.65, 28.6], [-7.4, -5.16, 27.72], [-7.4, -7.42, 26.3], [-7.4, -9.3, 24.42], [-7.4, -10.72, 22.16], [-7.4, -11.6, 19.65], [-7.4, -11.9, 17], [-7.4, -11.6, 14.35], [-7.4, -10.72, 11.84], [-7.4, -9.3, 9.58], [-7.4, -7.42, 7.7], [-7.4, -5.16, 6.28], [-7.4, -2.65, 5.4], [-7.4, 0, 5.1], [-7.4, 2.65, 5.4], [-7.4, 5.16, 6.28], [-7.4, 7.42, 7.7], [-7.4, 9.3, 9.58], [-7.4, 10.72, 11.84], [-7.4, 11.6, 14.35], [-7.4, 11.9, 17]], "bold": true},
+        {"id": "rayo-0", "kind": "prism", "axis": "x", "plan": [[1.5, 19], [1.2, 28], [-1.2, 28], [-1.5, 19]], "z": -9.4, "h": 1.4, "paint": "aluminium", "tone": "hi", "bevel": 0.3, "mount": ["rayo-1", "rayo-2", "rayo-3", "rayo-4"]},
+        {"id": "rayo-1", "kind": "prism", "axis": "x", "plan": [[-1.44, 19.04], [-10.09, 21.54], [-10.83, 19.26], [-2.37, 16.19]], "z": -9.4, "h": 1.4, "paint": "aluminium", "tone": "hi", "bevel": 0.3, "mount": ["rayo-0", "rayo-2", "rayo-3", "rayo-4"]},
+        {"id": "rayo-2", "kind": "prism", "axis": "x", "plan": [[-2.39, 16.26], [-7.44, 8.81], [-5.49, 7.4], [0.04, 14.5]], "z": -9.4, "h": 1.4, "paint": "aluminium", "tone": "hi", "bevel": 0.3, "mount": ["rayo-0", "rayo-1", "rayo-3", "rayo-4"]},
+        {"id": "rayo-3", "kind": "prism", "axis": "x", "plan": [[-0.04, 14.5], [5.49, 7.4], [7.44, 8.81], [2.39, 16.26]], "z": -9.4, "h": 1.4, "paint": "aluminium", "tone": "hi", "bevel": 0.3, "mount": ["rayo-0", "rayo-1", "rayo-2", "rayo-4"]},
+        {"id": "rayo-4", "kind": "prism", "axis": "x", "plan": [[2.37, 16.19], [10.83, 19.26], [10.09, 21.54], [1.44, 19.04]], "z": -9.4, "h": 1.4, "paint": "aluminium", "tone": "hi", "bevel": 0.3, "mount": ["rayo-0", "rayo-1", "rayo-2", "rayo-3"]},
+        {"id": "buje", "kind": "cylinder", "at": [-10.4, 0, 17], "r": 3.4, "h": 1, "axis": "x", "paint": "steel", "tone": "mid"},
+        {"id": "tuercas", "kind": "dots", "on": "buje", "points": [[-10.4, 2.1, 17], [-10.4, 0.65, 19], [-10.4, -1.7, 18.23], [-10.4, -1.7, 15.77], [-10.4, 0.65, 15]]}
+      ]
+    },
+    "rueda-der": {
+      "parts": [
+        {"id": "neumatico", "kind": "cylinder", "at": [-6.5, 0, 17], "r": 17, "h": 13, "axis": "x", "paint": "rubber", "tone": "lo", "bevel": 1.4},
+        {"id": "aro", "kind": "cylinder", "at": [6.5, 0, 17], "r": 12.5, "h": 0.9, "axis": "x", "paint": "aluminium", "tone": "hi", "bevel": 0.4},
+        {"id": "fondo", "kind": "cylinder", "at": [7.4, 0, 17], "r": 10.8, "h": 0.6, "axis": "x", "paint": "carbon", "tone": "lo"},
+        {"id": "plato", "kind": "cylinder", "at": [-7.7, 0, 17], "r": 11.5, "h": 1.2, "axis": "x", "paint": "steel", "tone": "mid", "bevel": 0.4},
+        {"id": "costado", "kind": "line", "on": "neumatico", "points": [[6.5, 15.2, 17], [6.5, 14.82, 20.38], [6.5, 13.69, 23.6], [6.5, 11.88, 26.48], [6.5, 9.48, 28.88], [6.5, 6.6, 30.69], [6.5, 3.38, 31.82], [6.5, 0, 32.2], [6.5, -3.38, 31.82], [6.5, -6.6, 30.69], [6.5, -9.48, 28.88], [6.5, -11.88, 26.48], [6.5, -13.69, 23.6], [6.5, -14.82, 20.38], [6.5, -15.2, 17], [6.5, -14.82, 13.62], [6.5, -13.69, 10.4], [6.5, -11.88, 7.52], [6.5, -9.48, 5.12], [6.5, -6.6, 3.31], [6.5, -3.38, 2.18], [6.5, 0, 1.8], [6.5, 3.38, 2.18], [6.5, 6.6, 3.31], [6.5, 9.48, 5.12], [6.5, 11.88, 7.52], [6.5, 13.69, 10.4], [6.5, 14.82, 13.62], [6.5, 15.2, 17]]},
+        {"id": "costado-int", "kind": "line", "on": "neumatico", "points": [[-6.5, 15.2, 17], [-6.5, 14.82, 20.38], [-6.5, 13.69, 23.6], [-6.5, 11.88, 26.48], [-6.5, 9.48, 28.88], [-6.5, 6.6, 30.69], [-6.5, 3.38, 31.82], [-6.5, 0, 32.2], [-6.5, -3.38, 31.82], [-6.5, -6.6, 30.69], [-6.5, -9.48, 28.88], [-6.5, -11.88, 26.48], [-6.5, -13.69, 23.6], [-6.5, -14.82, 20.38], [-6.5, -15.2, 17], [-6.5, -14.82, 13.62], [-6.5, -13.69, 10.4], [-6.5, -11.88, 7.52], [-6.5, -9.48, 5.12], [-6.5, -6.6, 3.31], [-6.5, -3.38, 2.18], [-6.5, 0, 1.8], [-6.5, 3.38, 2.18], [-6.5, 6.6, 3.31], [-6.5, 9.48, 5.12], [-6.5, 11.88, 7.52], [-6.5, 13.69, 10.4], [-6.5, 14.82, 13.62], [-6.5, 15.2, 17]]},
+        {"id": "labio", "kind": "line", "on": "aro", "points": [[7.4, 11.9, 17], [7.4, 11.6, 19.65], [7.4, 10.72, 22.16], [7.4, 9.3, 24.42], [7.4, 7.42, 26.3], [7.4, 5.16, 27.72], [7.4, 2.65, 28.6], [7.4, 0, 28.9], [7.4, -2.65, 28.6], [7.4, -5.16, 27.72], [7.4, -7.42, 26.3], [7.4, -9.3, 24.42], [7.4, -10.72, 22.16], [7.4, -11.6, 19.65], [7.4, -11.9, 17], [7.4, -11.6, 14.35], [7.4, -10.72, 11.84], [7.4, -9.3, 9.58], [7.4, -7.42, 7.7], [7.4, -5.16, 6.28], [7.4, -2.65, 5.4], [7.4, 0, 5.1], [7.4, 2.65, 5.4], [7.4, 5.16, 6.28], [7.4, 7.42, 7.7], [7.4, 9.3, 9.58], [7.4, 10.72, 11.84], [7.4, 11.6, 14.35], [7.4, 11.9, 17]], "bold": true},
+        {"id": "rayo-0", "kind": "prism", "axis": "x", "plan": [[1.5, 19], [1.2, 28], [-1.2, 28], [-1.5, 19]], "z": 8, "h": 1.4, "paint": "aluminium", "tone": "hi", "bevel": 0.3, "mount": ["rayo-1", "rayo-2", "rayo-3", "rayo-4"]},
+        {"id": "rayo-1", "kind": "prism", "axis": "x", "plan": [[-1.44, 19.04], [-10.09, 21.54], [-10.83, 19.26], [-2.37, 16.19]], "z": 8, "h": 1.4, "paint": "aluminium", "tone": "hi", "bevel": 0.3, "mount": ["rayo-0", "rayo-2", "rayo-3", "rayo-4"]},
+        {"id": "rayo-2", "kind": "prism", "axis": "x", "plan": [[-2.39, 16.26], [-7.44, 8.81], [-5.49, 7.4], [0.04, 14.5]], "z": 8, "h": 1.4, "paint": "aluminium", "tone": "hi", "bevel": 0.3, "mount": ["rayo-0", "rayo-1", "rayo-3", "rayo-4"]},
+        {"id": "rayo-3", "kind": "prism", "axis": "x", "plan": [[-0.04, 14.5], [5.49, 7.4], [7.44, 8.81], [2.39, 16.26]], "z": 8, "h": 1.4, "paint": "aluminium", "tone": "hi", "bevel": 0.3, "mount": ["rayo-0", "rayo-1", "rayo-2", "rayo-4"]},
+        {"id": "rayo-4", "kind": "prism", "axis": "x", "plan": [[2.37, 16.19], [10.83, 19.26], [10.09, 21.54], [1.44, 19.04]], "z": 8, "h": 1.4, "paint": "aluminium", "tone": "hi", "bevel": 0.3, "mount": ["rayo-0", "rayo-1", "rayo-2", "rayo-3"]},
+        {"id": "buje", "kind": "cylinder", "at": [9.4, 0, 17], "r": 3.4, "h": 1, "axis": "x", "paint": "steel", "tone": "mid"},
+        {"id": "tuercas", "kind": "dots", "on": "buje", "points": [[10.4, 2.1, 17], [10.4, 0.65, 19], [10.4, -1.7, 18.23], [10.4, -1.7, 15.77], [10.4, 0.65, 15]]}
+      ]
+    },
+    "freno": {
+      "parts": [
+        {"id": "disco", "kind": "cylinder", "at": [-1.5, 0, 17], "r": 12, "h": 3, "axis": "x", "paint": "steel", "tone": "hi", "bevel": 0.4},
+        {"id": "cubo-ext", "kind": "cylinder", "at": [1.5, 0, 17], "r": 4.6, "h": 2.5, "axis": "x", "paint": "steel", "tone": "mid"},
+        {"id": "cubo-int", "kind": "cylinder", "at": [-3.6, 0, 17], "r": 4.6, "h": 2.1, "axis": "x", "paint": "steel", "tone": "mid"},
+        {"id": "pista-ext", "kind": "line", "on": "disco", "points": [[1.5, 11.2, 17], [1.5, 10.92, 19.49], [1.5, 10.09, 21.86], [1.5, 8.76, 23.98], [1.5, 6.98, 25.76], [1.5, 4.86, 27.09], [1.5, 2.49, 27.92], [1.5, 0, 28.2], [1.5, -2.49, 27.92], [1.5, -4.86, 27.09], [1.5, -6.98, 25.76], [1.5, -8.76, 23.98], [1.5, -10.09, 21.86], [1.5, -10.92, 19.49], [1.5, -11.2, 17], [1.5, -10.92, 14.51], [1.5, -10.09, 12.14], [1.5, -8.76, 10.02], [1.5, -6.98, 8.24], [1.5, -4.86, 6.91], [1.5, -2.49, 6.08], [1.5, 0, 5.8], [1.5, 2.49, 6.08], [1.5, 4.86, 6.91], [1.5, 6.98, 8.24], [1.5, 8.76, 10.02], [1.5, 10.09, 12.14], [1.5, 10.92, 14.51], [1.5, 11.2, 17]]},
+        {"id": "pista-int", "kind": "line", "on": "disco", "points": [[-1.5, 11.2, 17], [-1.5, 10.92, 19.49], [-1.5, 10.09, 21.86], [-1.5, 8.76, 23.98], [-1.5, 6.98, 25.76], [-1.5, 4.86, 27.09], [-1.5, 2.49, 27.92], [-1.5, 0, 28.2], [-1.5, -2.49, 27.92], [-1.5, -4.86, 27.09], [-1.5, -6.98, 25.76], [-1.5, -8.76, 23.98], [-1.5, -10.09, 21.86], [-1.5, -10.92, 19.49], [-1.5, -11.2, 17], [-1.5, -10.92, 14.51], [-1.5, -10.09, 12.14], [-1.5, -8.76, 10.02], [-1.5, -6.98, 8.24], [-1.5, -4.86, 6.91], [-1.5, -2.49, 6.08], [-1.5, 0, 5.8], [-1.5, 2.49, 6.08], [-1.5, 4.86, 6.91], [-1.5, 6.98, 8.24], [-1.5, 8.76, 10.02], [-1.5, 10.09, 12.14], [-1.5, 10.92, 14.51], [-1.5, 11.2, 17]]},
+        {"id": "ventilacion-ext", "kind": "dots", "on": "disco", "points": [[1.5, 8.2, 17], [1.5, 7.1, 21.1], [1.5, 4.1, 24.1], [1.5, 0, 25.2], [1.5, -4.1, 24.1], [1.5, -7.1, 21.1], [1.5, -8.2, 17], [1.5, -7.1, 12.9], [1.5, -4.1, 9.9], [1.5, 0, 8.8], [1.5, 4.1, 9.9], [1.5, 7.1, 12.9]]},
+        {"id": "tornillos-cubo", "kind": "dots", "on": "cubo-ext", "points": [[4, 2.7, 17], [4, 0.83, 19.57], [4, -2.18, 18.59], [4, -2.18, 15.41], [4, 0.83, 14.43]]},
+        {"id": "pastilla-{i}", "kind": "prism", "axis": "x", "plan": [[8.56, 19.05], [12.02, 22.52], [5.52, 29.02], [2.05, 25.56]], "z": -3.2, "h": 1.7, "paint": "lacquer", "tone": "hi", "bevel": 0.3, "repeat": {"count": 2, "step": [4.7, 0, 0]}},
+        {"id": "puente", "kind": "prism", "axis": "x", "plan": [[11.74, 22.23], [13.72, 24.21], [7.21, 30.72], [5.23, 28.74]], "z": -3.2, "h": 6.4, "paint": "lacquer", "tone": "hi", "bevel": 0.4}
+      ]
+    },
+    "amortiguador": {
+      "parts": [
+        {"id": "espira-0", "kind": "cylinder", "at": [0, 0, 0], "r": 2.2, "h": 1.2, "paint": "iron", "tone": "mid"},
+        {"id": "varilla-0", "kind": "cylinder", "at": [0, 0, 1.2], "r": 1.1, "h": 2.4, "paint": "steel", "tone": "hi"},
+        {"id": "espira-1", "kind": "cylinder", "at": [0, 0, 3.6], "r": 2.2, "h": 1.2, "paint": "iron", "tone": "mid"},
+        {"id": "varilla-1", "kind": "cylinder", "at": [0, 0, 4.8], "r": 1.1, "h": 2.4, "paint": "steel", "tone": "hi"},
+        {"id": "espira-2", "kind": "cylinder", "at": [0, 0, 7.2], "r": 2.2, "h": 1.2, "paint": "iron", "tone": "mid"},
+        {"id": "varilla-2", "kind": "cylinder", "at": [0, 0, 8.4], "r": 1.1, "h": 2.4, "paint": "steel", "tone": "hi"},
+        {"id": "espira-3", "kind": "cylinder", "at": [0, 0, 10.8], "r": 2.2, "h": 1.2, "paint": "iron", "tone": "mid"},
+        {"id": "varilla-3", "kind": "cylinder", "at": [0, 0, 12], "r": 1.1, "h": 2.4, "paint": "steel", "tone": "hi"},
+        {"id": "espira-4", "kind": "cylinder", "at": [0, 0, 14.4], "r": 2.2, "h": 1.2, "paint": "iron", "tone": "mid"},
+        {"id": "varilla-4", "kind": "cylinder", "at": [0, 0, 15.6], "r": 1.1, "h": 2.4, "paint": "steel", "tone": "hi"},
+        {"id": "vastago", "kind": "cylinder", "at": [0, 0, 18], "r": 1.1, "h": 5, "paint": "steel", "tone": "hi"}
+      ]
+    },
+    "amortiguador-corto": {
+      "parts": [
+        {"id": "espira-0", "kind": "cylinder", "at": [0, 0, 0], "r": 1.7, "h": 1.2, "paint": "iron", "tone": "mid"},
+        {"id": "varilla-0", "kind": "cylinder", "at": [0, 0, 1.2], "r": 1.1, "h": 2.4, "paint": "steel", "tone": "hi"},
+        {"id": "espira-1", "kind": "cylinder", "at": [0, 0, 3.6], "r": 1.7, "h": 1.2, "paint": "iron", "tone": "mid"},
+        {"id": "varilla-1", "kind": "cylinder", "at": [0, 0, 4.8], "r": 1.1, "h": 2.4, "paint": "steel", "tone": "hi"},
+        {"id": "vastago", "kind": "cylinder", "at": [0, 0, 7.2], "r": 1.1, "h": 5, "paint": "steel", "tone": "hi"}
+      ]
+    },
+    "butaca": {
+      "parts": [
+        {"id": "base", "kind": "box", "at": [-8, 0, 0], "size": [16, 22, 5], "radius": 2, "bevel": 0.8, "tone": "mid", "paint": "carbon"},
+        {"id": "respaldo", "kind": "prism", "axis": "x", "plan": [[0, 5], [5, 5], [-1, 27], [-6, 27]], "z": -8, "h": 16, "bevel": 0.8, "tone": "mid", "paint": "carbon"},
+        {"id": "cabecera", "kind": "box", "at": [-4, -5.5, 27], "size": [8, 5, 5], "radius": 1.5, "bevel": 0.6, "tone": "mid", "paint": "carbon"},
+        {"id": "costura", "kind": "line", "on": "respaldo", "points": [[-3, 1, 16], [3, 1, 16]]}
+      ]
+    }
+  },
+  "root": {
+    "id": "muscle-car",
+    "name": {"es": "Muscle car", "en": "Muscle car"},
+    "paint": "iron",
+    "children": [
+      {
+        "id": "carroceria",
+        "name": {"es": "Carrocería", "en": "Body"},
+        "note": {"es": "Casco de dos puertas: capó largo, cabina baja y retrasada, maletera corta y guardafangos anchos.", "en": "Two-door shell: long hood, low set-back cabin, short deck and wide fenders."},
+        "paint": "lacquer",
+        "tone": "hi",
+        "explode": [0, 0, 84],
+        "stage": 4,
+        "step": {"es": "carrocería arriba", "en": "body up"},
+        "parts": [
+          {"id": "ala-nariz-{i}", "kind": "prism", "axis": "x", "plan": [[211, 8], [236, 8], [240, 13], [240, 31], [238, 35], [204, 41], [204, 36]], "z": -46, "h": 12, "bevel": 0.6, "repeat": {"count": 2, "step": [80, 0, 0]}},
+          {"id": "puente-del-{i}", "kind": "prism", "axis": "x", "plan": [[176, 36], [204, 36], [204, 41], [176, 42]], "z": -46, "h": 12, "bevel": 0.6, "repeat": {"count": 2, "step": [80, 0, 0]}},
+          {"id": "ala-puerta-{i}", "kind": "prism", "axis": "x", "plan": [[147, 8], [169, 8], [176, 36], [176, 42], [147, 44]], "z": -46, "h": 12, "bevel": 0.6, "repeat": {"count": 2, "step": [80, 0, 0]}},
+          {"id": "cuarto-{i}", "kind": "prism", "axis": "x", "plan": [[71, 8], [90, 8], [90, 48], [64, 48], [64, 36]], "z": -46, "h": 12, "bevel": 0.6, "repeat": {"count": 2, "step": [80, 0, 0]}},
+          {"id": "puente-tras-{i}", "kind": "prism", "axis": "x", "plan": [[36, 36], [64, 36], [64, 48], [36, 47.5]], "z": -46, "h": 12, "bevel": 0.6, "repeat": {"count": 2, "step": [80, 0, 0]}},
+          {"id": "cola-{i}", "kind": "prism", "axis": "x", "plan": [[3, 8], [29, 8], [36, 36], [36, 47.5], [4, 50], [0, 44], [0, 14]], "z": -46, "h": 12, "bevel": 0.6, "repeat": {"count": 2, "step": [80, 0, 0]}},
+          {"id": "umbral-{i}", "kind": "box", "at": [-46, 90, 8], "size": [12, 57, 4], "bevel": 0.5, "repeat": {"count": 2, "step": [80, 0, 0]}},
+          {"id": "nariz", "kind": "box", "at": [-34, 226, 10], "size": [68, 12, 22], "radius": 2, "bevel": 0.8},
+          {"id": "defensa", "kind": "box", "at": [-34, 236, 8], "size": [68, 6, 2], "radius": 1, "bevel": 0.4, "tone": "lo", "paint": "carbon"},
+          {"id": "parrilla", "kind": "box", "at": [-26, 238, 13], "size": [52, 2, 11], "tone": "lo", "paint": "carbon"},
+          {"id": "parrilla-rejilla", "kind": "line", "on": "parrilla", "points": [[-24, 240, 16], [24, 240, 16]]},
+          {"id": "parrilla-rejilla2", "kind": "line", "on": "parrilla", "points": [[-24, 240, 19], [24, 240, 19]]},
+          {"id": "parrilla-rejilla3", "kind": "line", "on": "parrilla", "points": [[-24, 240, 22], [24, 240, 22]]},
+          {"id": "faro-{i}", "kind": "box", "at": [-33, 238, 24], "size": [17, 2, 5], "radius": 1, "tone": "hi", "paint": "aluminium", "repeat": {"count": 2, "step": [50, 0, 0]}},
+          {"id": "cowl", "kind": "box", "at": [-34, 146, 38], "size": [68, 7, 8], "bevel": 0.6},
+          {"id": "pilar-a-{i}", "kind": "prism", "axis": "x", "plan": [[147, 46], [153, 46], [114, 67.6], [108.5, 67.6]], "z": 34, "h": 6, "bevel": 0.4, "repeat": {"count": 2, "step": [-80, 0, 0]}},
+          {"id": "riel-{i}", "kind": "prism", "axis": "x", "plan": [[90, 63.1], [116.5, 63.1], [108.5, 67.6], [70, 67.6]], "z": 34, "h": 6, "bevel": 0.4, "repeat": {"count": 2, "step": [-80, 0, 0]}},
+          {"id": "lateral-tras-{i}", "kind": "prism", "axis": "x", "plan": [[34, 48], [90, 48], [90, 63.1], [70, 67.6], [34, 50]], "z": 34, "h": 6, "bevel": 0.4, "repeat": {"count": 2, "step": [-80, 0, 0]}},
+          {"id": "techo", "kind": "prism", "axis": "x", "plan": [[66.8, 63.1], [116.5, 63.1], [108.5, 67.6], [76, 67.6]], "z": -34, "h": 68, "bevel": 0.6},
+          {"id": "franja-techo-izq", "kind": "prism", "axis": "x", "plan": [[78, 67.6], [107, 67.6], [107, 68.2], [78, 68.2]], "z": -22, "h": 6, "paint": "aluminium", "tone": "hi", "mount": ["techo"]},
+          {"id": "franja-techo-der", "kind": "prism", "axis": "x", "plan": [[78, 67.6], [107, 67.6], [107, 68.2], [78, 68.2]], "z": 16, "h": 6, "paint": "aluminium", "tone": "hi", "mount": ["techo"]},
+          {"id": "fondo-maletero", "kind": "box", "at": [-34, 6, 26], "size": [68, 26, 2], "tone": "lo", "paint": "carbon"},
+          {"id": "panel-trasero", "kind": "box", "at": [-34, 0, 14], "size": [68, 6, 32], "radius": 1, "bevel": 0.6},
+          {"id": "luz-trasera-{i}", "kind": "box", "at": [-33, -1, 30], "size": [20, 1.5, 7], "radius": 1, "tone": "lo", "paint": "lacquer", "repeat": {"count": 2, "step": [46, 0, 0]}}
+        ],
+        "children": [
+          {
+            "id": "capo",
+            "name": {"es": "Capó y maletera", "en": "Hood and trunk"},
+            "note": {"es": "Se abren para llegar al motor y a la maletera; el capó largo es la firma del muscle car.", "en": "They open to reach the engine and the trunk; the long hood is the muscle-car signature."},
+            "explode": [0, 36, 18],
+            "stage": 1,
+            "step": {"es": "capó y maletera arriba", "en": "hood and trunk lid up"},
+            "parts": [
+              {"id": "panel", "kind": "prism", "axis": "x", "plan": [[153, 44.1], [236, 33.1], [236, 37.1], [153, 48.1]], "z": -34, "h": 68, "bevel": 0.6},
+              {"id": "bulto", "kind": "prism", "axis": "x", "plan": [[172, 45.58], [204, 41.34], [204, 43.74], [172, 47.98]], "z": -14, "h": 28, "bevel": 0.5},
+              {"id": "franja-izq", "kind": "prism", "axis": "x", "plan": [[156, 47.7], [232, 37.63], [232, 38.23], [156, 48.3]], "z": -22, "h": 6, "paint": "aluminium", "tone": "hi", "mount": ["panel"]},
+              {"id": "franja-der", "kind": "prism", "axis": "x", "plan": [[156, 47.7], [232, 37.63], [232, 38.23], [156, 48.3]], "z": 16, "h": 6, "paint": "aluminium", "tone": "hi", "mount": ["panel"]},
+              {"id": "ranura-0", "kind": "line", "on": "bulto", "points": [[-9, 178, 47.19], [9, 178, 47.19]], "bold": true},
+              {"id": "ranura-1", "kind": "line", "on": "bulto", "points": [[-9, 184, 46.39], [9, 184, 46.39]], "bold": true},
+              {"id": "ranura-2", "kind": "line", "on": "bulto", "points": [[-9, 190, 45.6], [9, 190, 45.6]], "bold": true},
+              {"id": "ranura-3", "kind": "line", "on": "bulto", "points": [[-9, 196, 44.8], [9, 196, 44.8]], "bold": true}
+            ]
+          },
+          {
+            "id": "maletera",
+            "name": {"es": "Capó y maletera", "en": "Hood and trunk"},
+            "explode": [0, -36, 16],
+            "stage": 1,
+            "parts": [
+              {"id": "tapa", "kind": "prism", "axis": "x", "plan": [[35, 44.5], [35, 48], [6, 50.5], [6, 47]], "z": -34, "h": 68, "bevel": 0.6},
+              {"id": "alerón", "kind": "prism", "axis": "x", "plan": [[3, 50.7], [14, 49.8], [14, 51.5], [3, 54.6]], "z": -30, "h": 60, "bevel": 0.5},
+              {"id": "franja-izq", "kind": "prism", "axis": "x", "plan": [[33, 48.77], [8, 50.93], [8, 50.33], [33, 48.17]], "z": -22, "h": 6, "paint": "aluminium", "tone": "hi", "mount": ["tapa"]},
+              {"id": "franja-der", "kind": "prism", "axis": "x", "plan": [[33, 48.77], [8, 50.93], [8, 50.33], [33, 48.17]], "z": 16, "h": 6, "paint": "aluminium", "tone": "hi", "mount": ["tapa"]}
+            ]
+          },
+          {
+            "id": "puerta-izq",
+            "name": {"es": "Puertas", "en": "Doors"},
+            "note": {"es": "Dos puertas largas; el vidrio de cada una baja dentro de ella.", "en": "Two long doors; each window drops down inside its door."},
+            "explode": [-40, 0, 0],
+            "stage": 2,
+            "step": {"es": "puertas fuera", "en": "doors out"},
+            "parts": [
+              {"id": "hoja", "kind": "prism", "axis": "y", "plan": [[-46, 12], [-37, 12], [-37, 47], [-40, 46.5], [-46, 43]], "z": 90, "h": 57, "bevel": 0.6},
+              {"id": "manija", "kind": "box", "at": [-47.2, 100, 38], "size": [1.2, 10, 2], "tone": "hi", "paint": "steel", "radius": 0.6},
+              {"id": "pliegue", "kind": "line", "on": "hoja", "points": [[-46, 94, 36], [-46, 144, 38.5]]},
+              {"id": "canto", "kind": "line", "on": "hoja", "points": [[-46, 94, 18], [-46, 147, 18]]},
+              {"id": "espejo", "kind": "box", "at": [-51, 136, 44.5], "size": [6, 6, 4], "radius": 1.2, "bevel": 0.5, "tone": "hi", "mount": ["hoja"]}
+            ],
+            "children": [
+              {
+                "id": "vidrio",
+                "name": {"es": "Vidrios", "en": "Glass"},
+                "note": {"es": "Parabrisas muy inclinado, luneta y ventanillas: la cabina baja deja poco vidrio.", "en": "A steeply raked windshield, rear glass and side windows: the low cabin leaves little glass."},
+                "paint": "glass",
+                "tone": "mid",
+                "parts": [
+                  {"id": "lateral", "kind": "prism", "axis": "x", "plan": [[90, 47], [145.2, 47], [116.5, 63.1], [90, 63.1]], "z": -39.4, "h": 2.4, "bevel": 0.3}
+                ]
+              }
+            ]
+          },
+          {
+            "id": "puerta-der",
+            "name": {"es": "Puertas", "en": "Doors"},
+            "explode": [40, 0, 0],
+            "stage": 2,
+            "parts": [
+              {"id": "hoja", "kind": "prism", "axis": "y", "plan": [[46, 43], [40, 46.5], [37, 47], [37, 12], [46, 12]], "z": 90, "h": 57, "bevel": 0.6},
+              {"id": "manija", "kind": "box", "at": [46, 100, 38], "size": [1.2, 10, 2], "tone": "hi", "paint": "steel", "radius": 0.6},
+              {"id": "pliegue", "kind": "line", "on": "hoja", "points": [[46, 94, 36], [46, 144, 38.5]]},
+              {"id": "canto", "kind": "line", "on": "hoja", "points": [[46, 94, 18], [46, 147, 18]]},
+              {"id": "espejo", "kind": "box", "at": [45, 136, 44.5], "size": [6, 6, 4], "radius": 1.2, "bevel": 0.5, "tone": "hi", "mount": ["hoja"]}
+            ],
+            "children": [
+              {
+                "id": "vidrio",
+                "name": {"es": "Vidrios", "en": "Glass"},
+                "note": {"es": "Parabrisas muy inclinado, luneta y ventanillas: la cabina baja deja poco vidrio.", "en": "A steeply raked windshield, rear glass and side windows: the low cabin leaves little glass."},
+                "paint": "glass",
+                "tone": "mid",
+                "parts": [
+                  {"id": "lateral", "kind": "prism", "axis": "x", "plan": [[90, 47], [145.2, 47], [116.5, 63.1], [90, 63.1]], "z": 37, "h": 2.4, "bevel": 0.3}
+                ]
+              }
+            ]
+          },
+          {
+            "id": "parabrisas",
+            "name": {"es": "Vidrios", "en": "Glass"},
+            "paint": "glass",
+            "tone": "mid",
+            "explode": [0, 9, 16],
+            "stage": 3,
+            "step": {"es": "vidrios fuera", "en": "glass off"},
+            "parts": [
+              {"id": "cristal", "kind": "prism", "axis": "x", "plan": [[147, 46], [153, 46], [114, 67.6], [108.5, 67.6]], "z": -34, "h": 68, "bevel": 0.3}
+            ]
+          },
+          {
+            "id": "luneta",
+            "name": {"es": "Vidrios", "en": "Glass"},
+            "paint": "glass",
+            "tone": "mid",
+            "explode": [0, -10, 10],
+            "stage": 3,
+            "parts": [
+              {"id": "cristal", "kind": "prism", "axis": "x", "plan": [[34, 50], [40, 50], [76, 67.6], [70, 67.6]], "z": -34, "h": 68, "bevel": 0.3}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "interior",
+        "name": {"es": "Asientos y tablero", "en": "Seats and dashboard"},
+        "note": {"es": "Dos butacas delante y una banca corta atrás; el tablero y el volante quedan frente al conductor.", "en": "Two front bucket seats and a short rear bench; the dashboard and steering wheel face the driver."},
+        "explode": [0, 0, 34],
+        "stage": 5,
+        "step": {"es": "asientos y tablero arriba", "en": "seats and dashboard up"},
+        "parts": [
+          {"id": "piso-a-{i}", "kind": "box", "at": [-28, 65, 16], "size": [18, 41, 2], "tone": "lo", "paint": "carbon", "repeat": {"count": 2, "step": [38, 0, 0]}},
+          {"id": "piso-b-{i}", "kind": "box", "at": [-28, 106, 16], "size": [18, 44, 2], "tone": "lo", "paint": "carbon", "repeat": {"count": 2, "step": [38, 0, 0]}},
+          {"id": "tunel-tapa-a", "kind": "box", "at": [-10, 84, 27], "size": [20, 33, 2], "bevel": 0.6, "tone": "mid", "paint": "carbon"},
+          {"id": "tunel-tapa-b", "kind": "box", "at": [-10, 117, 27], "size": [20, 33, 2], "bevel": 0.6, "tone": "mid", "paint": "carbon"},
+          {"id": "tunel-pared-a-{i}", "kind": "box", "at": [-10, 84, 18], "size": [1.5, 33, 9], "tone": "lo", "paint": "carbon", "repeat": {"count": 2, "step": [18.5, 0, 0]}},
+          {"id": "tunel-pared-b-{i}", "kind": "box", "at": [-10, 117, 18], "size": [1.5, 33, 9], "tone": "lo", "paint": "carbon", "repeat": {"count": 2, "step": [18.5, 0, 0]}},
+          {"id": "consola", "kind": "box", "at": [-3.5, 100, 29], "size": [7, 30, 4], "radius": 1, "bevel": 0.6, "tone": "mid", "paint": "carbon"},
+          {"id": "palanca", "kind": "cylinder", "at": [0, 116, 33], "r": 0.9, "h": 7, "paint": "steel", "tone": "hi"},
+          {"id": "pomo", "kind": "cylinder", "at": [0, 116, 40], "r": 1.8, "h": 2.2, "paint": "steel", "tone": "hi"},
+          {"id": "tablero", "kind": "box", "at": [-34, 138, 29], "size": [68, 12, 9], "radius": 2, "bevel": 1, "tone": "mid", "paint": "carbon"},
+          {"id": "instrumentos", "kind": "line", "on": "tablero", "points": [[-30, 142, 38], [-12, 142, 38], [-12, 146, 38], [-30, 146, 38], [-30, 142, 38]], "bold": true},
+          {"id": "tablero-linea", "kind": "line", "on": "tablero", "points": [[-32, 150, 34], [32, 150, 34]]},
+          {"id": "columna", "kind": "cylinder", "at": [-18, 141, 38], "r": 1, "h": 7, "axis": [0, -0.7, 0.7], "paint": "steel", "tone": "mid"},
+          {"id": "volante", "kind": "cylinder", "at": [-18, 134, 40], "r": 6.5, "h": 1.4, "axis": [0, -0.8, 0.6], "paint": "carbon", "tone": "mid", "bevel": 0.4},
+          {"id": "banca", "kind": "box", "at": [-29, 64, 18.5], "size": [58, 16, 5], "radius": 2, "bevel": 0.8, "tone": "mid", "paint": "carbon"},
+          {"id": "banca-respaldo", "kind": "prism", "axis": "x", "plan": [[64, 23.5], [70, 23.5], [63, 42], [58, 42]], "z": -29, "h": 58, "bevel": 0.8, "tone": "mid", "paint": "carbon"}
+        ],
+        "children": [
+          {"id": "butaca-{i}", "use": "butaca", "at": [-19, 100, 18], "repeat": {"count": 2, "step": [38, 0, 0]}}
+        ]
+      },
+      {
+        "id": "motor",
+        "name": {"es": "Motor V8", "en": "V8 engine"},
+        "note": {"es": "V8 delantero longitudinal: dos bancadas de cuatro cilindros a 90°, con el radiador delante.", "en": "Front longitudinal V8: two banks of four cylinders at 90°, with the radiator ahead of it."},
+        "explode": [0, 8, 40],
+        "stage": 6,
+        "step": {"es": "motor y radiador arriba", "en": "engine and radiator up"},
+        "parts": [
+          {"id": "carter", "kind": "box", "at": [-9, 162, 5], "size": [18, 36, 4], "radius": 2, "bevel": 0.6, "tone": "lo", "paint": "aluminium"},
+          {"id": "bloque", "kind": "prism", "axis": "y", "plan": [[-9, 9], [9, 9], [11, 11], [11, 12.3], [0, 23.3], [-11, 12.3], [-11, 11]], "z": 160, "h": 40, "bevel": 0.8, "tone": "mid", "paint": "iron"},
+          {"id": "tapa-delantera", "kind": "prism", "axis": "y", "plan": [[-9, 9], [9, 9], [11, 11], [11, 12.3], [0, 23.3], [-11, 12.3], [-11, 11]], "z": 200, "h": 3, "bevel": 0.6, "tone": "lo", "paint": "iron"},
+          {"id": "bancada-izq", "kind": "prism", "axis": "y", "plan": [[-0.67, 22.66], [-7.74, 29.73], [-16.23, 21.24], [-9.16, 14.17]], "z": 160, "h": 40, "bevel": 0.6, "tone": "mid", "paint": "iron"},
+          {"id": "culata-izq", "kind": "prism", "axis": "y", "plan": [[-7.39, 30.08], [-11.28, 33.97], [-20.47, 24.78], [-16.58, 20.89]], "z": 160, "h": 40, "bevel": 0.6, "tone": "hi", "paint": "aluminium"},
+          {"id": "tapa-izq", "kind": "prism", "axis": "y", "plan": [[-11.99, 33.26], [-13.4, 34.68], [-21.18, 26.9], [-19.76, 25.49]], "z": 161, "h": 38, "bevel": 0.5, "tone": "hi", "paint": "steel"},
+          {"id": "bobinas-izq", "kind": "dots", "on": "tapa-izq", "points": [[-17.3, 165.5, 30.8], [-17.3, 174.5, 30.8], [-17.3, 183.5, 30.8], [-17.3, 192.5, 30.8]]},
+          {"id": "junta-izq", "kind": "line", "on": "culata-izq", "points": [[-18.53, 163, 22.83], [-18.53, 197, 22.83]]},
+          {"id": "colector-izq-0", "kind": "cylinder", "at": [-18.5, 165.5, 22.8], "r": 1.5, "h": 5, "axis": [-0.71, 0, -0.71], "paint": "steel", "tone": "mid", "mount": ["culata-izq", "freno-izq-0.cubo-ext", "freno-izq-0.cubo-int"]},
+          {"id": "colector-izq-1", "kind": "cylinder", "at": [-18.5, 174.5, 22.8], "r": 1.5, "h": 5, "axis": [-0.71, 0, -0.71], "paint": "steel", "tone": "mid", "mount": ["culata-izq", "freno-izq-0.cubo-ext", "freno-izq-0.cubo-int"]},
+          {"id": "colector-izq-2", "kind": "cylinder", "at": [-18.5, 183.5, 22.8], "r": 1.5, "h": 5, "axis": [-0.71, 0, -0.71], "paint": "steel", "tone": "mid", "mount": ["culata-izq", "freno-izq-0.cubo-ext", "freno-izq-0.cubo-int"]},
+          {"id": "colector-izq-3", "kind": "cylinder", "at": [-18.5, 192.5, 22.8], "r": 1.5, "h": 5, "axis": [-0.71, 0, -0.71], "paint": "steel", "tone": "mid", "mount": ["culata-izq", "freno-izq-0.cubo-ext", "freno-izq-0.cubo-int"]},
+          {"id": "bancada-der", "kind": "prism", "axis": "y", "plan": [[9.16, 14.17], [16.23, 21.24], [7.74, 29.73], [0.67, 22.66]], "z": 160, "h": 40, "bevel": 0.6, "tone": "mid", "paint": "iron"},
+          {"id": "culata-der", "kind": "prism", "axis": "y", "plan": [[16.58, 20.89], [20.47, 24.78], [11.28, 33.97], [7.39, 30.08]], "z": 160, "h": 40, "bevel": 0.6, "tone": "hi", "paint": "aluminium"},
+          {"id": "tapa-der", "kind": "prism", "axis": "y", "plan": [[19.76, 25.49], [21.18, 26.9], [13.4, 34.68], [11.99, 33.26]], "z": 161, "h": 38, "bevel": 0.5, "tone": "hi", "paint": "steel"},
+          {"id": "bobinas-der", "kind": "dots", "on": "tapa-der", "points": [[17.3, 165.5, 30.8], [17.3, 174.5, 30.8], [17.3, 183.5, 30.8], [17.3, 192.5, 30.8]]},
+          {"id": "junta-der", "kind": "line", "on": "culata-der", "points": [[18.53, 163, 22.83], [18.53, 197, 22.83]]},
+          {"id": "colector-der-0", "kind": "cylinder", "at": [18.5, 165.5, 22.8], "r": 1.5, "h": 5, "axis": [0.71, 0, -0.71], "paint": "steel", "tone": "mid", "mount": ["culata-der", "freno-der-0.cubo-ext", "freno-der-0.cubo-int"]},
+          {"id": "colector-der-1", "kind": "cylinder", "at": [18.5, 174.5, 22.8], "r": 1.5, "h": 5, "axis": [0.71, 0, -0.71], "paint": "steel", "tone": "mid", "mount": ["culata-der", "freno-der-0.cubo-ext", "freno-der-0.cubo-int"]},
+          {"id": "colector-der-2", "kind": "cylinder", "at": [18.5, 183.5, 22.8], "r": 1.5, "h": 5, "axis": [0.71, 0, -0.71], "paint": "steel", "tone": "mid", "mount": ["culata-der", "freno-der-0.cubo-ext", "freno-der-0.cubo-int"]},
+          {"id": "colector-der-3", "kind": "cylinder", "at": [18.5, 192.5, 22.8], "r": 1.5, "h": 5, "axis": [0.71, 0, -0.71], "paint": "steel", "tone": "mid", "mount": ["culata-der", "freno-der-0.cubo-ext", "freno-der-0.cubo-int"]},
+          {"id": "admision", "kind": "prism", "axis": "y", "plan": [[-3.4, 25.3], [3.4, 25.3], [7.2, 29.1], [-7.2, 29.1]], "z": 166, "h": 28, "bevel": 0.5, "tone": "hi", "paint": "aluminium"},
+          {"id": "camara", "kind": "box", "at": [-6.5, 170, 29.1], "size": [13, 20, 3.4], "radius": 1, "bevel": 0.5, "tone": "hi", "paint": "aluminium"},
+          {"id": "filtro", "kind": "cylinder", "at": [0, 180, 32.5], "r": 6.8, "h": 3.2, "tone": "hi", "paint": "steel", "bevel": 0.6},
+          {"id": "filtro-tornillos", "kind": "dots", "on": "filtro", "points": [[0, 180, 35.7], [3, 183, 35.7], [-3, 177, 35.7]]},
+          {"id": "mariposa", "kind": "cylinder", "at": [0, 190, 30.8], "r": 2.8, "h": 6, "axis": "y", "paint": "steel", "tone": "mid", "mount": ["camara", "admision"]},
+          {"id": "polea", "kind": "cylinder", "at": [0, 203, 15], "r": 5.5, "h": 3, "axis": "y", "paint": "steel", "tone": "hi"},
+          {"id": "polea-tornillos", "kind": "dots", "on": "polea", "points": [[3, 206, 15], [-3, 206, 15], [0, 206, 18], [0, 206, 12]]},
+          {"id": "bomba", "kind": "cylinder", "at": [0, 206, 15], "r": 2.4, "h": 4, "axis": "y", "paint": "steel", "tone": "mid"},
+          {"id": "ventilador", "kind": "cylinder", "at": [0, 210, 15], "r": 10, "h": 1.4, "axis": "y", "paint": "carbon", "tone": "mid", "bevel": 0.4},
+          {"id": "aspas", "kind": "line", "on": "ventilador", "points": [[0, 211.4, 15], [9, 211.4, 15], [0, 211.4, 15], [4.5, 211.4, 22.79], [0, 211.4, 15], [-4.5, 211.4, 22.79], [0, 211.4, 15], [-9, 211.4, 15], [0, 211.4, 15], [-4.5, 211.4, 7.21], [0, 211.4, 15], [4.5, 211.4, 7.21]], "bold": true},
+          {"id": "radiador", "kind": "box", "at": [-24, 216, 16.5], "size": [48, 5, 14.5], "bevel": 0.4, "tone": "hi", "paint": "aluminium"},
+          {"id": "tanque", "kind": "box", "at": [-24, 216, 31], "size": [48, 5, 3], "bevel": 0.4, "tone": "mid", "paint": "iron"},
+          {"id": "aletas", "kind": "ticks", "on": "radiador", "from": [-23, 221, 18], "along": [0, 0, 2], "count": 6, "toward": [1, 0, 0], "size": [46, 46]},
+          {"id": "manguera-{i}", "kind": "cylinder", "at": [-13.9, 200, 27.4], "r": 1.4, "h": 16, "axis": "y", "paint": "rubber", "tone": "lo", "repeat": {"count": 2, "step": [27.8, 0, 0]}},
+          {"id": "soporte-{i}", "kind": "box", "at": [-14, 176, 11], "size": [3, 12, 5], "tone": "mid", "paint": "iron", "repeat": {"count": 2, "step": [25, 0, 0]}}
+        ]
+      },
+      {
+        "id": "caja",
+        "name": {"es": "Caja de cambios", "en": "Gearbox"},
+        "note": {"es": "Recibe el giro del motor y lo pasa al cardán; puede ser manual o automática.", "en": "Takes the engine's rotation and hands it to the driveshaft; it can be manual or automatic."},
+        "explode": [0, 0, 34],
+        "stage": 7,
+        "step": {"es": "caja y cardán arriba", "en": "gearbox and driveshaft up"},
+        "parts": [
+          {"id": "campana", "kind": "cylinder", "at": [0, 148, 15], "r": 8.5, "h": 12, "axis": "y", "paint": "aluminium", "tone": "hi", "bevel": 0.6},
+          {"id": "carcasa", "kind": "cylinder", "at": [0, 114, 15], "r": 7, "h": 34, "axis": "y", "paint": "aluminium", "tone": "mid", "bevel": 0.6},
+          {"id": "extension", "kind": "cylinder", "at": [0, 100, 15], "r": 4.8, "h": 14, "axis": "y", "paint": "aluminium", "tone": "mid"},
+          {"id": "torreta", "kind": "box", "at": [-3, 122, 22], "size": [6, 8, 3], "tone": "mid", "paint": "aluminium", "radius": 1},
+          {"id": "campana-tornillos", "kind": "dots", "on": "campana", "points": [[8.1, 148, 15], [4.05, 148, 22.01], [-4.05, 148, 22.01], [-8.1, 148, 15], [-4.05, 148, 7.99], [4.05, 148, 7.99]]},
+          {"id": "anillo-carcasa", "kind": "line", "on": "carcasa", "points": [[7, 131, 15], [6.76, 131, 16.81], [6.06, 131, 18.5], [4.95, 131, 19.95], [3.5, 131, 21.06], [1.81, 131, 21.76], [0, 131, 22], [-1.81, 131, 21.76], [-3.5, 131, 21.06], [-4.95, 131, 19.95], [-6.06, 131, 18.5], [-6.76, 131, 16.81], [-7, 131, 15], [-6.76, 131, 13.19], [-6.06, 131, 11.5], [-4.95, 131, 10.05], [-3.5, 131, 8.94], [-1.81, 131, 8.24], [0, 131, 8], [1.81, 131, 8.24], [3.5, 131, 8.94], [4.95, 131, 10.05], [6.06, 131, 11.5], [6.76, 131, 13.19], [7, 131, 15]]}
+        ]
+      },
+      {
+        "id": "cardan",
+        "name": {"es": "Eje cardán", "en": "Driveshaft"},
+        "note": {"es": "Tubo que lleva el giro de la caja al diferencial por el túnel central.", "en": "A tube that carries the gearbox output back to the differential along the center tunnel."},
+        "explode": [0, 0, 22],
+        "stage": 7,
+        "parts": [
+          {"id": "brida-tras", "kind": "cylinder", "at": [0, 63, 15], "r": 3.8, "h": 2, "axis": "y", "paint": "steel", "tone": "hi"},
+          {"id": "eje", "kind": "cylinder", "at": [0, 65, 15], "r": 2.6, "h": 33, "axis": "y", "paint": "steel", "tone": "mid"},
+          {"id": "brida-del", "kind": "cylinder", "at": [0, 98, 15], "r": 3.8, "h": 2, "axis": "y", "paint": "steel", "tone": "hi"},
+          {"id": "pernos-tras", "kind": "dots", "on": "brida-tras", "points": [[2.6, 63, 15], [-2.6, 63, 15], [0, 63, 17.6], [0, 63, 12.4]]},
+          {"id": "pernos-del", "kind": "dots", "on": "brida-del", "points": [[2.6, 100, 15], [-2.6, 100, 15], [0, 100, 17.6], [0, 100, 12.4]]},
+          {"id": "soldadura", "kind": "line", "on": "eje", "points": [[0, 78, 17.6], [0, 78, 12.4]]}
+        ]
+      },
+      {
+        "id": "diferencial",
+        "name": {"es": "Diferencial", "en": "Differential"},
+        "note": {"es": "Reparte el giro entre las dos ruedas traseras: tracción trasera.", "en": "Splits the drive between the two rear wheels: rear-wheel drive."},
+        "explode": [0, 0, 26],
+        "stage": 8,
+        "step": {"es": "diferencial arriba y escape abajo", "en": "differential up, exhaust down"},
+        "parts": [
+          {"id": "carcasa", "kind": "cylinder", "at": [-7.5, 50, 15], "r": 7.5, "h": 15, "axis": "x", "paint": "iron", "tone": "hi", "bevel": 0.8},
+          {"id": "tapa", "kind": "cylinder", "at": [0, 40, 15], "r": 6, "h": 2.5, "axis": "y", "paint": "iron", "tone": "mid"},
+          {"id": "piñon", "kind": "cylinder", "at": [0, 57.5, 15], "r": 4.4, "h": 5.5, "axis": "y", "paint": "iron", "tone": "hi", "mount": ["carcasa"]},
+          {"id": "palier-izq", "kind": "cylinder", "at": [-21.5, 50, 15], "r": 2.8, "h": 14, "axis": "x", "paint": "steel", "tone": "mid"},
+          {"id": "palier-der", "kind": "cylinder", "at": [7.5, 50, 15], "r": 2.8, "h": 14, "axis": "x", "paint": "steel", "tone": "mid"},
+          {"id": "tapa-pernos", "kind": "dots", "on": "tapa", "points": [[5, 40, 15], [3.54, 40, 18.54], [0, 40, 20], [-3.54, 40, 18.54], [-5, 40, 15], [-3.54, 40, 11.46], [0, 40, 10], [3.54, 40, 11.46]]}
+        ]
+      },
+      {
+        "id": "escape",
+        "name": {"es": "Escape", "en": "Exhaust"},
+        "note": {"es": "Dos líneas con catalizador y silenciador, y doble salida atrás.", "en": "Two lines with a catalytic converter and a muffler, ending in dual tips at the rear."},
+        "explode": [0, 0, -16],
+        "stage": 8,
+        "parts": [
+          {"id": "tubo-del-izq", "kind": "cylinder", "at": [-10.5, 138, 6], "r": 2.1, "h": 10, "axis": "y", "paint": "steel", "tone": "mid"},
+          {"id": "catalizador-izq", "kind": "cylinder", "at": [-10.5, 126, 6], "r": 3.4, "h": 12, "axis": "y", "paint": "iron", "tone": "hi"},
+          {"id": "tubo-izq-0", "kind": "cylinder", "at": [-10.5, 36, 6], "r": 2.1, "h": 30, "axis": "y", "paint": "steel", "tone": "mid"},
+          {"id": "tubo-izq-1", "kind": "cylinder", "at": [-10.5, 66, 6], "r": 2.1, "h": 30, "axis": "y", "paint": "steel", "tone": "mid"},
+          {"id": "tubo-izq-2", "kind": "cylinder", "at": [-10.5, 96, 6], "r": 2.1, "h": 30, "axis": "y", "paint": "steel", "tone": "mid"},
+          {"id": "silenciador-izq", "kind": "cylinder", "at": [-10.5, 10, 6], "r": 4.2, "h": 26, "axis": "y", "paint": "iron", "tone": "hi", "bevel": 0.8},
+          {"id": "tubo-tras-izq", "kind": "cylinder", "at": [-10.5, 6, 6], "r": 2.1, "h": 4, "axis": "y", "paint": "steel", "tone": "mid"},
+          {"id": "salida-izq", "kind": "cylinder", "at": [-10.5, -4, 6], "r": 2.7, "h": 10, "axis": "y", "paint": "aluminium", "tone": "hi"},
+          {"id": "costura-izq", "kind": "line", "on": "silenciador-izq", "points": [[-6.3, 18, 6], [-6.62, 18, 7.61], [-7.53, 18, 8.97], [-8.89, 18, 9.88], [-10.5, 18, 10.2], [-12.11, 18, 9.88], [-13.47, 18, 8.97], [-14.38, 18, 7.61], [-14.7, 18, 6], [-14.38, 18, 4.39], [-13.47, 18, 3.03], [-12.11, 18, 2.12], [-10.5, 18, 1.8], [-8.89, 18, 2.12], [-7.53, 18, 3.03], [-6.62, 18, 4.39], [-6.3, 18, 6]]},
+          {"id": "tubo-del-der", "kind": "cylinder", "at": [10.5, 138, 6], "r": 2.1, "h": 10, "axis": "y", "paint": "steel", "tone": "mid"},
+          {"id": "catalizador-der", "kind": "cylinder", "at": [10.5, 126, 6], "r": 3.4, "h": 12, "axis": "y", "paint": "iron", "tone": "hi"},
+          {"id": "tubo-der-0", "kind": "cylinder", "at": [10.5, 36, 6], "r": 2.1, "h": 30, "axis": "y", "paint": "steel", "tone": "mid"},
+          {"id": "tubo-der-1", "kind": "cylinder", "at": [10.5, 66, 6], "r": 2.1, "h": 30, "axis": "y", "paint": "steel", "tone": "mid"},
+          {"id": "tubo-der-2", "kind": "cylinder", "at": [10.5, 96, 6], "r": 2.1, "h": 30, "axis": "y", "paint": "steel", "tone": "mid"},
+          {"id": "silenciador-der", "kind": "cylinder", "at": [10.5, 10, 6], "r": 4.2, "h": 26, "axis": "y", "paint": "iron", "tone": "hi", "bevel": 0.8},
+          {"id": "tubo-tras-der", "kind": "cylinder", "at": [10.5, 6, 6], "r": 2.1, "h": 4, "axis": "y", "paint": "steel", "tone": "mid"},
+          {"id": "salida-der", "kind": "cylinder", "at": [10.5, -4, 6], "r": 2.7, "h": 10, "axis": "y", "paint": "aluminium", "tone": "hi"},
+          {"id": "costura-der", "kind": "line", "on": "silenciador-der", "points": [[14.7, 18, 6], [14.38, 18, 7.61], [13.47, 18, 8.97], [12.11, 18, 9.88], [10.5, 18, 10.2], [8.89, 18, 9.88], [7.53, 18, 8.97], [6.62, 18, 7.61], [6.3, 18, 6], [6.62, 18, 4.39], [7.53, 18, 3.03], [8.89, 18, 2.12], [10.5, 18, 1.8], [12.11, 18, 2.12], [13.47, 18, 3.03], [14.38, 18, 4.39], [14.7, 18, 6]]}
+        ]
+      },
+      {
+        "id": "rueda-izq-{i}",
+        "use": "rueda-izq",
+        "name": {"es": "Ruedas", "en": "Wheels"},
+        "note": {"es": "Aro de cinco rayos y llanta de goma; cada rueda se sujeta con cinco tuercas.", "en": "A five-spoke rim and a rubber tire; each wheel is held on by five lug nuts."},
+        "explode": [-36, 0, 0],
+        "stage": 9,
+        "step": {"es": "ruedas y frenos fuera", "en": "wheels and brakes out"},
+        "repeat": {"count": 2, "step": [0, -140, 0]},
+        "at": [-36.5, 190, 0]
+      },
+      {
+        "id": "rueda-der-{i}",
+        "use": "rueda-der",
+        "name": {"es": "Ruedas", "en": "Wheels"},
+        "explode": [36, 0, 0],
+        "stage": 9,
+        "repeat": {"count": 2, "step": [0, -140, 0]},
+        "at": [36.5, 190, 0]
+      },
+      {
+        "id": "freno-izq-{i}",
+        "use": "freno",
+        "name": {"es": "Frenos", "en": "Brakes"},
+        "note": {"es": "Disco ventilado con cáliper: las pastillas lo aprietan para frenar.", "en": "A ventilated disc with a caliper: the pads squeeze it to stop the car."},
+        "explode": [-18, 0, 0],
+        "stage": 9,
+        "repeat": {"count": 2, "step": [0, -140, 0]},
+        "at": [-25, 190, 0]
+      },
+      {
+        "id": "freno-der-{i}",
+        "use": "freno",
+        "name": {"es": "Frenos", "en": "Brakes"},
+        "explode": [18, 0, 0],
+        "stage": 9,
+        "repeat": {"count": 2, "step": [0, -140, 0]},
+        "at": [25, 190, 0]
+      },
+      {
+        "id": "chasis",
+        "name": {"es": "Chasis y suspensión", "en": "Chassis and suspension"},
+        "note": {
+          "es": "Largueros y travesaños que sostienen motor y piso; brazos, resortes y amortiguadores en cada rueda.",
+          "en": "Rails and crossmembers that carry the engine and floor; arms, springs and shock absorbers at each wheel."
+        },
+        "tone": "mid",
+        "paint": "iron",
+        "parts": [
+          {"id": "riel-a-{i}", "kind": "box", "at": [-20, 64, 8], "size": [6, 36, 8], "bevel": 0.6, "tone": "mid", "repeat": {"count": 2, "step": [34, 0, 0]}},
+          {"id": "riel-b-{i}", "kind": "box", "at": [-20, 100, 8], "size": [6, 40, 8], "bevel": 0.6, "tone": "mid", "repeat": {"count": 2, "step": [34, 0, 0]}},
+          {"id": "riel-c-{i}", "kind": "box", "at": [-20, 140, 8], "size": [6, 40, 8], "bevel": 0.6, "tone": "mid", "repeat": {"count": 2, "step": [34, 0, 0]}},
+          {"id": "riel-d-{i}", "kind": "box", "at": [-20, 180, 8], "size": [6, 46, 8], "bevel": 0.6, "tone": "mid", "repeat": {"count": 2, "step": [34, 0, 0]}},
+          {"id": "riel-tras-{i}", "kind": "box", "at": [-20, 24, 8], "size": [6, 40, 4], "bevel": 0.6, "tone": "mid", "repeat": {"count": 2, "step": [34, 0, 0]}},
+          {"id": "travesano-del", "kind": "box", "at": [-14, 218, 8], "size": [28, 8, 4], "bevel": 0.5, "tone": "mid"},
+          {"id": "travesano-medio", "kind": "box", "at": [-14, 84, 8], "size": [28, 8, 4], "bevel": 0.5, "tone": "mid"},
+          {"id": "travesano-tras", "kind": "box", "at": [-14, 24, 10], "size": [28, 6, 4], "bevel": 0.5, "tone": "mid"},
+          {"id": "brazo-del-izq", "kind": "prism", "plan": [[-14, 176], [-14, 206], [-22, 191]], "z": 5, "h": 2.5, "paint": "steel", "tone": "mid"},
+          {"id": "brazo-del-der", "kind": "prism", "plan": [[22, 191], [14, 206], [14, 176]], "z": 5, "h": 2.5, "paint": "steel", "tone": "mid"},
+          {"id": "rotula-izq", "kind": "cylinder", "at": [-21.5, 191, 7.5], "r": 1.2, "h": 5, "paint": "steel", "tone": "hi"},
+          {"id": "rotula-der", "kind": "cylinder", "at": [21.5, 191, 7.5], "r": 1.2, "h": 5, "paint": "steel", "tone": "hi"}
+        ],
+        "children": [
+          {"id": "amort-del-{i}", "use": "amortiguador-corto", "at": [-21.8, 179, 7.5], "repeat": {"count": 2, "step": [43.6, 0, 0]}},
+          {"id": "amort-tras-{i}", "use": "amortiguador", "at": [-17, 57, 12], "repeat": {"count": 2, "step": [34, 0, 0]}}
+        ]
+      }
+    ]
+  }
+}
