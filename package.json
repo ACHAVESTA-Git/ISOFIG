@@ -86,6 +86,9 @@
     "examples/token-bucket/model.ts",
     "examples/motor-v8/spec.json",
     "examples/motor-cohete/spec.json",
+    "examples/mapa-tienda/spec.json",
+    "examples/mapa-pedido/spec.json",
+    "examples/mapa-uml/spec.json",
     "NOTICE.md",
     "CHANGELOG.md"
   ],

@@ -21,7 +21,7 @@ isofig is grey on purpose: grey is structure, and one accent marks the subject. 
   (`paint-indistinct` tells you when two paints in use are hard to tell apart).
 - **Six colors at most**, counting roles, colored materials and the accent; the greys (aluminium, steel, iron, carbon,
   rubber, external) count as one (`palette-too-many-colors`).
-- **Color never carries meaning alone.** Label the parts; on a map draw the legend with `legendOf(spec, lang)`. With color
+- **Color never carries meaning alone.** Label the parts; a map draws its own legend (`legend: false` removes it), and for a figure built by hand `legendOf(spec, lang)` lists the paints in use. With color
   blindness the green accent looks like a light grey: in a machine the subject also stands out because it moves. If
   the only difference between two parts is their color, add a shape, a label or a position.
 - **A node's children inherit its `paint`** (in a `root` tree). A part with its own `paint` keeps it.
@@ -37,11 +37,15 @@ isofig is grey on purpose: grey is structure, and one accent marks the subject. 
 | `glass` | Windows, tubes, anything you look through |
 | `lacquer` | A painted red part: the one that warns |
 
-| Roles (maps) | Suggested use |
+| Roles (maps) | Objects that carry them (the map catalog) |
 |---|---|
-| `client`, `edge` | Users and devices; gateways, CDNs, balancers |
-| `compute`, `data` | Services and workers; databases and caches |
-| `messaging`, `storage`, `external` | Queues and streams; object stores and disks; third parties |
+| `client` | `user`, `phone`, `laptop`, `browser` |
+| `edge` | `cdn`, `balancer`, `gateway`, and UML `interface` |
+| `compute` | `service`, `server`, `function`, and UML `class` |
+| `data` | `database`, `cache` |
+| `messaging` | `queue` |
+| `storage` | `storage` (a bucket) |
+| `external` | `external` (a cloud) |
 
 All come in OKLCH with light and dark values. The guarantees are measured and tested in both themes: engraved text
 against its face ≥ 4.5:1, edges ≥ 3:1, and any two paints of one set ΔE ≥ 10 apart (≥ 6 for color blindness). A

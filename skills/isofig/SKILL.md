@@ -56,9 +56,9 @@ Start with the simplest that tells the story: `bind` before a model, an assembly
 | The user wants to show | Format | Spec fields | Read |
 |---|---|---|---|
 | A mechanism that evolves with numbers (a queue fills, a breaker trips) | **Machine with a model** | `parts`, `groups`, `params`, `model` (a file with `init`/`step`/`view`) | `references/machines.md`, `references/models.md` |
-| A machine that only answers to its controls, or a loop that circulates | **Declarative machine** | `bind` (a parameter moves a group), `tracks` (a group travels a loop through points) | `references/models.md`, `references/maps.md` |
+| A machine that only answers to its controls, or a loop that circulates | **Declarative machine** | `bind` (a parameter moves a group), `tracks` (a group travels a polyline in a loop, with `hide` for the stretch inside an object) | `references/models.md`, `references/maps.md` |
 | What a thing is made of, or how it is built | **Nested assembly with teardown** | `root`, `defs`, `explode`, `stage` (plain JSON, no model) | `references/assemblies.md` |
-| Who talks to whom, how a flow crosses a system, classes | **Map** | `map` (topology, flow, UML; compiled to a `root`) | `references/maps.md` |
+| Who talks to whom, how a flow crosses a system, classes | **Map** | `map`: `nodes` (17 objects, containers), `links` (UML kinds), `flows`, `layout`; compiled to a `root` and `tracks` | `references/maps.md` |
 
 The formats mix: an assembly can carry a model (a wheel the model spins) and a machine can sit on a `bind`. A figure
 that needs no model is a plain JSON file; a model is the only part written in code.
@@ -120,7 +120,7 @@ Options, ids and the catalog: `node_modules/isofig/docs/en/kit.md`.
 - **Paint parts, not the stage:** base, rails and stands stay `lo`/`mid`.
 - **Six colors at most**, counting the accent (the greys count as one): `palette-too-many-colors`.
 - **States are not paint.** `s: "ok" | "warn" | "fail"` comes from the model and wins; never `paint` with them.
-- **Color never carries meaning alone.** Name the parts, give a map its legend (`legendOf`), and remember that the
+- **Color never carries meaning alone.** Name the parts, let a map draw its legend (`legendOf` for the rest), and remember that the
   green accent looks light grey under color blindness: in a machine the subject also stands out because it moves.
 - **Only theme variables, no literal colors.** A brand color goes in `palette: { base, use }`; measure it with
   `npx isofig palette --base "#hex" --report`. Set tables and details: `references/color-and-text.md`.
@@ -135,6 +135,8 @@ Words in the drawing are allowed **with rules**, and the rules are measured:
 - **Plates before loose text:** name a part on a `labelPlate` (kit) or engrave a short `label` on a face; a word or
   two, never a sentence. Names are for parts the reader must tell apart (services, nodes, stages).
 - **No arrows, balloons or leader lines** on a machine: the object shows the flow. (A map draws its own links.)
+- **A map reads only through "Enlarge"**: at 390 px its labels are about 3 px. More than about 20 nodes: split it
+  (`map-label-small`).
 - **Title, hint and readout live in the card corners; the explanation in `caption`.** The **readout is at most 70
   characters** and carries the model's true numbers: `5/8 tokens · 12 passed · 3 rejected` (`readout-long`).
 - `unit` short for the eye ("req/s"), `spoken` long for screen readers; `alt` when the caption is not a description.
@@ -171,7 +173,8 @@ node ${CLAUDE_SKILL_DIR}/scripts/capture.mjs preview.html --out shots   # needs 
 Ask of each PNG: is it instantly a real object? Still rich at 1280 and still reading at 390? Does every line end on
 something? Is every label legible in the enlarged shot? Does dark look right? Does the readout fit its lines? Does
 each preset show its change (`--set id=value`)? For an assembly: assembled, halfway and taken apart
-(`--set explode=N --set pick=N`). A green check does not fix what the eye does not believe. Findings, fixes and the
+(`--set explode=N --set pick=N`). For a map: the enlarged shot decides (390 px is unreadable by design), and the six
+captures take about a minute. A green check does not fix what the eye does not believe. Findings, fixes and the
 capture details: `references/verify.md`.
 
 ## Delivering
@@ -180,6 +183,9 @@ capture details: `references/verify.md`.
   component with `models({ name: () => import("./name.model.ts") })` from `isofig/astro/client`.
 - **Angular 19+:** `npx isofig add angular src/app/isofig`, generate with `--format module`, use
   `<isofig-figure [figure] [model]>`.
+- **Maps:** the compiler is its own module, `isofig/map`. The CLI and `<Figure>` add it themselves; if you call
+  `renderFigure(spec, { resolveMap })` or `assemble(spec, { resolveMap })` by hand, import `resolveMap` from `isofig/map`
+  (without it, `map-compiler-missing`).
 - **Theme:** override `--isofig-*` variables with one `.isofig { … }` rule. Optional luxury look: add
   `isofig/themes/luxe.css` after the theme and the class `isofig-luxe`.
 
@@ -192,10 +198,11 @@ Props, loading, `overrides`, several copies of a figure, view transitions: `refe
 | `references/machines.md` | Designing a machine: parts, world, detail, paint order |
 | `references/models.md` | Writing a model, presets, `bind`, controls |
 | `references/assemblies.md` | The figure has an inner structure or must come apart |
-| `references/maps.md` | The figure is a topology, a flow or UML (pending completion) |
+| `references/maps.md` | The figure is a topology, a flow or UML, or something circulates (`tracks`) |
 | `references/color-and-text.md` | Choosing paints, labels and readouts |
 | `references/verify.md` | Reading `check` output and the screenshots |
 | `references/delivery.md` | Astro, Angular, theme, overrides |
 
 Reference figures in the package: `examples/token-bucket/` (machine and model), `examples/motor-v8/spec.json` and
-`examples/motor-cohete/spec.json` (assemblies). Open one before you start.
+`examples/motor-cohete/spec.json` (assemblies), `examples/mapa-tienda/`, `mapa-pedido/` and `mapa-uml/` (maps).
+Open one before you start.

@@ -83,9 +83,10 @@ single-class rule of yours always wins, loaded before or after:
   `--isofig-on-accent` (ink on `lit`), `--isofig-ink-on-color` (ink on a state) or a paint's `-ink` variable.
 - The card is a container: below 40 rem the readout moves above the hint, and the readout reserves
   `--isofig-readout-lines` lines so the height does not jump. Put the figure in a container with a width.
-- **Luxury look (optional):** load `isofig/themes/luxe.css` after the theme and add the class `isofig-luxe` to the figure
-  or any ancestor; without the class nothing changes.
-<!-- TODO(0.9-luxe): confirm the path and the class when feature/estilo-de-lujo-y-galeria is merged. -->
+- **Luxury look (optional):** `import "isofig/themes/luxe.css"` **after** `isofig/theme.css` and add the class
+  `isofig-luxe` to the figure or any ancestor (`<body class="isofig-luxe">` for the whole page). Light is «Atelier», dark is
+  «Nocturne»; it is only CSS (about 1.7 KB gzip), follows the theme, and without the class nothing changes. If it loads
+  first it does not apply. Guide: `docs/en/luxe.md`.
 
 ## Before publishing
 

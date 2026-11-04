@@ -134,5 +134,4 @@ parameter crosses that window; `keep: [1, 3]` with a choice fades the group when
 ## `tracks`: no model, a loop
 
 A group that travels through points in a loop, with no model, for something that circulates (a belt, a carousel).
-Syntax and a sample are in `maps.md` (pending completion with the maps branch). Do not write a model just to make
-something go round.
+Syntax, `hide` and an example are in `maps.md`. Do not write a model just to make something go round.

@@ -91,6 +91,7 @@ Read each PNG (the Read tool shows images) and answer, in this order:
    says? Under reduced motion, does the settled state make sense?
 9. **Assembly:** assembled, halfway and taken apart; each picked part against the rest; no part painted over the one
    that should hide it.
-10. **Map:** roles stay apart in dark; the legend lists every color in use; every node name reads enlarged.
+10. **Map:** roles stay apart in dark; the legend lists every color in use; every node name reads enlarged (at 390 px it
+    cannot, by design); ribbons arrive by a visible side; packets switch off inside objects. More in `maps.md`.
 
 Fix what you see, run `check` again, capture again. A green check does not fix what the eye does not believe.
