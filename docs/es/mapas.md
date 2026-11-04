@@ -27,8 +27,10 @@ traza las cintas por el piso, pone las puntas UML y hace correr los paquetes.
 }
 ```
 
-`isofig build mapa.json --format page` lo dibuja tal cual: `renderFigure`, `drawScene` y `validateSpec` aceptan `map`
-sin pasos extra. Los ejemplos completos y bilingües están en `examples/`: [`mapa-tienda`](../../examples/mapa-tienda/spec.json)
+`isofig build mapa.json --format page` lo dibuja tal cual, igual que `isofig check` y `<Figure>` de Astro; `validateSpec` lo
+revisa sin compilarlo. Si llamas a `renderFigure` tú, pásale el compilador: `import { resolveMap } from "isofig/map"` y
+`renderFigure(spec, { resolveMap })` (sin él, el `map` es el error `map-compiler-missing`: así el núcleo no carga ~20 KB
+cuando nadie dibuja un mapa). Los ejemplos completos y bilingües están en `examples/`: [`mapa-tienda`](../../examples/mapa-tienda/spec.json)
 (una tienda en línea con VPC, subredes, caché, réplica, cola y dos flujos), [`mapa-pedido`](../../examples/mapa-pedido/spec.json)
 (del carrito al envío, con la rama de pago rechazado) y [`mapa-uml`](../../examples/mapa-uml/spec.json) (el dominio de
 una tienda).
@@ -208,7 +210,7 @@ npx isofig import mermaid diagrama.mmd -o mapa.json      # o «-» para leer de 
 | `A <\|-- B`, `A *-- B`, `A o-- B`, `A --> B`, `A ..> B`, `A ..\|> B`, `A "1" --> "*" B : texto` | `inherits`, `composes`, `aggregates`, `associates`, `depends`, `implements`, con multiplicidades y rótulo |
 
 Lo demás (estilos, `click`, `classDef`, secuencias…) se salta y la CLI lo lista en `skipped:`. `RL` y `BT` se dibujan
-como `LR` y `TD`. Con una API: `fromMermaid(texto)` devuelve la spec y `fromMermaidDetailed(texto)` también las líneas
+como `LR` y `TD`. Desde código, `fromMermaid(texto)` de `isofig/map` devuelve la spec y `fromMermaidDetailed(texto)` también las líneas
 saltadas.
 
 **docker compose.** Cada servicio es el objeto que sugiere su imagen (`postgres` → base de datos, `redis` → caché,
@@ -227,6 +229,6 @@ Con un mapa, `renderFigure` suma `map-label-small` y `map-route-blocked`, y todo
 
 - Los `id` de nodo son libres, pero `_links`, `_flows` y `_legend` son de las piezas que genera el compilador.
 - Las cintas que tienen que cruzarse se cruzan, sin puente; un mapa con más de unos veinte nodos pide partirse.
-- El compilador es una función pura y corre también en el navegador (`compileMap` y `resolveMap` salen de `isofig`),
-  pero el giro no lo trae: recibe la spec ya armada, como con un árbol. `<Figure orbit>` y la CLI la arman al compilar
+- El compilador es una función pura y corre también en el navegador (`compileMap`, `resolveMap` y `fromMermaid` salen
+  de `isofig/map`), pero el giro no lo trae: recibe la spec ya armada, como con un árbol. `<Figure orbit>` y la CLI la arman al compilar
   con `assemble(spec, { resolveMap })`; si llamas a `enableOrbit` tú, pásale eso y no el `map`.

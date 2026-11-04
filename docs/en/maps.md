@@ -27,8 +27,10 @@ the ribbons across the floor, puts on the UML ends and makes the packets travel.
 }
 ```
 
-`isofig build map.json --format page` draws it as is: `renderFigure`, `drawScene` and `validateSpec` accept `map` with
-no extra steps. The full bilingual examples are in `examples/`: [`mapa-tienda`](../../examples/mapa-tienda/spec.json)
+`isofig build map.json --format page` draws it as is, and so do `isofig check` and Astro's `<Figure>`; `validateSpec`
+checks it without compiling it. If you call `renderFigure` yourself, give it the compiler: `import { resolveMap } from
+"isofig/map"` and `renderFigure(spec, { resolveMap })` (without it the `map` is the `map-compiler-missing` error: that
+way the core does not load ~20 KB when nobody draws a map). The full bilingual examples are in `examples/`: [`mapa-tienda`](../../examples/mapa-tienda/spec.json)
 (an online shop with VPC, subnets, cache, replica, queue and two flows), [`mapa-pedido`](../../examples/mapa-pedido/spec.json)
 (from the cart to the shipment, with the rejected-payment branch) and [`mapa-uml`](../../examples/mapa-uml/spec.json)
 (a shop's domain).
@@ -205,7 +207,7 @@ npx isofig import mermaid diagram.mmd -o map.json      # or "-" to read standard
 | `A <\|-- B`, `A *-- B`, `A o-- B`, `A --> B`, `A ..> B`, `A ..\|> B`, `A "1" --> "*" B : text` | `inherits`, `composes`, `aggregates`, `associates`, `depends`, `implements`, with multiplicities and label |
 
 Everything else (styles, `click`, `classDef`, sequence diagrams…) is skipped and the CLI lists it under `skipped:`. `RL`
-and `BT` are drawn as `LR` and `TD`. From code: `fromMermaid(text)` returns the spec and `fromMermaidDetailed(text)`
+and `BT` are drawn as `LR` and `TD`. From code, `fromMermaid(text)` from `isofig/map` returns the spec and `fromMermaidDetailed(text)`
 also the skipped lines.
 
 **docker compose.** Each service is the object its image suggests (`postgres` → database, `redis` → cache, `nginx` →
@@ -224,6 +226,6 @@ tree that comes out of the map: its paths point at `root.children[…]`.
 
 - Node `id`s are free, but `_links`, `_flows` and `_legend` belong to the pieces the compiler generates.
 - Ribbons that have to cross do cross, without a bridge; a map with more than about twenty nodes asks to be split.
-- The compiler is a pure function and also runs in the browser (`compileMap` and `resolveMap` come from `isofig`), but
-  orbit does not bring it: it takes the already assembled spec, as with a tree. `<Figure orbit>` and the CLI assemble it
+- The compiler is a pure function and also runs in the browser (`compileMap`, `resolveMap` and `fromMermaid` come from
+  `isofig/map`), but orbit does not bring it: it takes the already assembled spec, as with a tree. `<Figure orbit>` and the CLI assemble it
   at build time with `assemble(spec, { resolveMap })`; if you call `enableOrbit` yourself, pass it that, not the `map`.

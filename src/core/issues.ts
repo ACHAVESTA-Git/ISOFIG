@@ -451,6 +451,11 @@ const CATALOG = {
     en: (v, q) => `A track moves the group ${q(v.group)}, which no part has: nothing would travel.`,
     es: (v, q) => `Un recorrido mueve el grupo ${q(v.group)}, que ninguna pieza tiene: no viajaría nada.`,
   },
+  "map-compiler-missing": {
+    severity: "error",
+    en: () => "The spec has a 'map' but nothing compiles it: pass resolveMap from 'isofig/map' to renderFigure (isofig build, isofig check and <Figure> do it for you).",
+    es: () => "La spec trae un 'map' pero nada lo compila: pásale resolveMap de 'isofig/map' a renderFigure (isofig build, isofig check y <Figure> lo hacen solos).",
+  },
   "map-node-id-duplicate": {
     severity: "error",
     en: (v, q) => `Duplicate node id ${q(v.id)} in the map (first used at ${v.first}).`,

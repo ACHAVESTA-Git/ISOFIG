@@ -54,6 +54,7 @@ no lanza: devuelve sus errores.
 | `id-duplicate` | Dos piezas sólidas con el mismo id después del `repeat` |
 | `on-unknown`, `on-not-solid` | Un detalle sobre una pieza que no existe, o que es otro detalle |
 | `node-id-missing`, `node-id-duplicate`, `use-unknown`, `use-cycle`, `use-failed`, `stage-invalid`, `axis-zero` | En un árbol ([anidar.md](anidar.md)): un nodo sin id o con el de un hermano, un `use` que no está en `defs` ni en el catálogo, que se usa a sí mismo o cuyas opciones rechaza el kit, un `stage` que no es un número, un eje `[0, 0, 0]` |
+| `map-compiler-missing` | `renderFigure` recibió un `map` pero no un `resolveMap` (de `isofig/map`) que lo compile; `isofig build`, `isofig check` y `<Figure>` se lo pasan solos |
 | `map-node-id-duplicate`, `map-glyph-unknown`, `map-node-unknown` | En un `map` ([mapas.md](mapas.md)): un id de nodo repetido, un `is` que no está en el catálogo (un contenedor puede ser cualquier cosa), un enlace o flujo que nombra un nodo que no existe |
 | `track-path-short`, `track-period-invalid` | Un `tracks` cuyo `path` tiene menos de 2 puntos distintos o cuyo `period` no es un número mayor que 0 |
 | `dimension-invalid`, `camera-invalid`, `spin-plane-invalid` | `width`, `height`, `pad`, los ángulos de la cámara o el plano de un giro que no sirven |

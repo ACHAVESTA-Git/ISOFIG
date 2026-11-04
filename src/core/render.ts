@@ -4,9 +4,8 @@ import { paletteIssues, paletteStyle } from "./palette/figure.ts";
 import { drawScene } from "./scene.ts";
 import { escapeHtml as esc } from "./serialize.ts";
 import { textOf, type FigureSpec, type FlatSpec } from "./spec.ts";
-import { assembleTree, type Catalog } from "./tree.ts";
+import { assembleTree, type AssembleOptions, type Catalog } from "./tree.ts";
 import { catalog as kit } from "../kit/index.ts";
-import { resolveMap } from "./map/index.ts";
 import { trackData, type TrackData } from "./tracks.ts";
 import { validateSpec } from "./validate.ts";
 
@@ -14,6 +13,11 @@ export interface RenderOptions {
   lang?: string;
   /** Número de figura que se muestra en la tarjeta («Fig. 3»). */
   n?: number | string;
+  /**
+   * Compila el `map` de la spec (`resolveMap` de `isofig/map`). No va dentro de `renderFigure` para que el núcleo no
+   * cargue el compilador (~21 KB gzip) cuando nadie dibuja un mapa; `isofig build`, `isofig check` y `<Figure>` lo ponen.
+   */
+  resolveMap?: AssembleOptions["resolveMap"];
   /** Añade los controles para girar la figura (el módulo isofig/orbit se carga al usarlos). */
   orbit?: boolean;
   /** `false` quita el chip «Ampliar» (el módulo isofig/zoom se carga al pulsarlo). */
@@ -116,7 +120,8 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
   // Una spec rota no lanza: da sus errores. Si el dibujo falla por algo que la validación no explica, se dice aquí.
   try {
     // Una spec anidada se aplana aquí; los problemas del árbol ya los dijo la validación.
-    const tree = assembleTree(spec, { catalog, resolveMap });
+    const tree = assembleTree(spec, { catalog, resolveMap: options.resolveMap });
+    if (spec.map && !options.resolveMap) issues.push(makeIssue(lang, "map-compiler-missing", "map"));
     const flat = tree.spec;
     for (const n of tree.notes) issues.push(makeIssue(lang, n.code, n.path, n.vars));
     const start = options.values ?? {};

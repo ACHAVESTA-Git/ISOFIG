@@ -135,7 +135,7 @@ async function main() {
   }
   if (command === "import") {
     const source = positionals[2];
-    if (!["compose", "mermaid"].includes(file) || !source) return usage("cli-missing-argument", { id: "import", expected: "compose|mermaid <file|->" });
+    if (!["compose", "mermaid"].includes(file) || !source) return usage("cli-missing-argument", { id: "import", expected: file === "mermaid" ? "mermaid <file.mmd|->" : "compose <file.json|->" });
     const raw = source === "-" ? readFileSync(0, "utf8") : readFileSync(resolve(source), "utf8");
     let spec: FigureSpec;
     if (file === "compose") spec = fromCompose(JSON.parse(raw));
@@ -185,7 +185,7 @@ async function main() {
     if (flat.params?.some((q) => q.id === id)) start[id] = value;
     else notes.push(makeIssue(lang, "set-unknown-param", "", { id }));
   }
-  const r = renderFigure(spec, { lang: values.lang, n: values.n, orbit: values.orbit, values: start });
+  const r = renderFigure(spec, { lang: values.lang, n: values.n, orbit: values.orbit, values: start, resolveMap });
   const size = measure(r.html);
   const issues = [...notes, ...r.issues, ...budgetIssues(spec, size, lang)];
 

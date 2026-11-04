@@ -54,6 +54,7 @@ returns its errors.
 | `id-duplicate` | Two solid parts with the same id after `repeat` |
 | `on-unknown`, `on-not-solid` | A detail on a part that does not exist, or that is itself a detail |
 | `node-id-missing`, `node-id-duplicate`, `use-unknown`, `use-cycle`, `use-failed`, `stage-invalid`, `axis-zero` | In a tree ([nesting.md](nesting.md)): a node without an id or with a sibling's, a `use` that is neither in `defs` nor in the catalog, that uses itself or whose options the kit rejects, a `stage` that is not a number, an axis `[0, 0, 0]` |
+| `map-compiler-missing` | `renderFigure` got a `map` but no `resolveMap` (from `isofig/map`) to compile it; `isofig build`, `isofig check` and `<Figure>` pass it for you |
 | `map-node-id-duplicate`, `map-glyph-unknown`, `map-node-unknown` | In a `map` ([maps.md](maps.md)): a node id used twice, an `is` that is not in the catalog (a container may be anything), a link or flow that names a node that does not exist |
 | `track-path-short`, `track-period-invalid` | A `tracks` entry whose `path` has fewer than 2 distinct points, or whose `period` is not a number greater than 0 |
 | `dimension-invalid`, `camera-invalid`, `spin-plane-invalid` | `width`, `height`, `pad`, the camera angles or a spin plane that cannot be used |

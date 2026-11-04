@@ -72,11 +72,12 @@ test("dos nodos en la misma celda de una cuadrícula avisan", () => {
 
 test("una celda fuera de rango, una lista que no es lista o un mapa sin nodos avisan sin romper el dibujo", async () => {
   const { renderFigure } = await import("../src/core/render.ts");
+  const { resolveMap } = await import("../src/core/map/index.ts");
   assert.deepEqual(codes({ layout: "grid", nodes: [node("a", "service", { cell: [1000, 0] })] }), ["map-cell-invalid@map.nodes[0].cell"]);
   assert.deepEqual(codes({ nodes: [node("a", "class", { fields: "x", methods: [1] })] }), ["type-invalid@map.nodes[0].fields", "type-invalid@map.nodes[0].methods"]);
   assert.deepEqual(codes({}), ["field-missing@map.nodes"]);
   for (const map of [{}, { nodes: [] }, { layout: "grid", nodes: [node("a", "service", { cell: [1e9, 0] })] }, { nodes: [node("a", "class", { fields: "x", methods: [1, null] })] }, { labelSize: -3, nodes: [node("a")] }]) {
-    assert.doesNotThrow(() => renderFigure({ ...base, map } as never, { lang: "es" }));
+    assert.doesNotThrow(() => renderFigure({ ...base, map } as never, { lang: "es", resolveMap }));
   }
 });
 

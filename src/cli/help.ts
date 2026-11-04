@@ -4,7 +4,9 @@ const EN = `isofig: isometric figures from a spec
   isofig check <spec> [--lang en|es] [--strict] [--model file [--presets] [--seconds 12]]
   isofig add angular <dir>    copy the standalone Angular component into your app
   isofig import compose <file.json|-> [-o spec.json]
-                              a figure from \`docker compose config --format json\`
+                              a map from \`docker compose config --format json\`
+  isofig import mermaid <file.mmd|-> [-o spec.json]
+                              a map from a Mermaid flowchart or classDiagram
   isofig palette [--base "#2fb58b"] [--format css|json] [--report] [-o file]
                               map roles derived from a brand color, with a contrast,
                               ΔE and color-blindness table on stderr (--report)
@@ -27,7 +29,9 @@ const ES = `isofig: figuras isométricas a partir de una spec
   isofig check <spec> [--lang en|es] [--strict] [--model archivo [--presets] [--seconds 12]]
   isofig add angular <dir>    copia el componente standalone de Angular en tu aplicación
   isofig import compose <archivo.json|-> [-o spec.json]
-                              una figura a partir de \`docker compose config --format json\`
+                              un mapa a partir de \`docker compose config --format json\`
+  isofig import mermaid <archivo.mmd|-> [-o spec.json]
+                              un mapa a partir de un flowchart o un classDiagram de Mermaid
   isofig palette [--base "#2fb58b"] [--format css|json] [--report] [-o archivo]
                               roles de mapa derivados de un color de marca, con una tabla de
                               contraste, ΔE y daltonismo por stderr (--report)

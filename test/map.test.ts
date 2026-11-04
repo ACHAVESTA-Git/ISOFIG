@@ -222,10 +222,17 @@ test("assembleTree compila el mapa solo si se le da el compilador: el giro no lo
   assert.equal("map" in full.spec, false);
 });
 
+test("renderFigure no trae el compilador: sin resolveMap un map es un error que dice cómo arreglarlo", () => {
+  const r = renderFigure(example("mapa-pedido"), { lang: "en" });
+  assert.ok(r.errors.some((e) => /pass resolveMap from 'isofig\/map'/.test(e)));
+  assert.ok(r.issues.some((i) => i.code === "map-compiler-missing" && i.severity === "error"));
+  assert.deepEqual(renderFigure(example("mapa-pedido"), { lang: "en", resolveMap }).errors, []);
+});
+
 test("compilar dos veces da lo mismo, byte a byte", () => {
   const spec = example("mapa-tienda");
   assert.equal(JSON.stringify(compileMap(spec.map!)), JSON.stringify(compileMap(spec.map!)));
-  const html = (s: FigureSpec) => renderFigure(s, { lang: "es" }).html;
+  const html = (s: FigureSpec) => renderFigure(s, { lang: "es", resolveMap }).html;
   assert.equal(html(spec), html(spec));
 });
 
@@ -248,7 +255,7 @@ test("los rótulos de un mapa miden al menos 10 px en la vista ampliada y, si no
     return { nodes, links: nodes.slice(1).map((x, i) => ({ from: nodes[i].id, to: x.id })) };
   };
   for (const map of [{ nodes: [node("a")] }, chain(6, (i) => `nodo-${i}`)]) {
-    const r = renderFigure({ id: "t", title: "t", map }, { lang: "es" });
+    const r = renderFigure({ id: "t", title: "t", map }, { lang: "es", resolveMap });
     assert.deepEqual(r.errors, []);
     assert.equal(r.issues.some((i) => i.code === "label-unreadable"), false, r.issues.map((i) => i.message).join("\n"));
   }
@@ -260,12 +267,12 @@ for (const name of ["mapa-tienda", "mapa-pedido", "mapa-uml"]) {
   test(`el ejemplo ${name} se dibuja sin errores ni avisos, con sus paquetes y dentro del peso`, () => {
     const spec = example(name);
     for (const lang of ["es", "en"]) {
-      const r = renderFigure(spec, { lang });
+      const r = renderFigure(spec, { lang, resolveMap });
       assert.deepEqual(r.errors, [], `${name} ${lang}`);
       assert.deepEqual(r.warnings, [], `${name} ${lang}`);
       assert.ok(measure(r.html).gzip < 40 * 1024, `${name} pesa ${measure(r.html).gzip} B gzip`);
     }
-    const r = renderFigure(spec, { lang: "es" });
+    const r = renderFigure(spec, { lang: "es", resolveMap });
     assert.equal(Boolean(r.data.tracks?.length), name !== "mapa-uml");
     assert.match(r.html, /role="img"/);
   });

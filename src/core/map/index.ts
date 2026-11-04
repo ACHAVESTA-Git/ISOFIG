@@ -6,6 +6,7 @@ import type { MapNode } from "./types.ts";
 const hasExplode = (nodes: MapNode[]): boolean => nodes.some((n) => n.explode || hasExplode(n.children ?? []));
 
 export { compileMap, type CompileOptions, type Note } from "./compile.ts";
+export { fromMermaid, fromMermaidDetailed, type MermaidResult } from "../importers/mermaid.ts";
 export { GLYPHS, type CompiledMap, type GlyphName, type LinkKind, type MapFlow, type MapLayout, type MapLink, type MapNode, type MapSpec, type TreeNode } from "./types.ts";
 
 export interface ResolvedMap {

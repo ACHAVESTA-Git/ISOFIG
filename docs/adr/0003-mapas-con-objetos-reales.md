@@ -18,7 +18,8 @@ un nombre.
 1. **`map` en la `FigureSpec`, compilado a un árbol y a recorridos.** `compileMap(map)` es una función pura (sin Node,
    corre en el navegador) que devuelve `{ root, tracks, width, height, camera }`: un `Node` del [árbol anidado](0002-especificacion-anidada-y-despiece.md)
    (contenedores con `children`, cada objeto con sus `parts`) y los recorridos de los paquetes. De ahí en adelante es una
-   spec anidada: `assembleTree` compila el `map` primero y el resto del núcleo no sabe que existió.
+   spec anidada: `assembleTree` compila el `map` primero y el resto del núcleo no sabe que existió. El compilador es un módulo aparte, `isofig/map` (~20,7 KB gzip), y entra por
+   una opción (`resolveMap`) en `assemble` y en `renderFigure`; `isofig build`, `isofig check` y `<Figure>` lo ponen.
 2. **Un catálogo de 17 objetos**, cada uno una función de unas decenas de piezas que se arma con un `ROLE` en el cuerpo
    y se pinta con el rol de color de su categoría (`client`, `edge`, `compute`, `data`, `messaging`, `storage`,
    `external`): un celular en su soporte, un rack de tres unidades, una pila de discos, una cinta transportadora con
@@ -64,10 +65,13 @@ un nombre.
 - Un mapa de 14 objetos, 21 enlaces y 2 flujos cabe en 1,6 KB de JSON y compila a 154 KB de SVG (31 KB gzip); el del
   pedido (7 objetos) pesa 20 KB y el UML (8 clases) 22 KB. Un mapa pesa más que una máquina por lo mismo que se lee mejor:
   cada objeto son 8–15 piezas.
-- El compilador entra en el núcleo (`isofig`), **no** en el giro: `assembleTree` compila el mapa solo si recibe
-  `resolveMap` (lo ponen `renderFigure`, `<Figure>` y la CLI), y el giro recibe la spec ya armada, como con cualquier
-  árbol (ADR 0002). Con el compilador dentro del giro, este crecía de 12,2 a 27,7 KB gzip para todas las figuras. Lo
-  que viaja con `<Figure orbit>` es el árbol armado: 7,6 KB gzip la tienda, 4,5 el pedido y 5,6 el UML.
+- El compilador **no** está en el núcleo ni en el giro. Dentro de `assembleTree` el núcleo pasaba de 39,1 a 60,2 KB gzip
+  (tope: 43) y el giro de 8,6 a 12,2; así que entra por `resolveMap` y el giro recibe la spec ya armada, como con
+  cualquier árbol (ADR 0002). El núcleo queda en 42,2 KB (las validaciones de `map` y `tracks`, los códigos nuevos y el
+  importador de compose), `isofig/map` en 20,7 (tope 22,0) y el runtime en 3665 B. Lo que viaja con `<Figure orbit>` es
+  el árbol armado: 7,6 KB gzip la tienda, 4,5 el pedido y 5,6 el UML.
+- Quien llama a `renderFigure` con un `map` sin `resolveMap` recibe un error que dice cómo arreglarlo
+  (`map-compiler-missing`) en vez de una figura vacía.
 - La vista de un mapa denso a 390 px no se lee (los rótulos miden ~3 px): se leen con el chip «Ampliar», y por eso la
   medida es la de la vista ampliada.
 - Lo que no resuelve: más de ~20 nodos en una figura (la letra o el tamaño ceden: conviene partir el mapa), cintas que

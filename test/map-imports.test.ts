@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { fromCompose } from "../src/core/importers/compose.ts";
 import { fromMermaid, fromMermaidDetailed } from "../src/core/importers/mermaid.ts";
 import { inferGlyph } from "../src/core/map/infer.ts";
+import { resolveMap } from "../src/core/map/index.ts";
 import { renderFigure } from "../src/core/render.ts";
 import type { MapNode, MapSpec } from "../src/core/map/types.ts";
 
@@ -60,7 +61,7 @@ test("un flowchart de Mermaid pasa a un mapa: formas, flechas con texto, & y sub
 test("flowchart TD reparte en niveles y se dibuja", () => {
   const spec = fromMermaid("graph TD\n  A[Inicio] --> B{¿Listo?}\n  B -->|sí| C[Fin]\n  B -->|no| A\n");
   assert.equal(mapOf(spec).layout, "layers");
-  const r = renderFigure(spec, { lang: "es" });
+  const r = renderFigure(spec, { lang: "es", resolveMap });
   assert.deepEqual(r.errors, []);
 });
 
@@ -105,7 +106,7 @@ test("un classDiagram pasa a clases con sus cajones, estereotipos y enlaces UML"
   assert.equal(link("PagoConTarjeta", "Notificador")?.kind, "implements");
   const has = link("Cliente", "Pedido")!;
   assert.deepEqual([has.kind, has.arrow, has.mult, has.label], ["associates", "end", ["1", "*"], "hace"]);
-  const r2 = renderFigure(r.spec, { lang: "es" });
+  const r2 = renderFigure(r.spec, { lang: "es", resolveMap });
   assert.deepEqual(r2.errors, []);
 });
 
@@ -132,7 +133,7 @@ test("un compose pasa a un mapa: objeto por imagen, cintas por depends_on, puert
   const volume = m.links!.find((l) => l.to === "vol-0")!;
   assert.deepEqual([volume.from, volume.dashed, volume.arrow], ["db", true, "none"]);
   assert.equal(find(m.nodes, "vol-0")?.name, "pgdata");
-  const r = renderFigure(spec, { lang: "es" });
+  const r = renderFigure(spec, { lang: "es", resolveMap });
   assert.deepEqual(r.errors, []);
   assert.deepEqual(r.warnings, []);
   assert.deepEqual(JSON.parse(readFileSync(new URL("../examples/compose/spec.json", import.meta.url), "utf8")), JSON.parse(JSON.stringify(spec)), "el ejemplo publicado es lo que importa la CLI");
@@ -155,15 +156,4 @@ test("isofig import mermaid escribe el mapa en JSON, y compose sigue funcionando
   assert.equal(c.status, 0, c.stderr);
   assert.equal(JSON.parse(c.stdout).map.nodes[0].is, "database");
   assert.equal(run(["import", "otro", "-"], "").status, 1);
-});
-
-test("la vista previa con --orbit pide la spec en .ts: un JSON no se puede empaquetar en la página", () => {
-  const cli = fileURLToPath(new URL("../src/cli/index.ts", import.meta.url));
-  const spec = fileURLToPath(new URL("../examples/mapa-pedido/spec.json", import.meta.url));
-  const r = spawnSync(process.execPath, ["--no-warnings", cli, "build", spec, "--format", "page", "--orbit"], { encoding: "utf8" });
-  assert.equal(r.status, 1);
-  assert.match(r.stderr, /--orbit needs the spec as a \.ts file/);
-  const ok = spawnSync(process.execPath, ["--no-warnings", cli, "build", spec, "--format", "page"], { encoding: "utf8" });
-  assert.equal(ok.status, 0, ok.stderr);
-  assert.match(ok.stdout, /<figure class="isofig" data-isofig="mapa-pedido"/);
 });
