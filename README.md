@@ -150,10 +150,10 @@ a single offline HTML file, in both styles and both themes.
 ### 1. Install
 
 ```sh
-npm i github:ACHAVESTA-Git/ISOFIG
+npm i github:ACHAVESTA-Git/ISOFIG#v0.10.0
 ```
 
-Node 22.18 or later. The package builds itself on install. (`npm i isofig` once it is on the npm registry.)
+Node 22.18 or later. The package builds itself on install. The name `isofig` on the npm registry does not belong to this project yet: until it is published there, install only from this repository.
 
 ### 2. Write a figure as JSON
 
@@ -175,8 +175,8 @@ Node 22.18 or later. The package builds itself on install. (`npm i isofig` once 
 ### 3. Check it and preview it
 
 ```sh
-npx isofig check box.json --strict
-npx isofig build box.json --format page -o box.html   # open box.html: the "Take apart" slider is already there
+npx --no-install isofig check box.json --strict
+npx --no-install isofig build box.json --format page -o box.html   # open box.html: the "Take apart" slider is already there
 ```
 
 ### 4. Put it on a page
@@ -197,8 +197,8 @@ dialog download when the reader gets close or uses them. [Astro guide](docs/en/a
 **Angular 19+** (standalone, signals, zoneless)
 
 ```sh
-npx isofig add angular src/app/isofig
-npx isofig build figures/box.json --format module -o src/app/figures/box.figure.ts
+npx --no-install isofig add angular src/app/isofig
+npx --no-install isofig build figures/box.json --format module -o src/app/figures/box.figure.ts
 ```
 
 [Angular guide](docs/en/angular.md).
@@ -235,7 +235,7 @@ npx isofig build figures/box.json --format module -o src/app/figures/box.figure.
 }
 ```
 
-Already have Mermaid? `npx isofig import mermaid diagram.mmd -o map.json`.
+Already have Mermaid? `npx --no-install isofig import mermaid diagram.mmd -o map.json`.
 
 ### A model in a few lines
 
@@ -266,7 +266,7 @@ announcements without repetition (`ctx.say`) and buttons (`ctx.pressed`).
 ```
 
 ```sh
-npx isofig palette --base "#e2231a" --report   # roles derived from your brand color, with the contrast table
+npx --no-install isofig palette --base "#e2231a" --report   # roles derived from your brand color, with the contrast table
 ```
 
 The `lit` tone stays the one strong accent of a figure. `check` warns when a figure uses more than six colors, when

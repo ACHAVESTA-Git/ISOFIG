@@ -1,13 +1,13 @@
 # isofig with Astro
 
 The `Figure` component generates the SVG at build time. The page receives the figure's HTML, the theme CSS (once,
-inline) and a ~1.3 KB gzip bootstrap. The runtime (~4.2 KB gzip), the model, the orbit and the enlarge dialog download
+inline) and a ~1.3 KB gzip bootstrap. The runtime (~4.3 KB gzip), the model, the orbit and the enlarge dialog download
 later, when the reader gets close to the figure or uses it, and the runtime only works while the figure is on screen.
 
 ## 1. Install
 
 ```sh
-npm i isofig
+npm i github:ACHAVESTA-Git/ISOFIG#v0.10.0
 ```
 
 Requires Node 22.18 or later (to load specs written in TypeScript) and Astro 5 or later.
@@ -133,7 +133,7 @@ reader could move or lose. Everything else downloads with `import()`:
 | What | When | Weight (gzip) |
 |---|---|---|
 | `<Figure>` bootstrap | With the page; only if it has a figure | ~1.3 KB |
-| Runtime and model | According to `load` | ~4.2 KB + the model |
+| Runtime and model | According to `load` | ~4.3 KB + the model |
 | Orbit (`isofig/orbit`) | When the pointer hovers, focuses or touches the figure | ~10 KB |
 | Enlarge (`isofig/zoom`) | When "Enlarge" is pressed | ~0.8 KB |
 
@@ -261,8 +261,8 @@ Use the same name on both pages. Wrapping it also works: `<div transition:persis
 ## 11. Check before publishing
 
 ```sh
-npx isofig check src/figures/bucket.ts --lang en --strict
-npx isofig build src/figures/bucket.ts --format page --model src/figures/bucket.model.ts -o preview.html
+npx --no-install isofig check src/figures/bucket.ts --lang en --strict
+npx --no-install isofig build src/figures/bucket.ts --format page --model src/figures/bucket.model.ts -o preview.html
 ```
 
 `check` prints the weight and the warnings (it fails with `--strict` if there are any). `page` builds a

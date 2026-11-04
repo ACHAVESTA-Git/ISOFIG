@@ -150,10 +150,10 @@ todos los ejemplos en un solo HTML que funciona sin conexión, en los dos estilo
 ### 1. Instalar
 
 ```sh
-npm i github:ACHAVESTA-Git/ISOFIG
+npm i github:ACHAVESTA-Git/ISOFIG#v0.10.0
 ```
 
-Node 22.18 o superior. El paquete se compila solo al instalarse. (`npm i isofig` cuando esté en el registro de npm).
+Node 22.18 o superior. El paquete se compila solo al instalarse. El nombre `isofig` en el registro de npm todavía no es de este proyecto: hasta que se publique ahí, instala solo desde este repositorio.
 
 ### 2. Escribir una figura en JSON
 
@@ -175,8 +175,8 @@ Node 22.18 o superior. El paquete se compila solo al instalarse. (`npm i isofig`
 ### 3. Validarla y verla
 
 ```sh
-npx isofig check caja.json --strict
-npx isofig build caja.json --format page --lang es -o caja.html   # abre caja.html: el control «Desarmar» ya está ahí
+npx --no-install isofig check caja.json --strict
+npx --no-install isofig build caja.json --format page --lang es -o caja.html   # abre caja.html: el control «Desarmar» ya está ahí
 ```
 
 ### 4. Ponerla en una página
@@ -197,8 +197,8 @@ y el diálogo «Ampliar» se descargan cuando el lector se acerca o los usa. [Gu
 **Angular 19+** (standalone, signals, zoneless)
 
 ```sh
-npx isofig add angular src/app/isofig
-npx isofig build figuras/caja.json --format module -o src/app/figuras/caja.figure.ts
+npx --no-install isofig add angular src/app/isofig
+npx --no-install isofig build figuras/caja.json --format module -o src/app/figuras/caja.figure.ts
 ```
 
 [Guía de Angular](docs/es/angular.md).
@@ -235,7 +235,7 @@ npx isofig build figuras/caja.json --format module -o src/app/figuras/caja.figur
 }
 ```
 
-¿Ya tienes Mermaid? `npx isofig import mermaid diagrama.mmd -o mapa.json`.
+¿Ya tienes Mermaid? `npx --no-install isofig import mermaid diagrama.mmd -o mapa.json`.
 
 ### Un modelo en pocas líneas
 
@@ -266,7 +266,7 @@ Los modelos son funciones puras. El runtime se encarga del reloj, de pausar fuer
 ```
 
 ```sh
-npx isofig palette --base "#e2231a" --report   # roles derivados de tu color de marca, con la tabla de contraste
+npx --no-install isofig palette --base "#e2231a" --report   # roles derivados de tu color de marca, con la tabla de contraste
 ```
 
 El tono `lit` sigue siendo el único acento fuerte de una figura. `check` avisa cuando una figura usa más de seis

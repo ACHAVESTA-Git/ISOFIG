@@ -63,7 +63,7 @@ also the legend's order. A pastel base (L ≥ 0.8) may fail to separate a role f
 Materials do not change with the base.
 
 ```sh
-npx isofig palette --base "#e4572e" --report   # the CSS block of the roles, and a table of the guarantees on stderr
+npx --no-install isofig palette --base "#e4572e" --report   # the CSS block of the roles, and a table of the guarantees on stderr
 ```
 
 ### Color warnings

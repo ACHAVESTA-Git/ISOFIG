@@ -67,7 +67,7 @@ change the public variable that applies.
   ink. If a part is `lit` and also in a state, the state wins.
 - A part with `paint` uses its paint's ink (`--isofig-paint-<name>-ink`), unless it is in a state.
 
-Pick an ink that contrasts at least 4.5:1 with the color under it in both themes (for example, `npx isofig palette
+Pick an ink that contrasts at least 4.5:1 with the color under it in both themes (for example, `npx --no-install isofig palette
 --report` measures the theme's paints).
 
 ## Stable readout

@@ -142,10 +142,10 @@ and a different audience (a client, a student) can then take it apart and zoom i
 ## Checking it
 
 ```sh
-npx isofig check engine.json --strict                      # tree shape, use, references, audit
-npx isofig build engine.json --format page -o engine.html --set explode=0
-npx isofig build engine.json --format page -o half.html   --set explode=4
-npx isofig build engine.json --format page -o apart.html  --set explode=7   # the last step of this one
+npx --no-install isofig check engine.json --strict                      # tree shape, use, references, audit
+npx --no-install isofig build engine.json --format page -o engine.html --set explode=0
+npx --no-install isofig build engine.json --format page -o half.html   --set explode=4
+npx --no-install isofig build engine.json --format page -o apart.html  --set explode=7   # the last step of this one
 ```
 
 Capture assembled, halfway and taken apart, and a few picked parts (`--set pick=3`), in light and dark. Look for a part
