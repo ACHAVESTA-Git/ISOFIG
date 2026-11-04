@@ -30,15 +30,16 @@ export function themeBlock(paints: PaintTokens[] = PAINTS): string {
  * Pinturas (\`paint\`): materiales para máquinas y roles para mapas, en OKLCH, cada una con la tinta de su texto
  * grabado. Salen de src/core/palette; \`isofig palette --report\` mide sus garantías. light-dark() sigue a
  * color-scheme, que aquí acompaña al tema. El canto se tiñe con la pintura; un estado del modelo gana sobre ella.
+ * Como los demás tokens, van en :where(): un \`.isofig { --isofig-paint-steel: … }\` o un \`color-scheme\` tuyo gana siempre.
  */
-.isofig {
+:where(.isofig) {
   color-scheme: light;
 ${tokens}
 }
 @media (prefers-color-scheme: dark) {
-  :where(:root:not([data-theme="light"])) .isofig { color-scheme: dark; }
+  :where(:root:not([data-theme="light"]) .isofig) { color-scheme: dark; }
 }
-:where(:root[data-theme="dark"]) .isofig { color-scheme: dark; }
+:where(:root[data-theme="dark"] .isofig) { color-scheme: dark; }
 .isofig-art [data-paint] {
   --c: var(--sc, var(--pc));
   --fe: color-mix(in oklab, var(--c), var(--isofig-edge) ${EDGE_MIX * 100}%);

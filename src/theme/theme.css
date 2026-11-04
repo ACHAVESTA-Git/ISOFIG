@@ -118,6 +118,7 @@
   font-variant-numeric: tabular-nums;
   color: var(--isofig-ink);
   text-align: right;
+  line-height: 1.5;
   overflow-wrap: break-word;
 }
 .isofig-readout[data-live] {
@@ -149,6 +150,13 @@
 }
 @container isofig-card (max-width: 20rem) {
   .isofig-readout { --rl: 4; }
+}
+/* La misma lectura, movida a la barra del diálogo de Ampliar, que ocupa todo el ancho de la pantalla. */
+@media (max-width: 899px) {
+  .isofig-zoombar .isofig-readout { --rl: 3; }
+}
+@media (max-width: 359px) {
+  .isofig-zoombar .isofig-readout { --rl: 4; }
 }
 
 .isofig-art {
@@ -214,8 +222,9 @@
  * Pinturas (`paint`): materiales para máquinas y roles para mapas, en OKLCH, cada una con la tinta de su texto
  * grabado. Salen de src/core/palette; `isofig palette --report` mide sus garantías. light-dark() sigue a
  * color-scheme, que aquí acompaña al tema. El canto se tiñe con la pintura; un estado del modelo gana sobre ella.
+ * Como los demás tokens, van en :where(): un `.isofig { --isofig-paint-steel: … }` o un `color-scheme` tuyo gana siempre.
  */
-.isofig {
+:where(.isofig) {
   color-scheme: light;
   --isofig-paint-client: light-dark(oklch(80% .075 250), oklch(43% .085 248));
   --isofig-paint-client-ink: light-dark(#1d1e1c, #f4f4ef);
@@ -251,9 +260,9 @@
   --isofig-paint-lacquer-ink: light-dark(#1d1e1c, #f4f4ef);
 }
 @media (prefers-color-scheme: dark) {
-  :where(:root:not([data-theme="light"])) .isofig { color-scheme: dark; }
+  :where(:root:not([data-theme="light"]) .isofig) { color-scheme: dark; }
 }
-:where(:root[data-theme="dark"]) .isofig { color-scheme: dark; }
+:where(:root[data-theme="dark"] .isofig) { color-scheme: dark; }
 .isofig-art [data-paint] {
   --c: var(--sc, var(--pc));
   --fe: color-mix(in oklab, var(--c), var(--isofig-edge) 50%);
