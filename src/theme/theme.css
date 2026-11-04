@@ -1,4 +1,8 @@
-.isofig {
+/*
+ * Todos los tokens van en :where(): especificidad 0. Un `.isofig { --isofig-accent: … }` tuyo gana siempre, se cargue
+ * antes o después de este archivo, y también en oscuro.
+ */
+:where(.isofig) {
   --isofig-paper: #f6f6f2;
   --isofig-card: #fbfbf8;
   --isofig-ink: #1d1e1c;
@@ -24,7 +28,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :where(:root:not([data-theme="light"])) .isofig {
+  :where(:root:not([data-theme="light"]) .isofig) {
     --isofig-ok: #5fd6ae;
     --isofig-warn: #e8b85a;
     --isofig-fail: #f07a5f;
@@ -44,7 +48,7 @@
   }
 }
 
-:where(:root[data-theme="dark"]) .isofig {
+:where(:root[data-theme="dark"] .isofig) {
     --isofig-ok: #5fd6ae;
     --isofig-warn: #e8b85a;
     --isofig-fail: #f07a5f;
@@ -70,6 +74,7 @@
 }
 
 .isofig-card {
+  container: isofig-card / inline-size;
   background: var(--isofig-card);
   border-radius: var(--isofig-radius);
   padding: 14px 16px;
@@ -91,11 +96,59 @@
   font-weight: 600;
 }
 
+/*
+ * Pie de la tarjeta: la pista ocupa lo que mide su texto (como mucho el 34 %) y la lectura el resto. Ninguna de las dos
+ * columnas depende del valor que muestra la lectura, así que el texto no se reacomoda mientras la figura corre.
+ */
+.isofig-bottom {
+  display: grid;
+  grid-template-columns: fit-content(34%) minmax(0, 1fr);
+  align-items: start;
+  line-height: 1.5;
+}
+
+/*
+ * La lectura reserva altura: --isofig-readout-lines líneas (tuyo; sin valor, 2, o 3 y 4 en tarjetas estrechas, ver abajo)
+ * para que la tarjeta no crezca ni encoja al cambiar el texto. Solo con data-live, es decir, si la figura tiene
+ * lectura o modelo: una figura sin lectura no deja un hueco.
+ */
 .isofig-readout {
+  --rl: 2;
   font-family: var(--isofig-mono);
   font-variant-numeric: tabular-nums;
   color: var(--isofig-ink);
   text-align: right;
+  overflow-wrap: break-word;
+}
+.isofig-readout[data-live] {
+  min-height: calc(var(--isofig-readout-lines, var(--rl)) * 1.5em);
+  min-height: calc(var(--isofig-readout-lines, var(--rl)) * 1lh);
+}
+
+/*
+ * Tarjeta estrecha (se mide el ancho de la tarjeta, no el de la pantalla): la lectura pasa arriba, a todo el ancho y a la
+ * izquierda; la pista baja y se atenúa. En el DOM la pista sigue primero, solo cambia el orden visual. Con menos ancho caben
+ * menos caracteres por línea, así que se reservan más líneas.
+ */
+@container isofig-card (max-width: 40rem) {
+  .isofig-bottom {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+  .isofig-readout {
+    order: -1;
+    text-align: left;
+    font-size: 0.8125rem;
+  }
+  .isofig-hint {
+    font-size: 0.72rem;
+  }
+}
+@container isofig-card (max-width: 28rem) {
+  .isofig-readout { --rl: 3; }
+}
+@container isofig-card (max-width: 20rem) {
+  .isofig-readout { --rl: 4; }
 }
 
 .isofig-art {
@@ -130,8 +183,12 @@
   stroke-linejoin: round;
 }
 .isofig-art .lit { --fe: color-mix(in oklab, var(--isofig-accent), var(--isofig-edge) 45%); }
-/* Sobre una cara de color (acento o estado) el texto grabado va en tinta oscura en los dos temas. */
-.isofig-art :is(.lit, [data-state]) { --fx: var(--isofig-ink-on-color); }
+/*
+ * Tinta del texto grabado sobre una cara de color, en los dos temas. Sobre el acento (.lit) usa --isofig-on-accent, la
+ * misma que el selector marcado; sobre un estado (ok, warn, fail) usa --isofig-ink-on-color. Si ambos coinciden, gana el estado.
+ */
+.isofig-art .lit { --fx: var(--isofig-on-accent); }
+.isofig-art [data-state] { --fx: var(--isofig-ink-on-color); }
 
 .isofig-art .t { fill: var(--ft); stroke: var(--ft); }
 .isofig-art .b { fill: var(--fb); stroke: var(--fb); }
@@ -252,6 +309,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  max-width: 100%;
   padding: 4px 12px;
   border-radius: 999px;
   background: var(--isofig-chip);
@@ -261,10 +319,18 @@
   min-height: 24px;
   width: 120px;
 }
+/* En un control estrecho cede el deslizante: el valor y su unidad nunca se parten ni se cortan. */
+.isofig-param input[type="range"] {
+  flex: 0 5 120px;
+  min-width: 4.5rem;
+}
 .isofig-param .isofig-value {
+  flex: none;
   min-width: 4.5ch;
   font-family: var(--isofig-mono);
   font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .isofig figcaption {

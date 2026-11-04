@@ -204,7 +204,7 @@ function draw(spec: FigureSpec, options: RenderOptions, lang: string, issues: Is
     `<div class="isofig-top">${n}<span class="isofig-title" aria-hidden="true">${esc(title)}</span>${zoom}</div>` +
     svg +
     `<div class="isofig-bottom"><span class="isofig-hint">${esc(hint)}</span>` +
-    `<span class="isofig-readout">${esc(readout)}</span></div></div>` +
+    `<span class="isofig-readout"${readout || spec.model ? " data-live" : ""}>${esc(readout)}</span></div></div>` +
     (play || controls || presetChips || orbit ? `<div class="isofig-controls" hidden>${play}${controls}${orbit}${presetChips}</div>` : "") +
     (presetChips ? `<p class="isofig-note" aria-live="polite"></p>` : "") +
     `<span class="isofig-say" aria-live="polite"></span>` +
