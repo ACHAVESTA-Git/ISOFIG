@@ -169,6 +169,14 @@ const inside = (a: Box3, b: Box3) => [0, 1, 2].every((i) => a.min[i] >= b.min[i]
 export interface Ordered {
   order: number[];
   cycles: string[];
+  /** Lo que se decidió de cada par `i < j` (en `i * n + j`): 0 no se pisan, -1 `i` va detrás, 1 `j` va detrás. */
+  pairs: Int8Array;
+}
+
+/** Lo ya decidido en otra pose: los pares que se movieron juntos (`same`) conservan su orden. */
+export interface Prior {
+  pairs: Int8Array;
+  same(i: number, j: number): boolean;
 }
 
 /**
@@ -176,24 +184,30 @@ export interface Ordered {
  * cajas se cruzan, decide un plano de las caras de los sólidos orientados (`shapes`) y, si no lo hay, la pieza
  * metida dentro de la otra va antes: queda tapada, como un pistón en su cilindro.
  */
-export function paintOrder(c: Camera, boxes: Box3[], names: string[], shapes?: (() => Shape | undefined)[]): Ordered {
+export function paintOrder(c: Camera, boxes: Box3[], names: string[], shapes?: (() => Shape | undefined)[], prior?: Prior): Ordered {
   const n = boxes.length;
   const rects = boxes.map((b) => screenRect(c, b));
   const depth = boxes.map((b) => depthOf(c, centerOf(b)));
   const after: number[][] = boxes.map(() => []);
   const indeg = new Array(n).fill(0);
+  const pairs = new Int8Array(n * n);
+  const decide = (i: number, j: number): number => {
+    if (!overlaps(rects[i], rects[j])) return 0;
+    // Con sólidos a mano, las cajas en pantalla exageran: si las siluetas no se pisan, el orden da igual.
+    const a = shapes?.[i]();
+    const b = shapes?.[j]();
+    if (a && b && !hullsOverlap(a.hull, b.hull)) return 0;
+    let r = compare(c, boxes[i], boxes[j]);
+    if (r === 0 && a && b) r = compareShapes(c, a, b);
+    if (r === 0 && inside(boxes[i], boxes[j])) r = -1;
+    else if (r === 0 && inside(boxes[j], boxes[i])) r = 1;
+    return r || (depth[i] <= depth[j] ? -1 : 1);
+  };
   for (let i = 0; i < n; i++) {
     for (let j = i + 1; j < n; j++) {
-      if (!overlaps(rects[i], rects[j])) continue;
-      // Con sólidos a mano, las cajas en pantalla exageran: si las siluetas no se pisan, el orden da igual.
-      const a = shapes?.[i]();
-      const b = shapes?.[j]();
-      if (a && b && !hullsOverlap(a.hull, b.hull)) continue;
-      let r = compare(c, boxes[i], boxes[j]);
-      if (r === 0 && a && b) r = compareShapes(c, a, b);
-      if (r === 0 && inside(boxes[i], boxes[j])) r = -1;
-      else if (r === 0 && inside(boxes[j], boxes[i])) r = 1;
-      if (r === 0) r = depth[i] <= depth[j] ? -1 : 1;
+      // Dos piezas que se movieron igual siguen en el mismo orden: en proyección paralela, trasladar no cambia nada.
+      const r = (pairs[i * n + j] = prior?.same(i, j) ? prior.pairs[i * n + j] : decide(i, j));
+      if (!r) continue;
       const [back, front] = r < 0 ? [i, j] : [j, i];
       after[back].push(front);
       indeg[front]++;
@@ -202,11 +216,13 @@ export function paintOrder(c: Camera, boxes: Box3[], names: string[], shapes?: (
   const order: number[] = [];
   const cycles: string[] = [];
   const done = new Array(n).fill(false);
-  const ready = () => [...Array(n).keys()].filter((k) => !done[k] && indeg[k] === 0);
+  // Las listas para pintar; entre las de igual profundidad sale la de menor índice, como al recorrerlas en orden.
+  let ready = [...Array(n).keys()].filter((k) => indeg[k] === 0);
+  const nearest = (pool: number[]) => pool.reduce((m, x) => (depth[x] < depth[m] || (depth[x] === depth[m] && x < m) ? x : m), pool[0]);
   // Una pieza metida en la caja de otra (un pistón en su bancada) queda tapada: si hay un ciclo, sale primero y no avisa.
   let hidden: boolean[] | undefined;
   while (order.length < n) {
-    let pool = ready();
+    let pool = ready;
     if (pool.length === 0) {
       hidden ??= boxes.map((b, i) => boxes.some((o, j) => j !== i && inside(b, o)));
       const left = [...Array(n).keys()].filter((k) => !done[k]);
@@ -217,10 +233,11 @@ export function paintOrder(c: Camera, boxes: Box3[], names: string[], shapes?: (
       if (!hidden[k]) cycles.push(peers.length ? `${names[k]} ↔ ${peers.slice(0, 3).join(", ")}` : names[k]);
       pool = [k];
     }
-    const k = pool.reduce((m, x) => (depth[x] < depth[m] ? x : m), pool[0]);
+    const k = nearest(pool);
     done[k] = true;
     order.push(k);
-    for (const f of after[k]) indeg[f]--;
+    ready = ready.filter((x) => x !== k);
+    for (const f of after[k]) if (--indeg[f] === 0 && !done[f]) ready.push(f);
   }
-  return { order, cycles };
+  return { order, cycles, pairs };
 }
