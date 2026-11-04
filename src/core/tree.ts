@@ -399,6 +399,18 @@ export function assembleTree(spec: FigureSpec, options: AssembleOptions = {}): A
   };
 }
 
+/** Si el árbol toma piezas de un catálogo (un `use` que no está en `defs`): quien lo dibuje necesitará ese catálogo. */
+export function usesCatalog(spec: FigureSpec): boolean {
+  const defs = spec.defs ?? {};
+  const visit = (n: unknown): boolean => {
+    if (!n || typeof n !== "object") return false;
+    const node = n as NodeDef;
+    if (typeof node.use === "string" && !Object.hasOwn(defs, node.use)) return true;
+    return Array.isArray(node.children) && node.children.some(visit);
+  };
+  return visit(spec.root) || Object.values(defs).some(visit);
+}
+
 /** Como `assembleTree`, pero devuelve solo la spec y lanza si el árbol no se puede armar (un `use` que no existe). */
 export function assemble(spec: FigureSpec, options: AssembleOptions = {}): FlatSpec {
   const { spec: flat, errors } = assembleTree(spec, options);

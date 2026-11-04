@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { assemble, assembleTree } from "../src/core/tree.ts";
+import { assemble, assembleTree, usesCatalog } from "../src/core/tree.ts";
 import { renderFigure } from "../src/core/render.ts";
 import { movesBetween } from "../src/core/scene.ts";
 import { validateSpec } from "../src/core/validate.ts";
@@ -97,6 +97,11 @@ test("use toma de defs (con plantillas de with) y si no está, del catálogo (re
   });
   assert.equal(own.errors.length, 0);
   assert.deepEqual(own.spec.groups?.["dado"], { extent: [[0, 0, 9]] });
+});
+
+test("usesCatalog dice si el árbol necesita un catálogo para dibujarse fuera de Node", () => {
+  assert.equal(usesCatalog(spec({ id: "m", children: [{ id: "a", use: "pata" }] }, { defs: { pata: { parts: [] } } })), false);
+  assert.equal(usesCatalog(spec({ id: "m", children: [{ id: "a", children: [{ id: "b", use: "bench" }] }] })), true);
 });
 
 test("un use que se llama a sí mismo se detiene y lo dice", () => {
