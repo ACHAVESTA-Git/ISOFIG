@@ -154,7 +154,7 @@ npm i isofig
 ```
 
 Node 22.18 or later. The package is on npm as [`isofig`](https://www.npmjs.com/package/isofig), published by its author
-(`anthonychavesta`). To follow the repository instead: `npm i github:ACHAVESTA-Git/ISOFIG#v0.10.2`.
+(`anthonychavesta`). To follow the repository instead: `npm i github:ACHAVESTA-Git/ISOFIG#v0.10.3`.
 
 ### 2. Write a figure as JSON
 
@@ -182,7 +182,7 @@ npx --no-install isofig build box.json --format page -o box.html   # open box.ht
 
 ### 4. Put it on a page
 
-**Astro**
+**Astro** (in an Astro 5 or later project, with Astro already installed: isofig does not install it for you)
 
 ```astro
 ---
@@ -356,7 +356,7 @@ The core (`isofig`), the kit and the map compiler run at build time and are not 
 
 ## Compatibility
 
-Node 22.18+ · Astro 5 and 7 (built in CI) · Angular 19+ · evergreen browsers (checked in Chromium and WebKit).
+Node 22.18+ · Astro 5 and 7, installed by your project (built in CI) · Angular 19+ · evergreen browsers (checked in Chromium and WebKit).
 
 ## Documentation
 
