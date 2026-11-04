@@ -6,7 +6,8 @@ import { derivePalette } from "../src/core/palette/derive.ts";
 import { legendOf, paintsUsed } from "../src/core/palette/figure.ts";
 import { paletteCss, paletteJson, themeBlock } from "../src/core/palette/format.ts";
 import { lin, measureSet, reservedOf } from "../src/core/palette/guarantees.ts";
-import { MATERIALS, ROLES } from "../src/core/palette/sets.ts";
+import { MATERIAL_NAMES, PAINT_NAMES, RESERVED, ROLE_NAMES } from "../src/core/palette/names.ts";
+import { MATERIALS, PAINT, PAINTS, ROLES } from "../src/core/palette/sets.ts";
 import { MODES, THEME } from "../src/core/palette/theme.ts";
 import { renderFigure } from "../src/core/render.ts";
 import { validateSpec } from "../src/core/validate.ts";
@@ -190,4 +191,12 @@ test("isofig palette da CSS y JSON con las medidas", () => {
   assert.equal(json.ok, true);
   assert.equal(Object.keys(json.light).length, ROLES.length);
   assert.ok(json.dark["data"].text >= 4.5);
+});
+
+test("names.ts y sets.ts nombran las mismas pinturas, en el mismo orden (el giro solo lleva los nombres)", () => {
+  assert.deepEqual(ROLES.map((p) => p.name), [...ROLE_NAMES]);
+  assert.deepEqual(MATERIALS.map((p) => p.name), [...MATERIAL_NAMES]);
+  assert.deepEqual([...PAINT_NAMES].sort(), PAINTS.map((p) => p.name).sort());
+  assert.deepEqual([...PAINT_NAMES].sort(), [...PAINT.keys()].sort());
+  assert.equal(RESERVED.some((n) => PAINT_NAMES.has(n)), false, "un estado no es una pintura");
 });
