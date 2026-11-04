@@ -6,11 +6,16 @@ later, when the reader gets close to the figure or uses it, and the runtime only
 
 ## 1. Install
 
+First you need an **Astro 5 or later** project with Astro already installed. isofig does not install Astro for you: it
+does not declare it as a dependency, so people who only use the library or the CLI never download Astro's tree.
+
 ```sh
-npm i isofig
+npm create astro@latest   # only if you don't have an Astro project yet
+npm i isofig              # inside the Astro project
 ```
 
-Requires Node 22.18 or later (to load specs written in TypeScript) and Astro 5 or later.
+Requires Node 22.18 or later (to load specs written in TypeScript). If `import Figure from "isofig/astro"` fails with
+"Cannot find module 'astro'", the project is missing Astro: install it with `npm i astro`.
 
 ## 2. Write the spec
 

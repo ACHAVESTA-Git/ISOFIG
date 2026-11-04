@@ -6,11 +6,16 @@ cuando el lector se acerca a la figura o la usa, y el runtime solo trabaja mient
 
 ## 1. Instalar
 
+Primero necesitas un proyecto de **Astro 5 o superior** con Astro ya instalado. isofig no instala Astro por ti: no
+lo declara como dependencia, para que quien solo usa la biblioteca o la CLI no descargue todo el árbol de Astro.
+
 ```sh
-npm i isofig
+npm create astro@latest   # solo si aún no tienes un proyecto de Astro
+npm i isofig              # dentro del proyecto de Astro
 ```
 
-Requiere Node 22.18 o superior (para cargar specs escritas en TypeScript) y Astro 5 o superior.
+Requiere Node 22.18 o superior (para cargar specs escritas en TypeScript). Si `import Figure from "isofig/astro"` falla
+con «Cannot find module 'astro'», al proyecto le falta Astro: instálalo con `npm i astro`.
 
 ## 2. Escribir la spec
 

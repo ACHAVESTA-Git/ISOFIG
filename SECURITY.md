@@ -8,10 +8,11 @@ Please report security problems privately through GitHub: open the repository's 
 ## Installing safely
 
 - isofig is published on npm as [`isofig`](https://www.npmjs.com/package/isofig) by its author (`anthonychavesta`), and
-  from this repository (`npm i github:ACHAVESTA-Git/ISOFIG#v0.10.2`). The Claude Code plugin comes from
+  from this repository (`npm i github:ACHAVESTA-Git/ISOFIG#v0.10.3`). The Claude Code plugin comes from
   `claude plugin marketplace add ACHAVESTA-Git/ISOFIG`.
 - Run the CLI as `npx --no-install isofig`: it uses your installed copy and never downloads a package on its own.
-- The package has no runtime dependencies. Installing it from npm runs nothing; installing it from GitHub runs only
+- The package has no dependencies of any kind (not even optional peers): Astro, for the `isofig/astro` adapter,
+  comes from your own Astro project. Installing it from npm runs nothing; installing it from GitHub runs only
   `tsc` (the `prepare` script) to build `dist/`.
 - The plugin has no hooks, MCP servers or commands that run on their own: everything it does goes through Claude
   Code's normal permission prompts.
