@@ -108,7 +108,7 @@ test("cada código tiene mensaje en inglés y en español, con su gravedad", () 
 test("un kind desconocido dice cuál es y cuáles hay", () => {
   const issue = find({ ...base, parts: [{ id: "bola", kind: "sphere", at: [0, 0, 0] }] }, "kind-unknown");
   assert.match(issue!.message, /'bola' has an unknown kind 'sphere'/);
-  assert.match(issue!.message, /box, cylinder, prism, ticks, dots, line, label/);
+  assert.match(issue!.message, /box, cylinder, cone, prism, ticks, dots, line, label/);
   assert.match(find({ ...base, parts: [{ id: "x", at: [0, 0, 0] }] }, "kind-missing")!.message, /no kind/);
 });
 

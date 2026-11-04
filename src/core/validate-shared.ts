@@ -89,17 +89,18 @@ export function checkVector(rep: Reporter, v: unknown, path: string, field: stri
 // Los nombres de campos van como palabras sueltas: `"from", "x"` en una lista confunde a quien busca imports con una expresión regular.
 export const words = (list: string): string[] => list.split(" ");
 
-const BASE = ["id", "kind", "tone", "group", "hidden", "repeat", "float", "mount", "shadow", "paint"];
+const BASE = ["id", "kind", "tone", "group", "hidden", "repeat", "float", "mount", "shadow", "paint", "outer"];
 
 export const FIGURE_KEYS = [
   "id", "title", "hint", "caption", "alt", "width", "height", "pad", "camera", "parts", "groups", "params", "bind",
-  "readout", "presets", "model", "autoplay", "motion", "budget", "root", "defs", "palette", "tracks", "map", "$schema",
+  "readout", "presets", "model", "autoplay", "motion", "budget", "root", "defs", "palette", "tracks", "map", "reorder", "$schema",
 ] as const;
 
 export const PART_KEYS = {
   box: [...BASE, "at", "size", "radius", "bevel"],
   cylinder: [...BASE, "at", "r", "h", "axis", "bevel"],
-  prism: [...BASE, "plan", "z", "h", "bevel"],
+  cone: [...BASE, "at", "r", "r2", "h", "axis"],
+  prism: [...BASE, "plan", "z", "h", "axis", "bevel"],
   ticks: [...BASE, ...words("on from along count toward every size")],
   dots: [...BASE, "on", "points"],
   line: [...BASE, "on", "points", "bold"],
@@ -107,12 +108,13 @@ export const PART_KEYS = {
 } as const;
 
 export const KINDS = Object.keys(PART_KEYS);
-export const SOLIDS: readonly string[] = ["box", "cylinder", "prism"];
+export const SOLIDS: readonly string[] = ["box", "cylinder", "cone", "prism"];
 
 /** Lo que una pieza no puede dibujarse sin tener. */
 export const REQUIRED: Record<string, readonly string[]> = {
   box: ["at", "size"],
   cylinder: ["at", "r", "h"],
+  cone: ["at", "r", "r2", "h"],
   prism: ["plan", "z", "h"],
   ticks: words("on from along count toward"),
   dots: ["on", "points"],
@@ -125,8 +127,9 @@ export const GROUP_KEYS = ["extent", "spin"] as const;
 export const SPIN_KEYS = ["center", "plane"] as const;
 export const CAMERA_KEYS = ["azimuth", "elevation"] as const;
 export const MOTION_KEYS = ["tau", "settle"] as const;
-export const PARAM_KEYS = ["id", "label", "min", "max", "value", "step", "unit", "spoken", "kind", "hidden", "options"] as const;
-export const BIND_KEYS = ["group", "param", "move", "spin", "fade"] as const;
+export const PARAM_KEYS = ["id", "label", "min", "max", "value", "step", "unit", "spoken", "kind", "hidden", "options", "texts"] as const;
+export const BIND_KEYS = ["group", "param", "move", "spin", "fade", "win", "keep"] as const;
+export const NODE_KEYS = words("id name note step at explode stage parts children repeat use with tone paint mount");
 export const PRESET_KEYS = ["label", "values", "note", "reset", "press"] as const;
 export const TONES = ["lo", "mid", "hi", "lit"] as const;
 export const PLANES = ["xy", "xz", "yz"] as const;

@@ -78,6 +78,8 @@
     "docs/en",
     "examples/token-bucket/spec.ts",
     "examples/token-bucket/model.ts",
+    "examples/motor-v8/spec.json",
+    "examples/motor-cohete/spec.json",
     "NOTICE.md",
     "CHANGELOG.md"
   ],

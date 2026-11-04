@@ -11,7 +11,7 @@ export interface Travel {
   implicit: boolean;
 }
 
-interface Control {
+export interface Control {
   id: string;
   kind: string;
   travel?: Travel;
@@ -133,7 +133,7 @@ export function validateBind(
     const path = `bind[${i}]`;
     if (!isObj(raw)) return void rep.add("type-invalid", path, { field: path, expected: "object", got: show(raw) });
     checkKeys(rep, raw, BIND_KEYS, path);
-    const { group, param, move, spin, fade } = raw;
+    const { group, param, move, spin, fade, win, keep } = raw;
     if (typeof param !== "string" || !byId.has(param)) {
       rep.add("bind-unknown-param", `${path}.param`, { param: show(param).replace(/^"|"$/g, ""), suggest: typeof param === "string" ? closest(param, [...byId.keys()]) ?? "" : "" });
     }
@@ -141,8 +141,12 @@ export function validateBind(
       rep.add("bind-unknown-group", `${path}.group`, { group: show(group).replace(/^"|"$/g, ""), suggest: typeof group === "string" ? closest(group, [...groups]) ?? "" : "" });
     }
     if (move !== undefined) checkVector(rep, move, `${path}.move`, "move");
+    if (win !== undefined && checkVector(rep, win, `${path}.win`, "win", 2) && !((win as number[])[0] < (win as number[])[1])) {
+      rep.add("bind-window-invalid", `${path}.win`, { a: (win as number[])[0], b: (win as number[])[1] });
+    }
+    if (keep !== undefined && (!Array.isArray(keep) || keep.some((k) => !isNum(k)))) rep.add("type-invalid", `${path}.keep`, { field: "keep", expected: "list", got: show(keep) });
     if (spin && typeof group === "string" && !spins.has(group)) rep.add("bind-spin-no-pivot", `${path}.spin`, { group });
-    if (!move && !spin && !fade) rep.add("bind-no-effect", path, { group: typeof group === "string" ? group : show(group) });
+    if (!move && !spin && !fade && !keep) rep.add("bind-no-effect", path, { group: typeof group === "string" ? group : show(group) });
   });
 }
 

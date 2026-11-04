@@ -46,13 +46,15 @@ export interface FigureData {
   tau: number;
   basis: number[];
   spins: Record<string, number[]>;
-  params: { id: string; value: number; unit: string; spoken: string; options?: string[] }[];
+  params: { id: string; value: number; unit: string; spoken: string; options?: string[]; texts?: string[] }[];
   presets?: { values: Record<string, number>; note: string; reset?: boolean; press?: string[] }[];
-  bind?: { group: string; param: string; move?: number[]; spin?: number; fade?: boolean }[];
+  bind?: { group: string; param: string; move?: number[]; spin?: number; fade?: boolean; win?: number[]; keep?: number[] }[];
   readout: string;
   lang: string;
   /** Con movimiento reducido, segundos que se simulan de golpe al montar y tras cada control o desvío. */
   settle?: number;
+  /** Orden de pintado por pose: `[valor, mover, antes de, …]` sobre el orden en reposo. */
+  reorder?: { param: string; poses: number[][] };
 }
 
 /** Lo que exporta isofig/zoom. */
@@ -72,7 +74,7 @@ interface Group {
 const registry = new Map<string, Model<any, any>>();
 const waiting = new Map<string, HTMLElement[]>();
 const live = new Map<HTMLElement, () => void>();
-const cameras = new WeakMap<HTMLElement, (basis: number[], spins: Record<string, number[]>) => void>();
+const cameras = new WeakMap<HTMLElement, (basis: number[], spins: Record<string, number[]>, reorder?: FigureData["reorder"]) => void>();
 let zoomer: (() => Promise<ZoomModule>) | undefined;
 
 /**
@@ -84,8 +86,8 @@ export function zoomOnDemand(load: () => Promise<ZoomModule>): void {
 }
 
 /** Cambia la cámara de una figura montada (lo usa isofig/orbit tras redibujarla). */
-export function retarget(el: HTMLElement, basis: number[], spins: Record<string, number[]>): void {
-  cameras.get(el)?.(basis, spins);
+export function retarget(el: HTMLElement, basis: number[], spins: Record<string, number[]>, reorder?: FigureData["reorder"]): void {
+  cameras.get(el)?.(basis, spins, reorder);
 }
 
 export function register(name: string, model: Model<any, any>): void {
@@ -94,18 +96,38 @@ export function register(name: string, model: Model<any, any>): void {
   waiting.delete(name);
 }
 
-const bindModel = (d: FigureData): Model<null> => ({
-  init: () => null,
-  view(_, p) {
-    const groups: Record<string, GroupView> = {};
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+
+/** `{id}` con el texto de su valor si lo hay, que a su vez puede nombrar otro parámetro (una pasada más). */
+const fill = (d: FigureData, p: Params, text = d.readout): string =>
+  text.replace(/\{([^}]+)\}/g, (m, id: string) => {
+    const q = d.params.find((x) => x.id === id);
+    return q ? (q.texts?.[p[id]] ?? String(p[id])) : m;
+  });
+
+/**
+ * Los `bind` de la spec sobre el modelo (si lo hay): varios enlaces al mismo grupo se suman, cada uno con su ventana
+ * del parámetro, y una elección atenúa los grupos que no son la pieza elegida. Así se desarma una figura sin modelo.
+ */
+const bindModel = (d: FigureData, m?: Model<any, any>): Model<any> => ({
+  init: (...a) => m?.init(...a),
+  step: (...a) => m?.step?.(...a),
+  view(s, p, c) {
+    const v: View = m ? m.view(s, p, c) : {};
+    const groups: Record<string, GroupView> = { ...v.groups };
     for (const b of d.bind ?? []) {
-      const v = p[b.param] ?? 0;
-      const g = (groups[b.group] ??= {});
-      if (b.move) g.t = [b.move[0] * v, b.move[1] * v, b.move[2] * v];
-      if (b.spin) g.r = b.spin * v;
-      if (b.fade) g.o = Math.max(0, Math.min(1, v));
+      let x = p[b.param] ?? 0;
+      const g = (groups[b.group] = { ...groups[b.group] });
+      if (b.keep) {
+        if (x && !b.keep.includes(x)) g.o = (g.o ?? 1) * 0.2;
+        continue;
+      }
+      if (b.win) x = clamp01((x - b.win[0]) / (b.win[1] - b.win[0]));
+      if (b.move) g.t = b.move.map((v, i) => (g.t?.[i] ?? 0) + v * x) as GroupView["t"];
+      if (b.spin) g.r = (g.r ?? 0) + b.spin * x;
+      if (b.fade) g.o = (g.o ?? 1) * clamp01(x);
     }
-    return { groups };
+    return { ...v, groups, readout: v.readout ?? fill(d, p, fill(d, p)) };
   },
 });
 
@@ -131,11 +153,12 @@ function transformOf(d: FigureData, name: string, [x, y, z, r]: number[]): strin
 /** Devuelve la función que la detiene. */
 export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureData): () => void {
   const d: FigureData = data ?? JSON.parse(el.querySelector(".isofig-data")?.textContent ?? "{}");
-  const m = model ?? (d.model ? registry.get(d.model) : bindModel(d));
-  if (!m) {
-    waiting.set(d.model!, [...(waiting.get(d.model!) ?? []), el]);
+  const own = model ?? (d.model ? registry.get(d.model) : undefined);
+  if (d.model && !own) {
+    waiting.set(d.model, [...(waiting.get(d.model) ?? []), el]);
     return () => {};
   }
+  const m = bindModel(d, own);
   const motion = matchMedia("(prefers-reduced-motion: reduce)");
   let reduced = motion.matches;
   // Lo que cambió (1) o se pulsó (2) desde el último paso del modelo.
@@ -165,8 +188,16 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     } else params[id] = Number(input.value);
   });
   const groups = new Map<string, Group>();
+  // Piezas en su orden de pintado en reposo, la pose que muestra el DOM y el parámetro que la elige, ya suavizado.
+  let scene: Element | null;
+  let base: Element[] = [];
+  let pose = 0;
+  let eased = 0;
   // Al girar la figura (isofig/orbit) el SVG se redibuja: se vuelven a buscar las piezas y conservan su estado.
   const collect = () => {
+    scene = el.querySelector(".isofig-scene");
+    base = [...(scene?.querySelectorAll(":scope>:is(g,use)") ?? [])];
+    pose = 0;
     const before = new Map(groups);
     groups.clear();
     el.querySelectorAll<SVGElement>("[data-g]").forEach((node) => {
@@ -280,7 +311,24 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
         node.style.visibility = g.cur[4] < 0.01 ? "hidden" : "";
       }
     }
-    const text = view.readout ?? d.params.reduce((s, p) => s.replaceAll(`{${p.id}}`, String(params[p.id])), d.readout);
+    const r = d.reorder;
+    if (r && scene) {
+      const goal = params[r.param] ?? 0;
+      eased = Math.abs(goal - eased) < 1e-3 ? goal : eased + (goal - eased) * k;
+      if (eased !== goal) moving = true;
+      // Al salir, la pieza cambia de orden cuando ya llegó; al volver, en cuanto arranca: así nunca se pinta encima.
+      let next = 0;
+      r.poses.forEach((q, i) => {
+        if (eased >= q[0] - 0.05) next = i + 1;
+      });
+      if (next !== pose) {
+        pose = next;
+        for (const n of base) scene.append(n);
+        const q = r.poses[pose - 1] ?? [];
+        for (let i = 1; i < q.length; i += 2) scene.insertBefore(base[q[i]], base[q[i + 1]] ?? null);
+      }
+    }
+    const text = view.readout ?? "";
     if (readout && readout.textContent !== text) readout.textContent = text;
     const news = view.say || (performance.now() < offerUntil && offer);
     if (news && budget > 0) speak(news);
@@ -300,7 +348,7 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
       else if (input.type === "radio") input.checked = Number(input.value) === params[id];
       else {
         input.value = String(params[id]);
-        input.setAttribute("aria-valuetext", `${value} ${p.spoken}`.trim());
+        input.setAttribute("aria-valuetext", p.texts?.[params[id]] ?? `${value} ${p.spoken}`.trim());
         const out = input.parentElement?.querySelector(".isofig-value");
         if (out) out.textContent = `${value} ${p.unit}`.trim();
       }
@@ -375,9 +423,10 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     { rootMargin: "120px" },
   );
   io.observe(el);
-  cameras.set(el, (basis, spins) => {
+  cameras.set(el, (basis, spins, reorder) => {
     d.basis = basis;
     d.spins = spins;
+    d.reorder = reorder;
     collect();
     wake();
   });

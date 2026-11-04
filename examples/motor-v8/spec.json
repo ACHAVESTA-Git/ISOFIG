@@ -1,0 +1,451 @@
+{
+  "id": "motor-v8",
+  "title": {"es": "Motor V8 de competición", "en": "Racing V8 engine"},
+  "hint": {"es": "Desármalo paso a paso o elige una pieza", "en": "Take it apart step by step, or pick a part"},
+  "caption": {"es": "Un V8 a 90° en su soporte de taller. Dos bancadas de cuatro cilindros comparten un cigüeñal plano: cada codo lleva dos bielas, una de cada lado. Al desarmarlo sale primero lo de fuera (la caja de aire, las tapas, las levas, las culatas) y al final el cárter y el tren alternativo.", "en": "A 90° V8 on a workshop stand. Two banks of four cylinders share a flat-plane crankshaft: each throw carries two rods, one from each side. Taking it apart removes the outside first (airbox, covers, cams, heads) and finally the oil pan and the rotating assembly."},
+  "width": 680,
+  "height": 600,
+  "pad": 20,
+  "camera": {"azimuth": 80, "elevation": 30},
+  "motion": {
+    "tau": 0.3
+  },
+  "parts": [
+    {"id": "pie-{i}", "kind": "box", "at": [-68, -100, 0], "size": [16, 12, 8], "radius": 2, "tone": "lo", "paint": "iron", "repeat": {"count": 2, "step": [120, 0, 0]}},
+    {"id": "pie-delantero-{i}", "kind": "box", "at": [-68, 134, 0], "size": [16, 12, 8], "radius": 2, "tone": "lo", "paint": "iron", "repeat": {"count": 2, "step": [120, 0, 0]}},
+    {"id": "riel-{i}", "kind": "box", "at": [-66, -102, 8], "size": [12, 250, 8], "radius": 2, "bevel": 0.8, "tone": "lo", "paint": "iron", "shadow": true, "repeat": {"count": 2, "step": [120, 0, 0]}},
+    {"id": "travesano", "kind": "box", "at": [-66, -98, 16], "size": [132, 18, 8], "radius": 2, "bevel": 0.8, "tone": "lo", "paint": "iron"},
+    {"id": "columna", "kind": "box", "at": [-9, -98, 24], "size": [18, 18, 196], "radius": 2, "bevel": 0.8, "tone": "mid", "paint": "iron"},
+    {"id": "columna-pernos", "kind": "dots", "on": "travesano", "points": [[-14, -89, 24], [14, -89, 24]]},
+    {"id": "brazo", "kind": "box", "at": [-8, -98, 204], "size": [16, 74, 16], "radius": 2, "bevel": 0.8, "tone": "mid", "paint": "iron", "mount": ["columna"]},
+    {"id": "giro", "kind": "cylinder", "at": [0, -24, 212], "r": 15, "h": 8, "axis": "y", "bevel": 1, "tone": "mid", "paint": "steel", "mount": ["brazo"]},
+    {"id": "placa", "kind": "box", "at": [-42, -16, 184], "size": [84, 8, 44], "radius": 4, "bevel": 1, "tone": "mid", "paint": "steel"},
+    {"id": "placa-pernos", "kind": "dots", "on": "placa", "points": [[-36, -8, 190], [36, -8, 190], [-10, -8, 224], [10, -8, 224]]},
+    {"id": "separador-{i}", "kind": "cylinder", "at": [-36, -8, 190], "r": 3.5, "h": 8, "axis": "y", "tone": "mid", "paint": "steel", "repeat": {"count": 2, "step": [72, 0, 0]}},
+    {"id": "separador-alto-{i}", "kind": "cylinder", "at": [-10, -8, 224], "r": 3.5, "h": 8, "axis": "y", "tone": "mid", "paint": "steel", "repeat": {"count": 2, "step": [20, 0, 0]}}
+  ],
+  "root": {
+    "id": "motor",
+    "name": {"es": "Motor V8", "en": "V8 engine"},
+    "at": [0, 0, 212],
+    "paint": "aluminium",
+    "children": [
+      {
+        "id": "bloque",
+        "name": {"es": "Bloque", "en": "Block"},
+        "note": {"es": "cárter superior y dos bancadas a 90°", "en": "crankcase and two banks at 90°"},
+        "tone": "mid",
+        "parts": [
+          {"id": "carter-superior", "kind": "prism", "axis": "y", "plan": [[-44, -30], [44, -30], [44, -14.3], [0, 29.7], [-44, -14.3]], "z": 0, "h": 155, "bevel": 1.2},
+          {"id": "carter-pernos", "kind": "dots", "on": "carter-superior", "points": [[44, 8, -27], [44, 26, -27], [44, 44, -27], [44, 62, -27], [44, 80, -27], [44, 98, -27], [44, 116, -27], [44, 134, -27], [44, 152, -27]]},
+          {"id": "carter-junta", "kind": "line", "on": "carter-superior", "points": [[44, 4, -20], [44, 151, -20]]}
+        ],
+        "children": [
+          {
+            "id": "bancada-izq",
+            "name": {"es": "Bancada", "en": "Bank"},
+            "note": {"es": "cuatro cilindros por lado, inclinados 45°", "en": "four cylinders a side, leaning 45°"},
+            "parts": [
+              {"id": "fundicion", "kind": "prism", "axis": "y", "plan": [[-29.7, 0], [0, 29.7], [-43.13, 72.83], [-72.83, 43.13]], "z": 2, "h": 144, "bevel": 1.2, "mount": ["carter-superior"]},
+              {"id": "pernos", "kind": "dots", "on": "fundicion", "points": [[-70, 2.5, 45.96], [-70, 36.5, 45.96], [-45.96, 2.5, 70], [-45.96, 36.5, 70], [-70, 38.5, 45.96], [-70, 72.5, 45.96], [-45.96, 38.5, 70], [-45.96, 72.5, 70], [-70, 74.5, 45.96], [-70, 108.5, 45.96], [-45.96, 74.5, 70], [-45.96, 108.5, 70], [-70, 110.5, 45.96], [-70, 144.5, 45.96], [-45.96, 110.5, 70], [-45.96, 144.5, 70]]},
+              {"id": "costilla-0", "kind": "line", "on": "fundicion", "points": [[-43.13, 8, 13.44], [-43.13, 140, 13.44]]},
+              {"id": "costilla-1", "kind": "line", "on": "fundicion", "points": [[-55.86, 8, 26.16], [-55.86, 140, 26.16]]}
+            ],
+            "children": [
+              {
+                "id": "culata",
+                "name": {"es": "Culata", "en": "Cylinder head"},
+                "note": {"es": "cierra los cilindros y lleva válvulas y levas", "en": "closes the cylinders, carries valves and cams"},
+                "explode": [-29.7, 0, 29.7],
+                "stage": 5,
+                "step": {"es": "culatas fuera", "en": "cylinder heads off"},
+                "tone": "hi",
+                "paint": "aluminium",
+                "parts": [
+                  {"id": "cuerpo", "kind": "prism", "axis": "y", "plan": [[-74.25, 41.72], [-41.72, 74.25], [-58.69, 91.22], [-91.22, 58.69]], "z": 2, "h": 144, "bevel": 1.4},
+                  {"id": "escapes", "kind": "dots", "on": "cuerpo", "points": [[-78.49, 10.5, 45.96], [-78.49, 28.5, 45.96], [-86.97, 10.5, 54.45], [-86.97, 28.5, 54.45], [-78.49, 46.5, 45.96], [-78.49, 64.5, 45.96], [-86.97, 46.5, 54.45], [-86.97, 64.5, 54.45], [-78.49, 82.5, 45.96], [-78.49, 100.5, 45.96], [-86.97, 82.5, 54.45], [-86.97, 100.5, 54.45], [-78.49, 118.5, 45.96], [-78.49, 136.5, 45.96], [-86.97, 118.5, 54.45], [-86.97, 136.5, 54.45]]},
+                  {"id": "junta", "kind": "line", "on": "cuerpo", "points": [[-75.66, 6, 43.13], [-75.66, 142, 43.13]]}
+                ],
+                "children": [
+                  {
+                    "id": "valvulas",
+                    "name": {"es": "Válvulas", "en": "Valves"},
+                    "note": {"es": "cuatro por cilindro: dos de admisión, dos de escape", "en": "four per cylinder: two intake, two exhaust"},
+                    "paint": "steel",
+                    "mount": ["tapa.tapa"],
+                    "children": [
+                      {
+                        "id": "cilindro-{i}",
+                        "use": "valvulas-izq",
+                        "at": [0, 19.5, 0],
+                        "repeat": {"count": 4, "step": [0, 36, 0]}
+                      }
+                    ]
+                  },
+                  {
+                    "id": "levas",
+                    "name": {"es": "Árboles de levas", "en": "Camshafts"},
+                    "note": {"es": "dos por culata: abren las válvulas", "en": "two per head: they open the valves"},
+                    "explode": [-14.14, 0, 14.14],
+                    "stage": 4,
+                    "step": {"es": "árboles de levas fuera", "en": "camshafts out"},
+                    "paint": "steel",
+                    "mount": ["tapa.tapa"],
+                    "parts": [
+                      {"id": "sombrerete-0", "kind": "prism", "axis": "y", "plan": [[-87.68, 66.47], [-66.47, 87.68], [-73.54, 94.75], [-94.75, 73.54]], "z": 2.5, "h": 6, "bevel": 0.8},
+                      {"id": "sombrerete-0-pernos", "kind": "dots", "on": "sombrerete-0", "points": [[-92.63, 5.5, 75.66], [-75.66, 5.5, 92.63]]},
+                      {"id": "sombrerete-1", "kind": "prism", "axis": "y", "plan": [[-87.68, 66.47], [-66.47, 87.68], [-73.54, 94.75], [-94.75, 73.54]], "z": 34.5, "h": 6, "bevel": 0.8},
+                      {"id": "sombrerete-1-pernos", "kind": "dots", "on": "sombrerete-1", "points": [[-92.63, 37.5, 75.66], [-75.66, 37.5, 92.63]]},
+                      {"id": "sombrerete-2", "kind": "prism", "axis": "y", "plan": [[-87.68, 66.47], [-66.47, 87.68], [-73.54, 94.75], [-94.75, 73.54]], "z": 70.5, "h": 6, "bevel": 0.8},
+                      {"id": "sombrerete-2-pernos", "kind": "dots", "on": "sombrerete-2", "points": [[-92.63, 73.5, 75.66], [-75.66, 73.5, 92.63]]},
+                      {"id": "sombrerete-3", "kind": "prism", "axis": "y", "plan": [[-87.68, 66.47], [-66.47, 87.68], [-73.54, 94.75], [-94.75, 73.54]], "z": 106.5, "h": 6, "bevel": 0.8},
+                      {"id": "sombrerete-3-pernos", "kind": "dots", "on": "sombrerete-3", "points": [[-92.63, 109.5, 75.66], [-75.66, 109.5, 92.63]]},
+                      {"id": "sombrerete-4", "kind": "prism", "axis": "y", "plan": [[-87.68, 66.47], [-66.47, 87.68], [-73.54, 94.75], [-94.75, 73.54]], "z": 138.5, "h": 6, "bevel": 0.8},
+                      {"id": "sombrerete-4-pernos", "kind": "dots", "on": "sombrerete-4", "points": [[-92.63, 141.5, 75.66], [-75.66, 141.5, 92.63]]},
+                      {"id": "admision-0", "kind": "cylinder", "at": [-73.89, 8.5, 86.62], "r": 4.5, "h": 26, "axis": "y"},
+                      {"id": "admision-1", "kind": "cylinder", "at": [-73.89, 40.5, 86.62], "r": 4.5, "h": 30, "axis": "y"},
+                      {"id": "admision-2", "kind": "cylinder", "at": [-73.89, 76.5, 86.62], "r": 4.5, "h": 30, "axis": "y"},
+                      {"id": "admision-3", "kind": "cylinder", "at": [-73.89, 112.5, 86.62], "r": 4.5, "h": 26, "axis": "y"},
+                      {"id": "escape-0", "kind": "cylinder", "at": [-86.62, 8.5, 73.89], "r": 4.5, "h": 26, "axis": "y"},
+                      {"id": "escape-1", "kind": "cylinder", "at": [-86.62, 40.5, 73.89], "r": 4.5, "h": 30, "axis": "y"},
+                      {"id": "escape-2", "kind": "cylinder", "at": [-86.62, 76.5, 73.89], "r": 4.5, "h": 30, "axis": "y"},
+                      {"id": "escape-3", "kind": "cylinder", "at": [-86.62, 112.5, 73.89], "r": 4.5, "h": 26, "axis": "y"}
+                    ]
+                  },
+                  {
+                    "id": "tapa",
+                    "name": {"es": "Tapa de válvulas", "en": "Valve cover"},
+                    "note": {"es": "cierra la culata y lleva las bobinas", "en": "seals the head and carries the coils"},
+                    "explode": [-31.11, 0, 31.11],
+                    "stage": 3,
+                    "step": {"es": "tapas de válvulas fuera", "en": "valve covers off"},
+                    "paint": "lacquer",
+                    "parts": [
+                      {"id": "tapa", "kind": "prism", "axis": "y", "plan": [[-89.1, 60.81], [-60.81, 89.1], [-73.54, 101.82], [-101.82, 73.54]], "z": 2, "h": 144, "bevel": 2},
+                      {"id": "nervio-0", "kind": "line", "on": "tapa", "points": [[-96.17, 8, 79.2], [-96.17, 140, 79.2]]},
+                      {"id": "nervio-1", "kind": "line", "on": "tapa", "points": [[-79.2, 8, 96.17], [-79.2, 140, 96.17]]},
+                      {"id": "bobina-0", "kind": "cylinder", "at": [-87.68, 19.5, 87.68], "r": 4.5, "h": 7, "axis": [-0.71, 0, 0.71], "bevel": 1, "mount": ["tapa"]},
+                      {"id": "bobina-1", "kind": "cylinder", "at": [-87.68, 55.5, 87.68], "r": 4.5, "h": 7, "axis": [-0.71, 0, 0.71], "bevel": 1, "mount": ["tapa"]},
+                      {"id": "bobina-2", "kind": "cylinder", "at": [-87.68, 91.5, 87.68], "r": 4.5, "h": 7, "axis": [-0.71, 0, 0.71], "bevel": 1, "mount": ["tapa"]},
+                      {"id": "bobina-3", "kind": "cylinder", "at": [-87.68, 127.5, 87.68], "r": 4.5, "h": 7, "axis": [-0.71, 0, 0.71], "bevel": 1, "mount": ["tapa"]},
+                      {"id": "pernos", "kind": "dots", "on": "tapa", "points": [[-99.7, 7, 75.66], [-99.7, 141, 75.66], [-75.66, 7, 99.7], [-75.66, 141, 99.7]]}
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "bancada-der",
+            "name": {"es": "Bancada", "en": "Bank"},
+            "note": {"es": "cuatro cilindros por lado, inclinados 45°", "en": "four cylinders a side, leaning 45°"},
+            "parts": [
+              {"id": "fundicion", "kind": "prism", "axis": "y", "plan": [[29.7, 0], [0, 29.7], [43.13, 72.83], [72.83, 43.13]], "z": 11, "h": 144, "bevel": 1.2, "mount": ["carter-superior"]},
+              {"id": "pernos", "kind": "dots", "on": "fundicion", "points": [[70, 11.5, 45.96], [70, 45.5, 45.96], [45.96, 11.5, 70], [45.96, 45.5, 70], [70, 47.5, 45.96], [70, 81.5, 45.96], [45.96, 47.5, 70], [45.96, 81.5, 70], [70, 83.5, 45.96], [70, 117.5, 45.96], [45.96, 83.5, 70], [45.96, 117.5, 70], [70, 119.5, 45.96], [70, 153.5, 45.96], [45.96, 119.5, 70], [45.96, 153.5, 70]]},
+              {"id": "costilla-0", "kind": "line", "on": "fundicion", "points": [[43.13, 17, 13.44], [43.13, 149, 13.44]]},
+              {"id": "costilla-1", "kind": "line", "on": "fundicion", "points": [[55.86, 17, 26.16], [55.86, 149, 26.16]]}
+            ],
+            "children": [
+              {
+                "id": "culata",
+                "name": {"es": "Culata", "en": "Cylinder head"},
+                "note": {"es": "cierra los cilindros y lleva válvulas y levas", "en": "closes the cylinders, carries valves and cams"},
+                "explode": [29.7, 0, 29.7],
+                "stage": 5,
+                "step": {"es": "culatas fuera", "en": "cylinder heads off"},
+                "tone": "hi",
+                "paint": "aluminium",
+                "parts": [
+                  {"id": "cuerpo", "kind": "prism", "axis": "y", "plan": [[74.25, 41.72], [41.72, 74.25], [58.69, 91.22], [91.22, 58.69]], "z": 11, "h": 144, "bevel": 1.4},
+                  {"id": "escapes", "kind": "dots", "on": "cuerpo", "points": [[78.49, 19.5, 45.96], [78.49, 37.5, 45.96], [86.97, 19.5, 54.45], [86.97, 37.5, 54.45], [78.49, 55.5, 45.96], [78.49, 73.5, 45.96], [86.97, 55.5, 54.45], [86.97, 73.5, 54.45], [78.49, 91.5, 45.96], [78.49, 109.5, 45.96], [86.97, 91.5, 54.45], [86.97, 109.5, 54.45], [78.49, 127.5, 45.96], [78.49, 145.5, 45.96], [86.97, 127.5, 54.45], [86.97, 145.5, 54.45]]},
+                  {"id": "junta", "kind": "line", "on": "cuerpo", "points": [[75.66, 15, 43.13], [75.66, 151, 43.13]]}
+                ],
+                "children": [
+                  {
+                    "id": "valvulas",
+                    "name": {"es": "Válvulas", "en": "Valves"},
+                    "note": {"es": "cuatro por cilindro: dos de admisión, dos de escape", "en": "four per cylinder: two intake, two exhaust"},
+                    "paint": "steel",
+                    "mount": ["tapa.tapa"],
+                    "children": [
+                      {
+                        "id": "cilindro-{i}",
+                        "use": "valvulas-der",
+                        "at": [0, 28.5, 0],
+                        "repeat": {"count": 4, "step": [0, 36, 0]}
+                      }
+                    ]
+                  },
+                  {
+                    "id": "levas",
+                    "name": {"es": "Árboles de levas", "en": "Camshafts"},
+                    "note": {"es": "dos por culata: abren las válvulas", "en": "two per head: they open the valves"},
+                    "explode": [14.14, 0, 14.14],
+                    "stage": 4,
+                    "step": {"es": "árboles de levas fuera", "en": "camshafts out"},
+                    "paint": "steel",
+                    "mount": ["tapa.tapa"],
+                    "parts": [
+                      {"id": "sombrerete-0", "kind": "prism", "axis": "y", "plan": [[87.68, 66.47], [66.47, 87.68], [73.54, 94.75], [94.75, 73.54]], "z": 11.5, "h": 6, "bevel": 0.8},
+                      {"id": "sombrerete-0-pernos", "kind": "dots", "on": "sombrerete-0", "points": [[92.63, 14.5, 75.66], [75.66, 14.5, 92.63]]},
+                      {"id": "sombrerete-1", "kind": "prism", "axis": "y", "plan": [[87.68, 66.47], [66.47, 87.68], [73.54, 94.75], [94.75, 73.54]], "z": 43.5, "h": 6, "bevel": 0.8},
+                      {"id": "sombrerete-1-pernos", "kind": "dots", "on": "sombrerete-1", "points": [[92.63, 46.5, 75.66], [75.66, 46.5, 92.63]]},
+                      {"id": "sombrerete-2", "kind": "prism", "axis": "y", "plan": [[87.68, 66.47], [66.47, 87.68], [73.54, 94.75], [94.75, 73.54]], "z": 79.5, "h": 6, "bevel": 0.8},
+                      {"id": "sombrerete-2-pernos", "kind": "dots", "on": "sombrerete-2", "points": [[92.63, 82.5, 75.66], [75.66, 82.5, 92.63]]},
+                      {"id": "sombrerete-3", "kind": "prism", "axis": "y", "plan": [[87.68, 66.47], [66.47, 87.68], [73.54, 94.75], [94.75, 73.54]], "z": 115.5, "h": 6, "bevel": 0.8},
+                      {"id": "sombrerete-3-pernos", "kind": "dots", "on": "sombrerete-3", "points": [[92.63, 118.5, 75.66], [75.66, 118.5, 92.63]]},
+                      {"id": "sombrerete-4", "kind": "prism", "axis": "y", "plan": [[87.68, 66.47], [66.47, 87.68], [73.54, 94.75], [94.75, 73.54]], "z": 147.5, "h": 6, "bevel": 0.8},
+                      {"id": "sombrerete-4-pernos", "kind": "dots", "on": "sombrerete-4", "points": [[92.63, 150.5, 75.66], [75.66, 150.5, 92.63]]},
+                      {"id": "admision-0", "kind": "cylinder", "at": [73.89, 17.5, 86.62], "r": 4.5, "h": 26, "axis": "y"},
+                      {"id": "admision-1", "kind": "cylinder", "at": [73.89, 49.5, 86.62], "r": 4.5, "h": 30, "axis": "y"},
+                      {"id": "admision-2", "kind": "cylinder", "at": [73.89, 85.5, 86.62], "r": 4.5, "h": 30, "axis": "y"},
+                      {"id": "admision-3", "kind": "cylinder", "at": [73.89, 121.5, 86.62], "r": 4.5, "h": 26, "axis": "y"},
+                      {"id": "escape-0", "kind": "cylinder", "at": [86.62, 17.5, 73.89], "r": 4.5, "h": 26, "axis": "y"},
+                      {"id": "escape-1", "kind": "cylinder", "at": [86.62, 49.5, 73.89], "r": 4.5, "h": 30, "axis": "y"},
+                      {"id": "escape-2", "kind": "cylinder", "at": [86.62, 85.5, 73.89], "r": 4.5, "h": 30, "axis": "y"},
+                      {"id": "escape-3", "kind": "cylinder", "at": [86.62, 121.5, 73.89], "r": 4.5, "h": 26, "axis": "y"}
+                    ]
+                  },
+                  {
+                    "id": "tapa",
+                    "name": {"es": "Tapa de válvulas", "en": "Valve cover"},
+                    "note": {"es": "cierra la culata y lleva las bobinas", "en": "seals the head and carries the coils"},
+                    "explode": [31.11, 0, 31.11],
+                    "stage": 3,
+                    "step": {"es": "tapas de válvulas fuera", "en": "valve covers off"},
+                    "paint": "lacquer",
+                    "parts": [
+                      {"id": "tapa", "kind": "prism", "axis": "y", "plan": [[89.1, 60.81], [60.81, 89.1], [73.54, 101.82], [101.82, 73.54]], "z": 11, "h": 144, "bevel": 2},
+                      {"id": "nervio-0", "kind": "line", "on": "tapa", "points": [[96.17, 17, 79.2], [96.17, 149, 79.2]]},
+                      {"id": "nervio-1", "kind": "line", "on": "tapa", "points": [[79.2, 17, 96.17], [79.2, 149, 96.17]]},
+                      {"id": "bobina-0", "kind": "cylinder", "at": [87.68, 28.5, 87.68], "r": 4.5, "h": 7, "axis": [0.71, 0, 0.71], "bevel": 1, "mount": ["tapa"]},
+                      {"id": "bobina-1", "kind": "cylinder", "at": [87.68, 64.5, 87.68], "r": 4.5, "h": 7, "axis": [0.71, 0, 0.71], "bevel": 1, "mount": ["tapa"]},
+                      {"id": "bobina-2", "kind": "cylinder", "at": [87.68, 100.5, 87.68], "r": 4.5, "h": 7, "axis": [0.71, 0, 0.71], "bevel": 1, "mount": ["tapa"]},
+                      {"id": "bobina-3", "kind": "cylinder", "at": [87.68, 136.5, 87.68], "r": 4.5, "h": 7, "axis": [0.71, 0, 0.71], "bevel": 1, "mount": ["tapa"]},
+                      {"id": "pernos", "kind": "dots", "on": "tapa", "points": [[99.7, 16, 75.66], [99.7, 150, 75.66], [75.66, 16, 99.7], [75.66, 150, 99.7]]}
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "admision",
+        "name": {"es": "Colector de admisión", "en": "Intake"},
+        "note": {"es": "ocho trompetas, una por cilindro", "en": "eight trumpets, one per cylinder"},
+        "explode": [0, 0, 62],
+        "stage": 2,
+        "step": {"es": "colector de admisión arriba", "en": "intake lifted"},
+        "tone": "hi",
+        "mount": ["caja-aire.caja"],
+        "parts": [
+          {"id": "cuna", "kind": "prism", "axis": "y", "plan": [[-20.3, 50], [20.3, 50], [42.3, 72], [-42.3, 72]], "z": 14, "h": 129, "bevel": 1, "mount": ["bloque.bancada-izq.fundicion", "bloque.bancada-der.fundicion"]},
+          {"id": "plenum", "kind": "box", "at": [-38, 14, 72], "size": [76, 129, 6], "radius": 4, "bevel": 1},
+          {"id": "plenum-pernos", "kind": "dots", "on": "plenum", "points": [[-33, 19, 78], [-33, 50, 78], [-33, 78.5, 78], [-33, 107, 78], [-33, 138, 78], [33, 19, 78], [33, 50, 78], [33, 78.5, 78], [33, 107, 78], [33, 138, 78]]},
+          {"id": "trompeta-izq-{i}", "kind": "cone", "at": [-19, 19.5, 78], "r": 6.5, "r2": 9.5, "h": 22, "repeat": {"count": 4, "step": [0, 36, 0]}},
+          {"id": "labio-izq-{i}", "kind": "cylinder", "at": [-19, 19.5, 100], "r": 10.5, "h": 1.6, "bevel": 0.5, "repeat": {"count": 4, "step": [0, 36, 0]}},
+          {"id": "trompeta-der-{i}", "kind": "cone", "at": [19, 28.5, 78], "r": 6.5, "r2": 9.5, "h": 22, "repeat": {"count": 4, "step": [0, 36, 0]}},
+          {"id": "labio-der-{i}", "kind": "cylinder", "at": [19, 28.5, 100], "r": 10.5, "h": 1.6, "bevel": 0.5, "repeat": {"count": 4, "step": [0, 36, 0]}}
+        ],
+        "children": [
+          {
+            "id": "caja-aire",
+            "name": {"es": "Caja de aire", "en": "Airbox"},
+            "note": {"es": "fibra de carbono: alimenta las trompetas", "en": "carbon fibre: it feeds the trumpets"},
+            "explode": [0, -56, 36],
+            "stage": 1,
+            "step": {"es": "caja de aire fuera", "en": "airbox off"},
+            "tone": "mid",
+            "paint": "carbon",
+            "parts": [
+              {"id": "caja", "kind": "box", "at": [-34, 12, 78], "size": [68, 133, 30], "radius": 10, "bevel": 2.5},
+              {"id": "toma", "kind": "cylinder", "at": [0, 145, 96], "r": 9, "h": 12, "axis": "y", "bevel": 1},
+              {"id": "toma-labio", "kind": "cylinder", "at": [0, 157, 96], "r": 11, "h": 2, "axis": "y", "bevel": 0.5},
+              {"id": "costuras", "kind": "line", "on": "caja", "points": [[-24, 20, 108], [-24, 137, 108]]},
+              {"id": "costuras-2", "kind": "line", "on": "caja", "points": [[24, 20, 108], [24, 137, 108]]},
+              {"id": "broches", "kind": "dots", "on": "caja", "points": [[34, 24, 92], [34, 60, 92], [34, 96, 92], [34, 132, 92]]}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "carter",
+        "name": {"es": "Cárter", "en": "Oil pan"},
+        "note": {"es": "recoge el aceite bajo el cigüeñal", "en": "holds the oil under the crankshaft"},
+        "explode": [0, 0, -150],
+        "stage": 6,
+        "step": {"es": "cárter abajo", "en": "oil pan dropped"},
+        "tone": "mid",
+        "parts": [
+          {"id": "brida", "kind": "box", "at": [-44, 0, -34], "size": [88, 155, 4], "radius": 2, "bevel": 0.6},
+          {"id": "pernos", "kind": "dots", "on": "brida", "points": [[44, 8, -32], [44, 26, -32], [44, 44, -32], [44, 62, -32], [44, 80, -32], [44, 98, -32], [44, 116, -32], [44, 134, -32], [44, 152, -32]]},
+          {"id": "pozo", "kind": "box", "at": [-36, 8, -56], "size": [72, 139, 22], "radius": 8, "bevel": 1.5},
+          {"id": "aleta-0", "kind": "line", "on": "pozo", "points": [[36, 24, -52], [36, 24, -38]]},
+          {"id": "aleta-1", "kind": "line", "on": "pozo", "points": [[36, 40, -52], [36, 40, -38]]},
+          {"id": "aleta-2", "kind": "line", "on": "pozo", "points": [[36, 56, -52], [36, 56, -38]]},
+          {"id": "aleta-3", "kind": "line", "on": "pozo", "points": [[36, 72, -52], [36, 72, -38]]},
+          {"id": "aleta-4", "kind": "line", "on": "pozo", "points": [[36, 88, -52], [36, 88, -38]]},
+          {"id": "aleta-5", "kind": "line", "on": "pozo", "points": [[36, 104, -52], [36, 104, -38]]},
+          {"id": "aleta-6", "kind": "line", "on": "pozo", "points": [[36, 120, -52], [36, 120, -38]]},
+          {"id": "aleta-7", "kind": "line", "on": "pozo", "points": [[36, 136, -52], [36, 136, -38]]}
+        ]
+      },
+      {
+        "id": "tren",
+        "name": {"es": "Tren alternativo", "en": "Rotating assembly"},
+        "note": {"es": "cigüeñal, bielas y pistones", "en": "crankshaft, rods and pistons"},
+        "explode": [0, 0, -122],
+        "stage": 7,
+        "step": {"es": "cigüeñal, bielas y pistones abajo", "en": "crankshaft, rods and pistons out"},
+        "mount": ["bloque.carter-superior", "bloque.bancada-izq.fundicion", "bloque.bancada-der.fundicion"],
+        "children": [
+          {
+            "id": "ciguenal",
+            "name": {"es": "Cigüeñal", "en": "Crankshaft"},
+            "note": {"es": "plano: codos a 180°, como en competición", "en": "flat-plane: throws at 180°, as in racing"},
+            "tone": "hi",
+            "paint": "steel",
+            "parts": [
+              {"id": "apoyo-trasero", "kind": "cylinder", "at": [0, 0, 0], "r": 8, "h": 10, "axis": "y"},
+              {"id": "apoyo-delantero", "kind": "cylinder", "at": [0, 154, 0], "r": 8, "h": 1, "axis": "y"},
+              {"id": "nariz", "kind": "cylinder", "at": [0, 155, 0], "r": 6, "h": 12, "axis": "y"},
+              {"id": "polea", "kind": "cylinder", "at": [0, 167, 0], "r": 20, "h": 7, "axis": "y", "bevel": 1.2},
+              {"id": "polea-cubo", "kind": "cylinder", "at": [0, 174, 0], "r": 7, "h": 2, "axis": "y", "bevel": 0.5},
+              {"id": "polea-marcas", "kind": "dots", "on": "polea", "points": [[0, 174, 16], [11.3, 174, 11.3], [-11.3, 174, 11.3]]}
+            ],
+            "children": [
+              {
+                "id": "par-{i}",
+                "at": [0, 24, 0],
+                "repeat": {"count": 2, "step": [0, 72, 0]},
+                "children": [
+                  {
+                    "id": "codo-a",
+                    "use": "codo-arriba"
+                  },
+                  {
+                    "id": "codo-b",
+                    "use": "codo-abajo",
+                    "at": [0, 36, 0]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "pistones",
+            "name": {"es": "Pistones y bielas", "en": "Pistons and rods"},
+            "note": {"es": "dos bielas por codo: una de cada bancada", "en": "two rods per throw, one from each bank"},
+            "tone": "lit",
+            "paint": "aluminium",
+            "children": [
+              {
+                "id": "par-{i}",
+                "at": [0, 24, 0],
+                "repeat": {"count": 2, "step": [0, 72, 0]},
+                "children": [
+                  {
+                    "id": "izq-a",
+                    "use": "piston-izq-arriba",
+                    "mount": ["ciguenal.par-{i}.codo-a.muñon-izq"]
+                  },
+                  {
+                    "id": "der-a",
+                    "use": "piston-der-arriba",
+                    "mount": ["ciguenal.par-{i}.codo-a.muñon-der"]
+                  },
+                  {
+                    "id": "izq-b",
+                    "use": "piston-izq-abajo",
+                    "at": [0, 36, 0],
+                    "mount": ["ciguenal.par-{i}.codo-b.muñon-izq"]
+                  },
+                  {
+                    "id": "der-b",
+                    "use": "piston-der-abajo",
+                    "at": [0, 36, 0],
+                    "mount": ["ciguenal.par-{i}.codo-b.muñon-der"]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "defs": {
+    "codo-arriba": {
+      "parts": [
+        {"id": "brazo-trasero", "kind": "prism", "axis": "y", "plan": [[-20, -6], [-15, -12], [-7, -19], [0, -21], [7, -19], [15, -12], [20, -6], [10, 14], [6, 18], [0, 19.5], [-6, 18], [-10, 14]], "z": -14, "h": 5, "bevel": 0.8},
+        {"id": "muñon-izq", "kind": "cylinder", "at": [0, -9, 12], "r": 7, "h": 9, "axis": "y"},
+        {"id": "muñon-der", "kind": "cylinder", "at": [0, 0, 12], "r": 7, "h": 9, "axis": "y"},
+        {"id": "brazo-delantero", "kind": "prism", "axis": "y", "plan": [[-20, -6], [-15, -12], [-7, -19], [0, -21], [7, -19], [15, -12], [20, -6], [10, 14], [6, 18], [0, 19.5], [-6, 18], [-10, 14]], "z": 9, "h": 5, "bevel": 0.8},
+        {"id": "apoyo", "kind": "cylinder", "at": [0, 14, 0], "r": 8, "h": 8, "axis": "y"}
+      ]
+    },
+    "codo-abajo": {
+      "parts": [
+        {"id": "brazo-trasero", "kind": "prism", "axis": "y", "plan": [[-20, 6], [-15, 12], [-7, 19], [0, 21], [7, 19], [15, 12], [20, 6], [10, -14], [6, -18], [0, -19.5], [-6, -18], [-10, -14]], "z": -14, "h": 5, "bevel": 0.8},
+        {"id": "muñon-izq", "kind": "cylinder", "at": [0, -9, -12], "r": 7, "h": 9, "axis": "y"},
+        {"id": "muñon-der", "kind": "cylinder", "at": [0, 0, -12], "r": 7, "h": 9, "axis": "y"},
+        {"id": "brazo-delantero", "kind": "prism", "axis": "y", "plan": [[-20, 6], [-15, 12], [-7, 19], [0, 21], [7, 19], [15, 12], [20, 6], [10, -14], [6, -18], [0, -19.5], [-6, -18], [-10, -14]], "z": 9, "h": 5, "bevel": 0.8},
+        {"id": "apoyo", "kind": "cylinder", "at": [0, 14, 0], "r": 8, "h": 8, "axis": "y"}
+      ]
+    },
+    "piston-izq-arriba": {
+      "parts": [
+        {"id": "cabeza", "kind": "cylinder", "at": [0, -9, 12], "r": 9.5, "h": 9, "axis": "y", "tone": "hi", "mount": ["cana-baja"]},
+        {"id": "cana-baja", "kind": "cylinder", "at": [0, -4.5, 12], "r": 3.5, "h": 15.6, "axis": [-42.28, 0, 30.28], "tone": "hi"},
+        {"id": "cana-alta", "kind": "cylinder", "at": [-12.68, -4.5, 21.08], "r": 3.5, "h": 36.4, "axis": [-42.28, 0, 30.28], "tone": "hi", "mount": ["falda"]},
+        {"id": "falda", "kind": "cylinder", "at": [-36.62, -4.5, 36.62], "r": 13.4, "h": 15, "axis": [-0.71, 0, 0.71]},
+        {"id": "corona", "kind": "cylinder", "at": [-47.23, -4.5, 47.23], "r": 14, "h": 6, "axis": [-0.71, 0, 0.71], "bevel": 0.8}
+      ]
+    },
+    "piston-der-arriba": {
+      "parts": [
+        {"id": "cabeza", "kind": "cylinder", "at": [0, 0, 12], "r": 9.5, "h": 9, "axis": "y", "tone": "hi", "mount": ["cana-baja"]},
+        {"id": "cana-baja", "kind": "cylinder", "at": [0, 4.5, 12], "r": 3.5, "h": 15.6, "axis": [42.28, 0, 30.28], "tone": "hi"},
+        {"id": "cana-alta", "kind": "cylinder", "at": [12.68, 4.5, 21.08], "r": 3.5, "h": 36.4, "axis": [42.28, 0, 30.28], "tone": "hi", "mount": ["falda"]},
+        {"id": "falda", "kind": "cylinder", "at": [36.62, 4.5, 36.62], "r": 13.4, "h": 15, "axis": [0.71, 0, 0.71]},
+        {"id": "corona", "kind": "cylinder", "at": [47.23, 4.5, 47.23], "r": 14, "h": 6, "axis": [0.71, 0, 0.71], "bevel": 0.8}
+      ]
+    },
+    "piston-izq-abajo": {
+      "parts": [
+        {"id": "cabeza", "kind": "cylinder", "at": [0, -9, -12], "r": 9.5, "h": 9, "axis": "y", "tone": "hi", "mount": ["cana-baja"]},
+        {"id": "cana-baja", "kind": "cylinder", "at": [0, -4.5, -12], "r": 3.5, "h": 26, "axis": [-30.28, 0, 42.28], "tone": "hi"},
+        {"id": "cana-alta", "kind": "cylinder", "at": [-15.14, -4.5, 9.14], "r": 3.5, "h": 26, "axis": [-30.28, 0, 42.28], "tone": "hi", "mount": ["falda"]},
+        {"id": "falda", "kind": "cylinder", "at": [-24.62, -4.5, 24.62], "r": 13.4, "h": 15, "axis": [-0.71, 0, 0.71]},
+        {"id": "corona", "kind": "cylinder", "at": [-35.23, -4.5, 35.23], "r": 14, "h": 6, "axis": [-0.71, 0, 0.71], "bevel": 0.8}
+      ]
+    },
+    "piston-der-abajo": {
+      "parts": [
+        {"id": "cabeza", "kind": "cylinder", "at": [0, 0, -12], "r": 9.5, "h": 9, "axis": "y", "tone": "hi", "mount": ["cana-baja"]},
+        {"id": "cana-baja", "kind": "cylinder", "at": [0, 4.5, -12], "r": 3.5, "h": 26, "axis": [30.28, 0, 42.28], "tone": "hi"},
+        {"id": "cana-alta", "kind": "cylinder", "at": [15.14, 4.5, 9.14], "r": 3.5, "h": 26, "axis": [30.28, 0, 42.28], "tone": "hi", "mount": ["falda"]},
+        {"id": "falda", "kind": "cylinder", "at": [24.62, 4.5, 24.62], "r": 13.4, "h": 15, "axis": [0.71, 0, 0.71]},
+        {"id": "corona", "kind": "cylinder", "at": [35.23, 4.5, 35.23], "r": 14, "h": 6, "axis": [0.71, 0, 0.71], "bevel": 0.8}
+      ]
+    },
+    "valvulas-izq": {
+      "parts": [
+        {"id": "adm-a", "kind": "cylinder", "at": [-68.59, -7, 81.32], "r": 4.2, "h": 3, "axis": [-0.71, 0, 0.71], "bevel": 0.6},
+        {"id": "adm-b", "kind": "cylinder", "at": [-68.59, 7, 81.32], "r": 4.2, "h": 3, "axis": [-0.71, 0, 0.71], "bevel": 0.6},
+        {"id": "esc-a", "kind": "cylinder", "at": [-81.32, -7, 68.59], "r": 4.2, "h": 3, "axis": [-0.71, 0, 0.71], "bevel": 0.6},
+        {"id": "esc-b", "kind": "cylinder", "at": [-81.32, 7, 68.59], "r": 4.2, "h": 3, "axis": [-0.71, 0, 0.71], "bevel": 0.6}
+      ]
+    },
+    "valvulas-der": {
+      "parts": [
+        {"id": "adm-a", "kind": "cylinder", "at": [68.59, -7, 81.32], "r": 4.2, "h": 3, "axis": [0.71, 0, 0.71], "bevel": 0.6},
+        {"id": "adm-b", "kind": "cylinder", "at": [68.59, 7, 81.32], "r": 4.2, "h": 3, "axis": [0.71, 0, 0.71], "bevel": 0.6},
+        {"id": "esc-a", "kind": "cylinder", "at": [81.32, -7, 68.59], "r": 4.2, "h": 3, "axis": [0.71, 0, 0.71], "bevel": 0.6},
+        {"id": "esc-b", "kind": "cylinder", "at": [81.32, 7, 68.59], "r": 4.2, "h": 3, "axis": [0.71, 0, 0.71], "bevel": 0.6}
+      ]
+    }
+  }
+}

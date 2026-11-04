@@ -26,7 +26,18 @@ function checkOptional(rep: Reporter, v: unknown, path: string, field: string, i
   if (v < 0) rep.add("number-negative", path, { id, field, got: v });
 }
 
-function checkPlan(rep: Reporter, plan: unknown, path: string, id: string): void {
+/** `x`, `y` o `z`; un cilindro o un cono admiten además una dirección cualquiera (`[1, 0, 1]`), que no sea cero. */
+function checkAxis(rep: Reporter, axis: unknown, path: string, vector: boolean): void {
+  if (vector && Array.isArray(axis)) {
+    if (checkVector(rep, axis, path, "axis") && axis.every((v) => v === 0)) rep.add("axis-zero", path);
+    return;
+  }
+  if (!AXES.includes(axis as string)) {
+    rep.add("option-invalid", path, { field: "axis", got: show(axis).replace(/^"|"$/g, ""), expected: vector ? `${AXES.join(", ")}, [x, y, z]` : AXES.join(", ") });
+  }
+}
+
+function checkPlan(rep: Reporter, plan: unknown, path: string, id: string, oriented = true): void {
   if (!Array.isArray(plan)) return void rep.add("type-invalid", path, { field: "plan", expected: "list", got: show(plan) });
   if (plan.length < 3) rep.add("prism-plan-short", path, { id, got: plan.length });
   let ok = plan.length >= 3;
@@ -40,7 +51,7 @@ function checkPlan(rep: Reporter, plan: unknown, path: string, id: string): void
     area2 += x0 * y1 - x1 * y0;
   }
   if (Math.abs(area2) < 1e-9) return void rep.add("prism-degenerate", path, { id });
-  if (area2 < 0) rep.add("prism-clockwise", path, { id });
+  if (area2 < 0 && oriented) rep.add("prism-clockwise", path, { id });
   // Convexa: todos los giros van hacia el mismo lado que el área (se toleran los tramos rectos).
   const sign = Math.sign(area2);
   const concave = pts.some((a, j) => {
@@ -57,7 +68,7 @@ function checkCount(rep: Reporter, count: unknown, path: string, field: string, 
   else if (!isNum(count) || !Number.isInteger(count) || count < 1) rep.add("count-invalid", path, { id, field, got: show(count) });
 }
 
-function checkRepeat(rep: Reporter, r: unknown, path: string, id: string): void {
+export function checkRepeat(rep: Reporter, r: unknown, path: string, id: string): void {
   if (!isObj(r)) return void rep.add("type-invalid", path, { field: "repeat", expected: "object", got: show(r) });
   checkKeys(rep, r, REPEAT_KEYS, path);
   const { count, step, from } = r;
@@ -68,7 +79,7 @@ function checkRepeat(rep: Reporter, r: unknown, path: string, id: string): void 
 }
 
 /** Valida una pieza suelta. Devuelve su `kind` si es uno conocido (las demás comprobaciones solo corren con esas). */
-function checkPart(rep: Reporter, p: Record<string, unknown>, path: string): string | undefined {
+export function checkPart(rep: Reporter, p: Record<string, unknown>, path: string): string | undefined {
   const id = typeof p["id"] === "string" && p["id"] !== "" ? p["id"] : path;
   if (typeof p["id"] !== "string" || p["id"] === "") rep.add("part-id-missing", `${path}.id`);
   const kind = p["kind"];
@@ -90,13 +101,17 @@ function checkPart(rep: Reporter, p: Record<string, unknown>, path: string): str
     }
     checkOptional(rep, p["radius"], `${path}.radius`, "radius", id);
     checkOptional(rep, p["bevel"], `${path}.bevel`, "bevel", id);
-  } else if (kind === "cylinder") {
+  } else if (kind === "cylinder" || kind === "cone") {
     if (has("at")) checkVector(rep, p["at"], `${path}.at`, "at");
     for (const f of ["r", "h"]) if (has(f)) checkSize(rep, p[f], `${path}.${f}`, f, id);
-    if (has("axis") && !AXES.includes(p["axis"] as string)) rep.add("option-invalid", `${path}.axis`, { field: "axis", got: show(p["axis"]).replace(/^"|"$/g, ""), expected: AXES.join(", ") });
+    // El otro extremo de un cono puede ser una punta (0).
+    if (kind === "cone") checkOptional(rep, p["r2"], `${path}.r2`, "r2", id);
+    if (has("axis")) checkAxis(rep, p["axis"], `${path}.axis`, true);
     checkOptional(rep, p["bevel"], `${path}.bevel`, "bevel", id);
   } else if (kind === "prism") {
-    if (has("plan")) checkPlan(rep, p["plan"], `${path}.plan`, id);
+    if (has("axis")) checkAxis(rep, p["axis"], `${path}.axis`, false);
+    // Con `axis` en x o y la planta se orienta sola: el sentido no importa.
+    if (has("plan")) checkPlan(rep, p["plan"], `${path}.plan`, id, !has("axis") || p["axis"] === "z");
     if (has("z") && !isNum(p["z"])) rep.add("number-invalid", `${path}.z`, { field: "z", got: show(p["z"]) });
     if (has("h")) checkSize(rep, p["h"], `${path}.h`, "h", id);
     checkOptional(rep, p["bevel"], `${path}.bevel`, "bevel", id);

@@ -1,4 +1,5 @@
 import { drawScene } from "../core/scene.ts";
+import { assembleTree, type Catalog } from "../core/tree.ts";
 import type { FigureSpec } from "../core/spec.ts";
 import { retarget, type OrbitHandle } from "../runtime/index.ts";
 
@@ -10,6 +11,8 @@ export interface OrbitOptions {
   maxElevation?: number;
   /** Nombre de la copia en el DOM (ver `RenderOptions.instance`); por defecto, el que ya tiene el SVG. */
   instance?: string;
+  /** Para una spec anidada que usa piezas de un catálogo (`isofig/kit`): el mismo que se le pasó a `renderFigure`. */
+  catalog?: Catalog;
 }
 
 export type Orbit = OrbitHandle;
@@ -29,7 +32,9 @@ export function enableOrbit(el: HTMLElement, spec: FigureSpec, options: OrbitOpt
   const range = options.range ?? 40;
   const minEl = options.minElevation ?? 12;
   const maxEl = options.maxElevation ?? 60;
-  const scale = drawScene(spec, lang).cam.scale;
+  // Una spec anidada se arma una vez: cada cuadro del giro solo redibuja.
+  const flat = spec.root ? assembleTree(spec, { catalog: options.catalog }).spec : spec;
+  const scale = drawScene(flat, lang).cam.scale;
   let az = base.az;
   let elv = base.el;
   let frame = 0;
@@ -37,10 +42,10 @@ export function enableOrbit(el: HTMLElement, spec: FigureSpec, options: OrbitOpt
 
   const paint = () => {
     frame = 0;
-    const s = drawScene(spec, lang, { azimuth: az, elevation: elv, scale, instance });
+    const s = drawScene(flat, lang, { azimuth: az, elevation: elv, scale, instance });
     const scene = svg.querySelector(".isofig-scene");
     if (scene) scene.outerHTML = `<g class="isofig-scene">${s.markup}</g>`;
-    retarget(el, s.basis, s.spins);
+    retarget(el, s.basis, s.spins, s.reorder);
   };
   const set = (a: number, e: number) => {
     const na = clamp(a, base.az - range, base.az + range);

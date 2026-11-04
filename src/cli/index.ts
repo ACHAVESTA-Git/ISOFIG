@@ -9,6 +9,8 @@ import { checkModel } from "../core/check.ts";
 import { fromCompose } from "../core/importers/compose.ts";
 import { formatIssue, makeIssue, messageLang, PREFIXES, type Issue } from "../core/issues.ts";
 import { renderFigure } from "../core/render.ts";
+import { assembleTree, type Catalog } from "../core/tree.ts";
+import { catalog } from "../kit/index.ts";
 import { budgetIssues, measure } from "../node/index.ts";
 import type { FigureSpec } from "../core/spec.ts";
 import { validateSpec } from "../core/validate.ts";
@@ -208,15 +210,17 @@ async function main() {
     print(invalid);
     process.exit(1);
   }
-  // --set param=valor fija el arranque de un control, para previsualizar cada estado sin tocar la spec.
+  // --set param=valor fija el arranque de un control, para previsualizar cada estado sin tocar la spec. Alcanza también
+  // los controles que añade el despiece de una spec anidada («explode», «pick»).
+  const flat = assembleTree(spec, { catalog: catalog as Catalog }).spec;
   const notes: Issue[] = [];
+  const start: Record<string, number> = {};
   for (const pair of values.set ?? []) {
     const [id, v] = pair.split("=");
-    const p = spec.params?.find((q) => q.id === id);
-    if (p) p.value = Number(v);
+    if (flat.params?.some((q) => q.id === id)) start[id] = Number(v);
     else notes.push(makeIssue(lang, "set-unknown-param", "", { id }));
   }
-  const r = renderFigure(spec, { lang: values.lang, n: values.n, orbit: values.orbit });
+  const r = renderFigure(spec, { lang: values.lang, n: values.n, orbit: values.orbit, values: start });
   const size = measure(r.html);
   const issues = [...notes, ...r.issues, ...budgetIssues(spec, size, lang)];
 
@@ -225,7 +229,7 @@ async function main() {
       issues.push(makeIssue(lang, "presets-need-model", ""));
     } else if (values.model && !r.errors.length) {
       const seconds = Number(values.seconds);
-      issues.push(...checkModel(spec, await loadModel(values.model), { lang, presets: values.presets, ...(seconds > 0 ? { seconds } : {}) }));
+      issues.push(...checkModel(flat, await loadModel(values.model), { lang, presets: values.presets, ...(seconds > 0 ? { seconds } : {}) }));
     }
     print(issues);
     console.error(`${spec.id}: ${(size.bytes / 1024).toFixed(1)} KB, ${(size.gzip / 1024).toFixed(1)} KB gzip`);

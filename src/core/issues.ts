@@ -17,7 +17,7 @@ type VarName =
   | "field" | "expected" | "got" | "key" | "where" | "suggest" | "known" | "id" | "kinds" | "kind" | "first" | "more" | "on"
   | "mount" | "a" | "b" | "group" | "min" | "max" | "value" | "shown" | "step" | "implicit" | "last" | "param" | "length"
   | "count" | "total" | "text" | "zoomed" | "mobile" | "need" | "near" | "kb" | "budget" | "reason" | "when" | "list"
-  | "hidden" | "runs" | "at" | "seconds" | "paint" | "vision" | "theme" | "base";
+  | "hidden" | "runs" | "at" | "seconds" | "paint" | "vision" | "theme" | "base" | "use";
 export type V = Partial<Record<VarName, string | number>>;
 type Q = (s: string | number | undefined) => string;
 /** Traduce lo que se esperaba (`array`, `positive`…): los códigos de `EXPECTED` no cambian, el texto sí. */
@@ -160,6 +160,59 @@ const CATALOG = {
     en: (v, q) => `${q(v.id)} is mounted in ${q(v.mount)}, which does not exist.`,
     es: (v, q) => `${q(v.id)} va encajada en ${q(v.mount)}, que no existe.`,
   },
+  "axis-zero": {
+    severity: "error",
+    en: () => "The axis is [0, 0, 0]: it has no direction.",
+    es: () => "El eje es [0, 0, 0]: no tiene dirección.",
+  },
+
+  // Especificación anidada (root, defs, use)
+  "node-id-missing": {
+    severity: "error",
+    en: () => "Every node needs an id: it names its parts and its group.",
+    es: () => "Cada nodo necesita un id: nombra sus piezas y su grupo.",
+  },
+  "node-id-duplicate": {
+    severity: "error",
+    en: (v, q) => `Two sibling nodes are called ${q(v.id)} (first at ${v.first}): their parts would share ids.`,
+    es: (v, q) => `Dos nodos hermanos se llaman ${q(v.id)} (el primero en ${v.first}): sus piezas compartirían ids.`,
+  },
+  "use-unknown": {
+    severity: "error",
+    en: (v, q) => `${q(v.id)} uses ${q(v.use)}, which is neither in defs nor in the catalog.${v.suggest ? ` Did you mean ${q(v.suggest)}?` : ""}`,
+    es: (v, q) => `${q(v.id)} usa ${q(v.use)}, que no está en defs ni en el catálogo.${v.suggest ? ` ¿Querías ${q(v.suggest)}?` : ""}`,
+  },
+  "use-cycle": {
+    severity: "error",
+    en: (v, q) => `${q(v.id)} uses itself: ${v.use}.`,
+    es: (v, q) => `${q(v.id)} se usa a sí mismo: ${v.use}.`,
+  },
+  "use-failed": {
+    severity: "error",
+    en: (v, q) => `${q(v.id)} uses ${q(v.use)} and the catalog rejected its options: ${v.reason}`,
+    es: (v, q) => `${q(v.id)} usa ${q(v.use)} y el catálogo rechazó sus opciones: ${v.reason}`,
+  },
+  "root-repeat": {
+    severity: "warning",
+    en: () => "The root node cannot repeat: its repeat is ignored.",
+    es: () => "El nodo raíz no se repite: su repeat se ignora.",
+  },
+  "stage-invalid": {
+    severity: "error",
+    en: (v) => `stage must be a finite number, got ${v.got}.`,
+    es: (v) => `stage debe ser un número finito; llegó ${v.got}.`,
+  },
+  "stage-without-explode": {
+    severity: "warning",
+    en: (v, q) => `${q(v.id)} has a stage but no explode, and nothing below it moves: the stage does nothing.`,
+    es: (v, q) => `${q(v.id)} tiene stage pero no explode, y nada debajo se mueve: el stage no hace nada.`,
+  },
+  "explode-on-root": {
+    severity: "warning",
+    en: () => "The root node has explode: it has nothing to move away from, so it is ignored.",
+    es: () => "El nodo raíz tiene explode: no tiene de qué separarse, así que se ignora.",
+  },
+
   "size-negative": {
     severity: "error",
     en: (v, q) => `${q(v.field)} of ${q(v.id)} is ${v.got}: sizes must be positive.`,
@@ -317,9 +370,14 @@ const CATALOG = {
     es: (v, q) => `Este bind de ${q(v.group)} no tiene move, spin ni fade: no hace nada.`,
   },
   "bind-with-model": {
+    severity: "info",
+    en: () => "The figure has a model and bind: each bind adds its move, spin or fade to what the model sets for that group.",
+    es: () => "La figura tiene modelo y bind: cada bind suma su movimiento, giro u opacidad a lo que el modelo fije en ese grupo.",
+  },
+  "bind-window-invalid": {
     severity: "warning",
-    en: () => "bind is ignored when the figure has a model: the model has to move the groups.",
-    es: () => "bind se ignora cuando la figura tiene modelo: el modelo es quien debe mover los grupos.",
+    en: (v) => `bind.win is [${v.a}, ${v.b}]: the start must be below the end.`,
+    es: (v) => `bind.win es [${v.a}, ${v.b}]: el inicio debe ser menor que el final.`,
   },
   "preset-unknown-param": {
     severity: "warning",
