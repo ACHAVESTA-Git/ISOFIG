@@ -26,6 +26,7 @@
     "src/core",
     "src/runtime",
     "src/cli",
-    "src/orbit"
+    "src/orbit",
+    "src/kit"
   ]
 }
