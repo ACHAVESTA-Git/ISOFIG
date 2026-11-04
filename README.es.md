@@ -150,7 +150,7 @@ todos los ejemplos en un solo HTML que funciona sin conexión, en los dos estilo
 ### 1. Instalar
 
 ```sh
-npm i github:ACHAVESTA-Git/ISOFIG#v0.10.0
+npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1
 ```
 
 Node 22.18 o superior. El paquete se compila solo al instalarse. El nombre `isofig` en el registro de npm todavía no es de este proyecto: hasta que se publique ahí, instala solo desde este repositorio.
