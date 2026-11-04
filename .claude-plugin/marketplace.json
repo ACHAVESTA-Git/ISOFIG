@@ -1,0 +1,15 @@
+{
+  "name": "isofig",
+  "owner": {
+    "name": "ACHAVESTA-Git",
+    "url": "https://github.com/ACHAVESTA-Git"
+  },
+  "description": "Isometric explanatory figures for technical docs, from a Claude Code skill.",
+  "plugins": [
+    {
+      "name": "isofig",
+      "source": "./",
+      "description": "Explain technical ideas as small isometric machines: a Claude Code skill that writes isofig specs for build-time SVG figures."
+    }
+  ]
+}

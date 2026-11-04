@@ -1,0 +1,24 @@
+{
+  "name": "isofig",
+  "description": "Explain technical ideas as small isometric machines: a Claude Code skill that writes isofig specs for build-time SVG figures.",
+  "version": "0.8.3",
+  "author": {
+    "name": "ACHAVESTA-Git",
+    "url": "https://github.com/ACHAVESTA-Git"
+  },
+  "homepage": "https://github.com/ACHAVESTA-Git/ISOFIG#readme",
+  "repository": "https://github.com/ACHAVESTA-Git/ISOFIG",
+  "license": "MIT",
+  "keywords": [
+    "isometric",
+    "svg",
+    "diagram",
+    "illustration",
+    "figure",
+    "animation",
+    "technical-diagrams",
+    "documentation",
+    "claude-code",
+    "skill"
+  ]
+}
