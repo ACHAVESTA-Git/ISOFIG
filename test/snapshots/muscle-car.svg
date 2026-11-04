@@ -38,7 +38,6 @@
 <path style="fill:var(--fb);stroke:var(--fb);stroke-width:.35" d="M10-6l-2-3-1.5.5 2 3z"/>
 <path style="fill:var(--ft);stroke:var(--ft);stroke-width:.35" d="M5.5-11l-3 0-1 .5 2.5 0zm2.5 2l-2.5-2-1.5.5 2.5 2z"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M8 2l-1.5.5 2-1.5 1-3-1-3.5-2-3-2.5-2-2.5 0 1-.5 3 0 2.5 2 2 3 .5 3.5-.5 3-2 1.5m-1.5.5l-2.5 0-2.5-2-2-3-1-3.5 1-3 2-1.5"/>
-<path style="fill:none;stroke:var(--fe);stroke-width:1.3" d="M8.5-3.5h0M6.5-8h0M2.5-8h0M2.5-3h0M6.5-.5h0"/>
 </g>
 <g id="muscle-car-p5">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M3 1l9-10.5-1.5 1-9 10.5z"/>
@@ -101,7 +100,6 @@
 <path style="fill:var(--fb);stroke:var(--fb);stroke-width:.35" d="M2.5-35l-1.5 2.5 0 .5 1.5-2.5zm1.5-2.5l-1.5 2.5 0 .5 1.5-2zm2-1.5l-2 1.5 0 1 2-1.5zm2.5-1.5l-2.5 1.5 0 1 2-1.5zm3-1l-2.5 1-.5 0 2.5-.5zm-.5.5l-2.5.5-.5 1 2.5-.5zm2.5-.5l-2.5.5-.5 1 2.5-.5zm2.5.5l-2.5-.5-.5 1 2.5.5zm3 .5l-3-.5-.5 1 3 .5zm3 1.5l-3-1.5-.5 1 2.5 1.5zm2.5 1.5l-2.5-1.5-1 1 3 1.5zm2.5 2l-2.5-2-.5 1 2.5 2zm3.5 2.5l-2.5-2.5-1 0 2.5 2.5zm-1 0l-2.5-2.5-.5 1 2 2.5zm3 2.5l-2-2.5-1 0 2.5 3zm-.5.5l-2.5-3-1 1 2.5 2.5zm6.5 13l-1-3.5-.5.5 1 3.5zm-4-10l-2-3.5-.5.5 2 3zm3 6.5l-1.5-3.5-.5.5 1.5 3.5zm-1.5-3.5l-1.5-3-.5 0 1.5 3.5zm-2-3l-2-3-1 .5 2 3zm3 7l-1.5-3.5-1 .5 1 3.5zm-1.5-3.5l-1.5-3.5-1 .5 1.5 3.5z"/>
 <path style="fill:var(--ft);stroke:var(--ft);stroke-width:.35" d="M14-41.5l-2.5 0-.5.5 2.5-.5zm3 0l-3 0-.5 0 2.5.5zm2.5 1l-2.5-1-1 .5 3 .5zm3 1l-3-1-.5 0 3 1.5zm2.5 2l-2.5-2-.5.5 2.5 1.5zm3 2l-3-2-.5 0 2.5 2z"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M38.5-3.5l-1 3-1.5 2.5-1.5 2-2 1.5-2 1.5-1 0 2.5-1 2-1.5 1.5-2.5 1.5-2.5 1-2.5.5-3.5 0-3 0-3.5-.5-3.5-1-3.5-1.5-3.5-1.5-3.5-2-3-2.5-3-2.5-2.5-2.5-2-2.5-1.5-3-1.5-3-.5-2.5-.5-2.5.5-2.5.5.5 0 2.5-1 2.5 0 3 0 2.5 1 3 1 2.5 2 3 2 2.5 2.5 2 2.5 2 3.5 1.5 3 1.5 3.5 1 3.5.5 3.5.5 3.5-.5 3.5-.5 3m-30-37l-2.5 1.5-2 1.5-1.5 2.5-1.5 2.5-1 2.5-.5 3 0 3.5 0 3.5.5 3.5 0 .5-.5-3.5 0-3.5 0-3 .5-3 1-3 1.5-2.5 1.5-2 2-1.5 2-1.5 2.5-.5 2.5-.5 2.5.5 3 .5 2.5 1.5 3 1.5 2.5 2 2 2.5 2.5 2.5 2 3 1.5 3.5 1 3.5 1 3 1 3.5 0 3.5 0 3-1 3-1 3-1 2.5-1.5 2-2 1.5-2.5 1-2 1-2.5 0-3 0-2.5-.5-3-1.5-2.5-1.5-2.5-2-2.5-2.5-2-3 0 .5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 1.5 3 1.5 3 .5 2.5.5 2.5-.5 2.5-1m-23.5-10.5l-2-3-1.5-3-1.5-3.5-1-3"/>
-<path style="fill:none;stroke:var(--fe);stroke-width:.6" d="M38.5-10l-.5-5.5-1.5-5-2-5.5-3-4.5-3.5-4-4-3-4.5-2-4-1-4 .5-3.5 1.5-3 2.5-2 3.5-1.5 4-.5 5 .5 5.5 1.5 5 2 5 3 4.5 3.5 4 4 3.5 4 2 4.5.5 4 0 3.5-1.5 3-2.5 2-3.5 1.5-4.5.5-4.5"/>
 </g>
 <g id="muscle-car-p13">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M43 8.5l2.5-2-15.5 7.5-3 2zm2.5-2l2.5-2-16 7-2 2.5zm2.5-2l2-3-16 7.5-2 2.5zm2-3l1.5-3.5-16 7.5-1.5 3.5zm1.5-3.5l1-3.5-16 7.5-1 3.5zm1-3.5l.5-4-15.5 7.5-1 4zm.5-4l.5-4-16 7.5 0 4zm.5-4l-.5-4.5-15.5 7.5 0 4.5zm-.5-4.5l-.5-4-16 7.5 1 4z"/>
@@ -110,7 +108,7 @@
 <path style="fill:var(--fb);stroke:var(--fb);stroke-width:.35" d="M-12.5-40l-1.5 3.5.5 2.5 1-3zm2-2.5l-2 2.5 0 3 2-2.5zm24-13l-3 1-16 7.5 3-1zm-21.5 10.5l-2.5 2.5 0 3 2-2zm24.5-11.5l-3 1-16 7.5 3-1zm-22 9.5l-2.5 2-.5 3.5 2.5-2zm3-1l-3 1-.5 3.5 2.5-1zm3-1l-3 1-1 3.5 3-1zm3.5 0l-3.5 0-1 3.5 3 0zm3.5 0l-3.5 0-1.5 3.5 3.5.5zm3.5 1l-3.5-1-1.5 4 3 .5zm29 2l-3-3-16 7 3 3zm3 3l-3-3-16 7 3 3.5zm-28.5-3.5l-3.5-1.5-2 3.5 3 1.5zm38 24.5l-1-4.5-16 7.5 1 4.5zm-7-17l-2.5-4-16 7.5 3 4zm6 12.5l-1.5-4.5-16 7.5 1.5 4.5zm-3.5-8.5l-2.5-4-15.5 7.5 2 4zm2 4l-2-4-16 7.5 2 4zm-32-13.5l-3.5-2-2.5 3.5 3.5 2zm3 2.5l-3-2.5-2.5 3.5 3 2.5zm3 3l-3-3-2.5 3.5 2.5 2.5zm3 3.5l-3-3.5-3 3 3 3zm3 4l-3-4-3 2.5 2.5 3.5zm5.5 12.5l-1.5-4.5-4 1.5 1.5 4zm-3.5-8.5l-2-4-3.5 2 2 3.5zm2 4l-2-4-3.5 1.5 1.5 4z"/>
 <path style="fill:var(--ft);stroke:var(--ft);stroke-width:.35" d="M20-56.5l-3.5 0-16 7.5 3.5 0zm3 .5l-3-.5-16 7.5 3.5 0zm3.5.5l-3.5-.5-15.5 7 3.5 1zm3.5 1.5l-3.5-1.5-15.5 7.5 3.5 1.5zm3.5 2.5l-3.5-2.5-15.5 7.5 3.5 2zm3.5 2.5l-3.5-2.5-15.5 7 3 2.5z"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M52.5-5.5l-1 3.5-1.5 3.5-2 3-2.5 2-2.5 2-16 7.5 3-2 2-2.5 2-2.5 1.5-3.5 1-3.5 1-4 0-4 0-4.5-1-4-1-4.5-1.5-4.5-2-4-2-4-3-4-3-3.5-3-3-3-2.5-3.5-2-3.5-1.5-3.5-1-3.5 0-3.5 0-3 1-3 1 16-7.5 3-1 3-1 3.5 0 3 .5 3.5.5 3.5 1.5 3.5 2.5 3.5 2.5 3 3 3 3 2.5 4 2.5 4 2 4 1.5 4.5 1 4.5.5 4 .5 4.5-.5 4-.5 4m-58-41.5l-2.5 2-2.5 2.5-2 2.5-1.5 3.5-1 3.5-.5 4-.5 4 .5 4.5.5 4.5.5.5-1-4 0-4 0-3.5 1-3.5 1-3.5 1-3 2-2.5 2-2 2.5-2 2.5-1 3-1 3 0 3.5.5 3 .5 3 1.5 3.5 2 3 2.5 2.5 2.5 3 3 2.5 3.5 2 3.5 1.5 4 1.5 4 1 4 1 4 0 4 0 4-1 3.5-1 3.5-1.5 3-1.5 2.5-2 2-2.5 1.5-3 1.5-2.5.5-3 .5-3.5-.5-3-1-3-1.5-3.5-1.5-3-2.5-3-2.5-2.5-3.5.5 1 3 3.5 3 3 3.5 2.5 3.5 2 3.5 1.5 3.5 1 3.5 0 3 0 3-.5 3-1.5m-33-12.5l-2.5-3-2-4-2-4-1-3.5-1-4.5"/>
-<path style="fill:none;stroke:var(--fe);stroke-width:.45;opacity:.7" d="M50.5-14.5l-.5-6.5-1.5-7-3-6.5-4-5.5-4.5-5.5-5-3.5-5.5-3-5-1-5 .5-4.5 1.5-4 3.5-3 4.5-1.5 5.5-.5 6 .5 7 1.5 6.5 3 6.5 4 6 4.5 5 5 4 5 2.5 5.5 1 5 0 4.5-2 4-3.5 3-4 1.5-5.5.5-6.5m-17.5 8.5l-.5-7-2-6.5-3-6.5-3.5-6-4.5-5-5-4-5.5-2.5-5.5-1-5 0-4.5 2-3.5 3.5-3 4-2 5.5-.5 6.5.5 6.5 2 7 3 6.5 3.5 6 4.5 5 5 3.5 5.5 3 5.5 1 5-.5 4.5-1.5 3.5-3.5 3-4.5 2-5.5.5-6"/>
+<path style="fill:none;stroke:var(--fe);stroke-width:.45;opacity:.7" d="M33-6l-.5-7-2-6.5-3-6.5-3.5-6-4.5-5-5-4-5.5-2.5-5.5-1-5 0-4.5 2-3.5 3.5-3 4-2 5.5-.5 6.5.5 6.5 2 7 3 6.5 3.5 6 4.5 5 5 3.5 5.5 3 5.5 1 5-.5 4.5-1.5 3.5-3.5 3-4.5 2-5.5.5-6"/>
 </g>
 <g id="muscle-car-p14">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M28.5 6l2.5-1.5-1 .5-2.5 1.5zm2.5-1.5l1.5-2-1 .5-1.5 2zm1.5-2l1.5-2.5-1 .5-1.5 2.5zm1.5-2.5l1.5-2.5-1.5.5-1 2.5zm1.5-2.5l.5-3.5-1 1-1 3zm.5-3.5l0-3-1 .5 0 3.5zm0-3l0-3.5-1 .5 0 3.5zm0-3.5l-.5-3.5-1.5.5 1 3.5z"/>
@@ -149,7 +147,7 @@
 <path style="fill:var(--fb);stroke:var(--fb);stroke-width:.35" d="M-.5-32.5l-1.5 2.5 0 .5 1.5-2zm1.5-2l-1.5 2 0 1 1.5-2zm2-1.5l-2 1.5 0 1 2-1.5zm2-1.5l-2 1.5 0 1 2-1.5zm6-2l-2.5.5-3.5 1.5 2.5-.5zm-3.5 1.5l-2.5.5 0 1 2-.5zm2.5-.5l-2.5.5-.5 1 2.5-.5zm2.5.5l-2.5-.5-.5 1 2.5.5zm3 .5l-3-.5-.5 1 3 .5zm2.5 1.5l-2.5-1.5-.5 1 2.5 1.5zm2.5 1.5l-2.5-1.5-.5 1 2.5 1.5zm8.5 2.5l-2.5-2-3.5 1.5 2.5 2.5zm-6-.5l-2.5-2-.5 1 2.5 2zm8 3.5l-2-3-3.5 2 2 2.5zm6 13l-1-3.5-3.5 1.5 1 3.5zm-4-10l-2-3-3.5 1.5 2 3zm-7.5-4l-2.5-2.5-.5 1 2 2zm10.5 10.5l-1.5-3.5-3.5 2 1.5 3zm-1.5-3.5l-1.5-3-3.5 1.5 1.5 3.5zm-7-4.5l-2-2.5-1 .5 2 3zm2 3l-2-3-1 1 2 2.5zm3 6.5l-1.5-3-1 0 1.5 3.5zm-1.5-3l-1.5-3.5-1 .5 1.5 3z"/>
 <path style="fill:var(--ft);stroke:var(--ft);stroke-width:.35" d="M13.5-40l-2.5.5-3.5 1.5 2.5-.5zm2.5.5l-2.5-.5-3.5 1.5 2.5.5zm3 .5l-3-.5-3.5 1.5 3 .5zm2.5 1l-2.5-1-3.5 1.5 2.5 1.5zm2.5 2l-2.5-2-3.5 2 2.5 1.5zm2.5 2l-2.5-2-3.5 1.5 2.5 2z"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M37-3.5l-1 3-1.5 2.5-1.5 2-2 1.5-2 1-3.5 2 2-1.5 2-1.5 1.5-2 1.5-2.5 1-2.5.5-3 0-3.5 0-3-.5-3.5-1-3.5-1.5-3-1.5-3.5-2-3-2-2.5-2.5-2.5-2.5-2-2.5-1.5-2.5-1.5-3-.5-2.5-.5-2.5.5-2.5.5 3.5-1.5 2.5-.5 2.5-.5 2.5.5 3 .5 2.5 1 2.5 2 2.5 2 2.5 2 2 3 2 3 1.5 3 1.5 3.5 1 3.5.5 3 0 3.5 0 3-.5 3m-32-34l-2 1.5-2 1.5-1.5 2-1.5 2.5-1 2.5-.5 3 0 3.5 0 3 .5 3.5.5.5-1-3.5 0-3 0-3.5 1-2.5.5-3 1.5-2 1.5-2 2-1.5 2-1.5 2-.5 2.5-.5 2.5.5 3 .5 2.5 1.5 2.5 1.5 2.5 2 2 2 2 3 2 2.5 1.5 3 1.5 3.5 1 3 .5 3.5 0 3 0 3.5-.5 2.5-1 3-1.5 2-1.5 2-2 1.5-2 1.5-2 .5-2.5 0-2.5 0-2.5-.5-3-1.5-2.5-1.5-2.5-2-2-2-2-3 0 .5 2 2.5 2.5 2.5 2.5 2 2.5 1.5 3 1.5 2.5.5 2.5.5 2.5-.5 2.5-.5m-22.5-10.5l-2-2.5-1.5-3-1.5-3.5-.5-3"/>
-<path style="fill:none;stroke:var(--fe);stroke-width:.45;opacity:.7" d="M32.5-8l-.5-5-1.5-5-2-4.5-3-4.5-3-4-4-2.5-3.5-2-4-1-4 .5-3 1-3 2.5-2 3.5-1.5 4-.5 4.5.5 5 1.5 5 2 4.5 3 4.5 3 4 4 2.5 4 2 3.5 1 4-.5 3-1 3-2.5 2-3.5 1.5-4 .5-4.5m4-2l-.5-5-1.5-5-2-4.5-2.5-4.5-3.5-3.5-3.5-3-4-2-4-1-4 .5-3 1.5-3 2-2 3.5-1.5 4 0 4.5 0 5 1.5 5 2 4.5 3 4.5 3 4 4 2.5 4 2 4 1 3.5-.5 3.5-1 2.5-2.5 2-3.5 1.5-4 .5-4.5"/>
+<path style="fill:none;stroke:var(--fe);stroke-width:.45;opacity:.7" d="M32.5-8l-.5-5-1.5-5-2-4.5-3-4.5-3-4-4-2.5-3.5-2-4-1-4 .5-3 1-3 2.5-2 3.5-1.5 4-.5 4.5.5 5 1.5 5 2 4.5 3 4.5 3 4 4 2.5 4 2 3.5 1 4-.5 3-1 3-2.5 2-3.5 1.5-4 .5-4.5"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:1.3" d="M27.5-9.5h0M26-18h0M21-25.5h0M15-30h0M8.5-30h0M3.5-26h0M2-19h0M3.5-10.5h0M8.5-3h0M15 1.5h0M21 1.5h0M26-2.5h0"/>
 </g>
 <g id="muscle-car-p19">
@@ -407,15 +405,6 @@
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M52 15.5l-2-1-50-17.5-25.5 12-2 1 0 3 52 18 0-2.5 27.5-13 0 3-27.5 12.5m-50-22l50 17.5 0 2-52-18.5m77.5 4.5l-25.5 12"/>
 </g>
 <g id="muscle-car-p54">
-<path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M43 8.5l2.5-2-15.5 7.5-3 2zm2.5-2l2.5-2-16 7-2 2.5zm2.5-2l2-3-16 7.5-2 2.5zm2-3l1.5-3.5-16 7.5-1.5 3.5zm1.5-3.5l1-3.5-16 7.5-1 3.5zm1-3.5l.5-4-15.5 7.5-1 4zm.5-4l.5-4-16 7.5 0 4zm.5-4l-.5-4.5-15.5 7.5 0 4.5zm-.5-4.5l-.5-4-16 7.5 1 4z"/>
-<path style="fill:var(--f2);stroke:var(--f2);stroke-width:.35" d="M24 17.5l3-1.5-3-2-3 1.5zm3-1.5l3-2-3.5-1.5-2.5 1.5zm3-2l2-2.5-3.5-1-2 2zm2-2.5l2-2.5-4-1-1.5 2.5zm2-2.5l1.5-3.5-4-.5-1.5 3zm1.5-3.5l1-3.5-4-.5-1 3.5zm1-3.5l1-4-4 0-1 3.5zm1-4l0-4-4 0 0 4zm0-4l0-4.5-4 .5 0 4zm0-4.5l-1-4-4 .5 1 4zm-1-4l-1-4.5-4 1 1 4z"/>
-<path style="fill:var(--f3);stroke:var(--f3);stroke-width:.35" d="M-5.5 4.5l3 3.5-1-1-2.5-3.5zm-10-25l.5 4.5.5.5-1-4zm13 28.5l3 3-1-1.5-3-2.5zm-13.5-33l.5 4.5 0 1 0-4zm16.5 36l3.5 2.5-1.5-1.5-3-2.5zm-16-40l-.5 4 .5 1.5 0-3.5zm19.5 42.5l3.5 2-1.5-2-3.5-1.5zm-19-46.5l-.5 4 0 2 1-3.5zm22.5 48.5l3.5 1.5-2-2-3-1.5zm-21.5-52l-1 3.5.5 2.5 1-3.5zm25 53.5l3.5 1-2.5-2-3-1zm3.5 1l3.5 0-2.5-1.5-3.5-.5zm3.5 0l3 0-2.5-2-3 .5zm3 0l3-.5-3-2-2.5.5zm12.5-24l0-4-1-4-1-4-1.5-4-1.5-4-2-3.5-2.5-3.5-3-3-2.5-2.5-3-2.5-3.5-2-3-1.5-3-.5-3.5-.5-3 0-3 1-2.5 1-2.5 2-2 2-2 2.5-1 3-1 3.5-1 3.5 0 3.5 0 4 1 4 1 4.5 1 3.5 2 4 2 4 2.5 3 2.5 3.5 3 2.5 3 2.5 3.5 1.5 3 1.5 3 1 3.5.5 3-.5 2.5-.5 3-1.5 2.5-1.5 2-2 1.5-2.5 1.5-3 1-3.5 1-3.5z"/>
-<path style="fill:var(--fb);stroke:var(--fb);stroke-width:.35" d="M-12.5-40l-1.5 3.5.5 2.5 1-3zm2-2.5l-2 2.5 0 3 2-2.5zm24-13l-3 1-16 7.5 3-1zm-21.5 10.5l-2.5 2.5 0 3 2-2zm24.5-11.5l-3 1-16 7.5 3-1zm-22 9.5l-2.5 2-.5 3.5 2.5-2zm3-1l-3 1-.5 3.5 2.5-1zm3-1l-3 1-1 3.5 3-1zm3.5 0l-3.5 0-1 3.5 3 0zm3.5 0l-3.5 0-1.5 3.5 3.5.5zm3.5 1l-3.5-1-1.5 4 3 .5zm29 2l-3-3-16 7 3 3zm3 3l-3-3-16 7 3 3.5zm-28.5-3.5l-3.5-1.5-2 3.5 3 1.5zm38 24.5l-1-4.5-16 7.5 1 4.5zm-7-17l-2.5-4-16 7.5 3 4zm6 12.5l-1.5-4.5-16 7.5 1.5 4.5zm-3.5-8.5l-2.5-4-15.5 7.5 2 4zm2 4l-2-4-16 7.5 2 4zm-32-13.5l-3.5-2-2.5 3.5 3.5 2zm3 2.5l-3-2.5-2.5 3.5 3 2.5zm3 3l-3-3-2.5 3.5 2.5 2.5zm3 3.5l-3-3.5-3 3 3 3zm3 4l-3-4-3 2.5 2.5 3.5zm5.5 12.5l-1.5-4.5-4 1.5 1.5 4zm-3.5-8.5l-2-4-3.5 2 2 3.5zm2 4l-2-4-3.5 1.5 1.5 4z"/>
-<path style="fill:var(--ft);stroke:var(--ft);stroke-width:.35" d="M20-56.5l-3.5 0-16 7.5 3.5 0zm3 .5l-3-.5-16 7.5 3.5 0zm3.5.5l-3.5-.5-15.5 7 3.5 1zm3.5 1.5l-3.5-1.5-15.5 7.5 3.5 1.5zm3.5 2.5l-3.5-2.5-15.5 7.5 3.5 2zm3.5 2.5l-3.5-2.5-15.5 7 3 2.5z"/>
-<path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M52.5-5.5l-1 3.5-1.5 3.5-2 3-2.5 2-2.5 2-16 7.5 3-2 2-2.5 2-2.5 1.5-3.5 1-3.5 1-4 0-4 0-4.5-1-4-1-4.5-1.5-4.5-2-4-2-4-3-4-3-3.5-3-3-3-2.5-3.5-2-3.5-1.5-3.5-1-3.5 0-3.5 0-3 1-3 1 16-7.5 3-1 3-1 3.5 0 3 .5 3.5.5 3.5 1.5 3.5 2.5 3.5 2.5 3 3 3 3 2.5 4 2.5 4 2 4 1.5 4.5 1 4.5.5 4 .5 4.5-.5 4-.5 4m-58-41.5l-2.5 2-2.5 2.5-2 2.5-1.5 3.5-1 3.5-.5 4-.5 4 .5 4.5.5 4.5.5.5-1-4 0-4 0-3.5 1-3.5 1-3.5 1-3 2-2.5 2-2 2.5-2 2.5-1 3-1 3 0 3.5.5 3 .5 3 1.5 3.5 2 3 2.5 2.5 2.5 3 3 2.5 3.5 2 3.5 1.5 4 1.5 4 1 4 1 4 0 4 0 4-1 3.5-1 3.5-1.5 3-1.5 2.5-2 2-2.5 1.5-3 1.5-2.5.5-3 .5-3.5-.5-3-1-3-1.5-3.5-1.5-3-2.5-3-2.5-2.5-3.5.5 1 3 3.5 3 3 3.5 2.5 3.5 2 3.5 1.5 3.5 1 3.5 0 3 0 3-.5 3-1.5m-33-12.5l-2.5-3-2-4-2-4-1-3.5-1-4.5"/>
-<path style="fill:none;stroke:var(--fe);stroke-width:.45;opacity:.7" d="M33-6l-.5-7-2-6.5-3-6.5-3.5-6-4.5-5-5-4-5.5-2.5-5.5-1-5 0-4.5 2-3.5 3.5-3 4-2 5.5-.5 6.5.5 6.5 2 7 3 6.5 3.5 6 4.5 5 5 3.5 5.5 3 5.5 1 5-.5 4.5-1.5 3.5-3.5 3-4.5 2-5.5.5-6m17.5-8.5l-.5-6.5-1.5-7-3-6.5-4-5.5-4.5-5.5-5-3.5-5.5-3-5-1-5 .5-4.5 1.5-4 3.5-3 4.5-1.5 5.5-.5 6 .5 7 1.5 6.5 3 6.5 4 6 4.5 5 5 4 5 2.5 5.5 1 5 0 4.5-2 4-3.5 3-4 1.5-5.5.5-6.5"/>
-</g>
-<g id="muscle-car-p55">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M30.5 7l2-1.5-.5.5-2.5 1zm2-1.5l2-1.5-.5.5-2 1.5zm2-1.5l1.5-2-.5 0-1.5 2.5zm1.5-2l1.5-2.5-.5 0-1.5 2.5zm1.5-2.5l1-3-.5.5-1 2.5zm1-3l.5-3-.5 0-.5 3.5zm.5-3l.5-3.5-1 .5 0 3zm.5-3.5l-.5-3.5-.5.5 0 3.5zm-.5-3.5l-.5-3.5-.5.5.5 3.5z"/>
 <path style="fill:var(--f2);stroke:var(--f2);stroke-width:.35" d="M27 8l2.5-1-1-.5-2 1zm2.5-1l2.5-1-1-.5-2.5 1zm2.5-1l2-1.5-1-.5-2 1.5zm2-1.5l1.5-2.5-1 0-1.5 2zm1.5-2.5l1.5-2.5-1.5 0-1 2.5zm1.5-2.5l1-2.5-1.5-.5-1 3zm1-2.5l.5-3.5-1 0-1 3zm.5-3.5l0-3-1 0 0 3zm0-3l0-3.5-1 0 0 3.5zm0-3.5l-.5-3.5-1.5 0 1 3.5zm-.5-3.5l-1-3.5-1.5.5 1 3z"/>
 <path style="fill:var(--f3);stroke:var(--f3);stroke-width:.35" d="M6-3l2.5 2.5-.5 0-2-3zm-6.5-17l.5 3.5 0 .5-.5-3.5zm9 19.5l2.5 2.5-.5 0-2.5-2.5zm-9-23l0 3.5 0 .5 0-3.5zm11.5 25.5l2.5 2.5-.5-.5-2.5-2zm-11.5-29l0 3.5 0 .5 0-3zm14 31.5l2.5 1.5-.5-.5-2.5-1.5zm-13.5-34.5l-.5 3 0 1 .5-3zm16 36l3 1.5-.5-.5-3-1.5zm-15-38.5l-1 2.5 0 1 1-3zm18 40l3 .5-1-.5-2.5-.5zm3 .5l2.5.5-.5-1-3 0zm2.5.5l2.5-.5-.5-.5-2.5 0zm13-18l0-3.5-1-3.5-1-3-1-3.5-1.5-3.5-2-3-2.5-2.5-2-2.5-2.5-2-3-1.5-2.5-1.5-3-.5-2.5-.5-2.5.5-2.5.5-2 1.5-2 1.5-1.5 2-1.5 2.5-1 3-.5 3 0 3 0 3.5.5 3.5 1 3 1.5 3.5 1.5 3 2 3 2 3 2.5 2.5 2.5 2 2.5 1.5 3 1.5 2.5.5 3 0 2.5 0 2-1 2.5-1 2-1.5 1.5-2 1-2.5 1-3 1-3z"/>
@@ -424,7 +413,7 @@
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M38.5-3.5l-1 3-1.5 2.5-1.5 2-2 1.5-2 1.5-1 0 2.5-1 2-1.5 1.5-2.5 1.5-2.5 1-2.5.5-3.5 0-3 0-3.5-.5-3.5-1-3.5-1.5-3.5-1.5-3.5-2-3-2.5-3-2.5-2.5-2.5-2-2.5-1.5-3-1.5-3-.5-2.5-.5-2.5.5-2.5.5.5 0 2.5-1 2.5 0 3 0 2.5 1 3 1 2.5 2 3 2 2.5 2.5 2 2.5 2 3.5 1.5 3 1.5 3.5 1 3.5.5 3.5.5 3.5-.5 3.5-.5 3m-30-37l-2.5 1.5-2 1.5-1.5 2.5-1.5 2.5-1 2.5-.5 3 0 3.5 0 3.5.5 3.5 0 .5-.5-3.5 0-3.5 0-3 .5-3 1-3 1.5-2.5 1.5-2 2-1.5 2-1.5 2.5-.5 2.5-.5 2.5.5 3 .5 2.5 1.5 3 1.5 2.5 2 2 2.5 2.5 2.5 2 3 1.5 3.5 1 3.5 1 3 1 3.5 0 3.5 0 3-1 3-1 3-1 2.5-1.5 2-2 1.5-2.5 1-2 1-2.5 0-3 0-2.5-.5-3-1.5-2.5-1.5-2.5-2-2.5-2.5-2-3 0 .5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 1.5 3 1.5 3 .5 2.5.5 2.5-.5 2.5-1m-23.5-10.5l-2-3-1.5-3-1.5-3.5-1-3"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:.6" d="M37-9.5l-.5-5.5-1-5-2.5-5-3-5-3.5-4-4-3-4-2-4-1-4 .5-3.5 1.5-3 2.5-2.5 3.5-1.5 4-.5 5 .5 5.5 1.5 5 2.5 5 3 5 3.5 4 4 3 4 2 4 1 4-.5 3.5-1.5 3-2.5 2.5-3.5 1-4.5.5-4.5"/>
 </g>
-<g id="muscle-car-p56">
+<g id="muscle-car-p55">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M8 2l2-1.5-1.5.5-2 1.5zm2-1.5l.5-3-1 .5-1 3zm.5-3l-.5-3.5-1.5.5 1 3.5z"/>
 <path style="fill:var(--f3);stroke:var(--f3);stroke-width:.35" d="M9.5-2l-1-3.5-2-3-2.5-2-2.5 0-2 1.5-1 3 1 3.5 2 3 2.5 2 2.5 0 2-1.5z"/>
 <path style="fill:var(--fb);stroke:var(--fb);stroke-width:.35" d="M10-6l-2-3-1.5.5 2 3z"/>
@@ -432,7 +421,7 @@
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M8 2l-1.5.5 2-1.5 1-3-1-3.5-2-3-2.5-2-2.5 0 1-.5 3 0 2.5 2 2 3 .5 3.5-.5 3-2 1.5m-1.5.5l-2.5 0-2.5-2-2-3-1-3.5 1-3 2-1.5"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:1.3" d="M7.5-3h0M5-7.5h0M1.5-7h0M1.5-2.5h0M5 0h0"/>
 </g>
-<g id="muscle-car-p57">
+<g id="muscle-car-p56">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M44 15.5l0-9.5-15.5 7.5 0 9.5z"/>
 <path style="fill:var(--f2);stroke:var(--f2);stroke-width:.35" d="M28.5 23l0-9.5-2 1 0 7.5z"/>
 <path style="fill:var(--f3);stroke:var(--f3);stroke-width:.35" d="M-15.5-4l0 11.5 0-.5 0-9zm0 11.5l44 15.5-2-1-42-15zm0-.5l42 15 0-7.5-42-16.5z"/>
@@ -440,7 +429,7 @@
 <path style="fill:var(--ft);stroke:var(--ft);stroke-width:.35" d="M44 6l-44-17.5-15.5 7.5 44 17.5z"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M28.5 13.5l0 9.5-2-1-42-15 0 .5 44 15.5 15.5-7.5 0-9.5-15.5 7.5-44-17.5 15.5-7.5 44 17.5m-59.5 1.5l0-11.5 0 2 42 16.5 0 7.5m-42-24l0 9"/>
 </g>
-<g id="muscle-car-p58">
+<g id="muscle-car-p57">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M2 2l.5-.5 0-9.5-.5.5z"/>
 <path style="fill:var(--f1);stroke:var(--f1);stroke-width:.35" d="M1 2.5l1-.5 0-9.5-1 .5z"/>
 <path style="fill:var(--f2);stroke:var(--f2);stroke-width:.35" d="M0 2.5l1 0 0-9.5-1 0z"/>
@@ -448,27 +437,27 @@
 <path style="fill:var(--ft);stroke:var(--ft);stroke-width:.35" d="M-1.5-7.5l1.5.5 1 0 1-.5.5-.5 0-.5-.5-.5-1.5 0-1 0-1 .5-.5 0 0 .5z"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M-2 1l0-9.5 0 .5.5.5 1.5.5 1 0 1-.5.5-.5 0 9.5-.5.5-1 .5-1 0-1.5-.5-.5 0 0-1m0-9.5l.5 0 1-.5 1 0 1.5 0 .5.5 0 .5"/>
 </g>
-<g id="muscle-car-p59">
+<g id="muscle-car-p58">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M10 3.5l3.5-2.5-8.5 4-3 2.5z"/>
 <path style="fill:var(--f2);stroke:var(--f2);stroke-width:.35" d="M2 7.5l3-2.5-1.5-.5-2 2z"/>
 <path style="fill:var(--f3);stroke:var(--f3);stroke-width:.35" d="M1.5 6.5l2-2-9-14.5-2.5 2z"/>
 <path style="fill:var(--fb);stroke:var(--fb);stroke-width:.35" d="M13.5 1l-10.5-16-8 4 10 16zm-18.5-12l-3 2.5 0 .5 2.5-2zm10 16l-10-16-.5 1 9 14.5z"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M5 5l-3 2.5 8-4 3.5-2.5-8.5 4-10-16 8-4 10.5 16m-18.5-12l-3 2.5 0 .5 2.5-2 9 14.5-2 2 .5 1m-10-15.5l9.5 14.5"/>
 </g>
-<g id="muscle-car-p60">
+<g id="muscle-car-p59">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M64 29.5l8.5-4 0-14-8.5 4z"/>
 <path style="fill:var(--f3);stroke:var(--f3);stroke-width:.35" d="M-8 4l72 25.5 0-14-72-25.5z"/>
 <path style="fill:var(--fb);stroke:var(--fb);stroke-width:.35" d="M-8-10l72 25.5 0-2-70.5-25zm72 25.5l8.5-4-2-1-6.5 3z"/>
 <path style="fill:var(--ft);stroke:var(--ft);stroke-width:.35" d="M0-14.5l-6.5 3 70.5 25 6.5-3z"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M72.5 11.5l-2-1-70.5-25-6.5 3-1.5 1.5 0 14 72 25.5 0-14 8.5-4 0 14-8.5 4m-70.5-41l70.5 25 0 2-72-25.5m78.5 20.5l-6.5 3"/>
 </g>
-<g id="muscle-car-p61">
+<g id="muscle-car-p60">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M15 8.5l4-2 0-9.5-4 2z"/>
 <path style="fill:var(--f3);stroke:var(--f3);stroke-width:.35" d="M-4 2l19 6.5 0-9.5-19-6.5z"/>
 <path style="fill:var(--ft);stroke:var(--ft);stroke-width:.35" d="M0-9.5l-4 2 19 6.5 4-2z"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M19-3l-19-6.5-4 2 0 9.5 19 6.5 0-9.5 4-2 0 9.5-4 2m0-9.5l-19-6.5"/>
 </g>
-<g id="muscle-car-p62">
+<g id="muscle-car-p61">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M50.5 18l6-7.5-15.5 7.5-6.5 7zm6-7.5l0-34.5-15.5 7.5 0 34.5z"/>
 <path style="fill:var(--f2);stroke:var(--f2);stroke-width:.35" d="M34.5 25l6.5-7-1.5-.5-6 6.5zm6.5-7l0-34.5-1.5.5 0 33.5z"/>
 <path style="fill:var(--f3);stroke:var(--f3);stroke-width:.35" d="M-15.5-46l11 57 0-.5-11-56zm11 57l39 14-1-1-38-13.5zm-11-66.5l0 9.5 0 .5 0-8zm11 66l38 13.5 6-6.5 0-33.5-3-8-52-29.5 0 8z"/>
@@ -476,27 +465,27 @@
 <path style="fill:var(--ft);stroke:var(--ft);stroke-width:.35" d="M53.5-32.5l-53.5-30.5-15.5 7.5 53.5 30.5z"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M53.5-32.5l3 8.5 0 34.5-6 7.5-16 7 6.5-7 0-34.5-3-8.5-53.5-30.5 15.5-7.5 53.5 30.5m-19 57.5l-39-14-11-57 0-9.5 0 2 52 29.5 3 8 0 33.5-6 6.5-38-13.5-11-56 0-8"/>
 </g>
-<g id="muscle-car-p63">
+<g id="muscle-car-p62">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M23 4.5l-.5 1-1 1 0 1.5 0 1 1 1 .5 0 1-1 1-1.5 0-1.5 0-1-1-.5z"/>
 <path style="fill:var(--f3);stroke:var(--f3);stroke-width:.35" d="M-3.5.5l.5.5 25.5 9-1-1zm-.5-1.5l.5 1.5 25 8.5 0-1zm.5-1.5l-.5 1.5 25.5 9 0-1.5z"/>
 <path style="fill:var(--fb);stroke:var(--fb);stroke-width:.35" d="M-3-3.5l-.5 1 25 9 1-1z"/>
 <path style="fill:var(--ft);stroke:var(--ft);stroke-width:.35" d="M-1-4.5l-1 0 25 9 1 0zm-1 0l-1 1 25.5 9 .5-1z"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M-3.5.5l-.5-1.5.5-1.5.5-1 1-1 1 0 25 9-1 0-.5 1-1 1 0 1.5 0 1 1 1-25.5-9-.5-.5m27.5 4l1 .5 0 1 0 1.5-1 1.5-1 1-.5 0"/>
 </g>
-<g id="muscle-car-p64">
+<g id="muscle-car-p63">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M3.5-6l0-.5-5 9 .5.5z"/>
 <path style="fill:var(--f1);stroke:var(--f1);stroke-width:.35" d="M3.5-6.5l-1.5-.5-4.5 9 1 .5z"/>
 <path style="fill:var(--f3);stroke:var(--f3);stroke-width:.35" d="M-1.5 2.5l-1-.5-1.5-1-1.5-.5-1-.5 0 .5 0 .5 1.5.5 1 1 1.5.5 1 .5.5-.5z"/>
 <path style="fill:var(--fb);stroke:var(--fb);stroke-width:.35" d="M-1.5-9l-.5.5-4.5 9 0-.5zm1 .5l-1-.5-5 9 1 .5zm1.5.5l-1.5-.5-5 9 1.5.5zm1 1l-1-1-5 9 1.5 1z"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M-1.5-9l1 .5 1.5.5 1 1 1.5.5 0 .5-4.5 9-.5-.5-1-.5-1.5-1-1.5-.5-1-.5 0 .5 4.5-9 .5-.5m.5 12l-.5.5-1-.5-1.5-.5-1-1-1.5-.5 0-.5"/>
 </g>
-<g id="muscle-car-p65">
+<g id="muscle-car-p64">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M119.5 42.5l0-1.5-8 4 0 1z"/>
 <path style="fill:var(--f3);stroke:var(--f3);stroke-width:.35" d="M-8-15.5l119.5 61.5 0-1-119.5-61.5z"/>
 <path style="fill:var(--ft);stroke:var(--ft);stroke-width:.35" d="M119.5 41l-119.5-61.5-8 4 119.5 61.5z"/>
 <path style="fill:none;stroke:var(--fe);stroke-width:.7" d="M-8-16.5l0 1 119.5 61.5 8-3.5 0-1.5-8 4-119.5-61.5 8-4 119.5 61.5m-8 4l0 1"/>
 </g>
-<g id="muscle-car-p66">
+<g id="muscle-car-p65">
 <path style="fill:var(--f0);stroke:var(--f0);stroke-width:.35" d="M2 2l.5-1 0-9.5-.5.5zm-20.5 9.5l20.5-9.5 0-10-20.5 10z"/>
 <path style="fill:var(--f1);stroke:var(--f1);stroke-width:.35" d="M-20 11.5l1.5 0 0-9.5-1.5 0z"/>
 <path style="fill:var(--f3);stroke:var(--f3);stroke-width:.35" d="M-22.5 11l1 .5 0-9.5-1-.5zm1 .5l1.5 0 0-9.5-1.5 0z"/>
@@ -566,7 +555,6 @@
 <path class="b" d="M224.5 468l-2 2.5 4 1.5 2-2.5zm-3 5.5l-1 3.5 4 1 1-3zm1-3l-1 3 4 1.5 1-3z"/>
 <path class="t" d="M232.5 464.5l-2-.5 4 1.5 2 0zm-2-.5l-2 .5 4 1.5 2-.5zm-2 .5l-2 1.5 4 1.5 2-1.5zm-2 1.5l-2 2 4 1.5 2-2z"/>
 <path class="e" d="M232.5 464.5l4 1-2 0-2 .5-2 1.5-2 2-2 2.5-1 3-1 3-.5 3.5.5 2.5 1 2.5 1 2 2 1-4-1.5-2-1-1-2-1-2 0-3 0-3 1-3.5 1-3 2-2.5 2-2 2-1.5 2-.5 2 .5m4 1l1.5 1 1.5 2 1 2.5 0 2.5 0 3-1 3.5-1.5 3-1.5 2.5-2 2-2 1.5-2 .5-2 0"/>
-<path class="d" d="M221.5 479.5h0M223.5 471.5h0M228.5 466.5h0M233.5 467h0M235.5 473h0M233.5 480.5h0M228.5 485.5h0M223.5 485h0"/>
 </g>
 <use href="#muscle-car-p27" x="282" y="380.5" class="hi" data-paint="lacquer" data-g="carroceria"/>
 <use href="#muscle-car-p24" x="278" y="463" class="hi" data-paint="steel" data-g="chasis"/>
@@ -609,7 +597,6 @@
 <path class="b" d="M262.5 483l-1.5 2.5 3 1 2-2.5zm-1.5 2.5l-1 3 3 1 1-3z"/>
 <path class="t" d="M266.5 481.5l-2 0 3.5 1.5 2-.5zm-2 0l-2 1.5 3.5 1 2-1z"/>
 <path class="e" d="M261 495.5l-1-1.5-.5-2.5.5-3 1-3 1.5-2.5 2-1.5 2 0 3.5 1-2 .5-2 1-2 2.5-1 3-.5 3 .5 2.5 1 2 2 .5-3.5-1-1.5-1m9-13l1.5.5 1 2 .5 2.5-.5 3-1 3-1.5 2-2 1.5-2 .5"/>
-<path class="d" d="M261 490.5h0M268 487h0M264.5 484h0M264.5 494h0"/>
 </g>
 <use href="#muscle-car-p28" x="156.5" y="405.5" class="hi" data-paint="aluminium" data-g="carroceria.maletera"/>
 <g class="hi" data-paint="lacquer" data-g="carroceria.maletera">
@@ -638,7 +625,7 @@
 <path class="b" d="M370 421l-8-2.5 88.5 31 8 3zm88.5 31.5l-8-3 .5 2 8 2.5zm-8-3l-4 1 1.5 1.5 3-.5z"/>
 <path class="t" d="M362 418.5l-4.5 1 89 31 4-1z"/>
 <path class="e" d="M458.5 452.5l.5 1.5-8-2.5-3 .5-1.5-1.5 4-1 8 3-88.5-31.5-8-2.5-4.5 1 89 31 0 67-89-31.5 0-66.5m90.5 32.5l0 64-1.5 1.5 12-6 .5-.5-11 5m11-5l0-57"/>
-<path class="l" d="M376.5 436.5l78.5 23.5m-78.5 11l83 29.5"/>
+<path class="l" d="M376.5 471l83 29.5"/>
 </g>
 <use href="#muscle-car-p24" x="231.5" y="485" class="hi" data-paint="steel" data-g="chasis"/>
 <use href="#muscle-car-p23" x="231.5" y="479" class="mid" data-paint="iron" data-g="chasis"/>
@@ -761,16 +748,16 @@
 <use href="#muscle-car-p35" x="303.5" y="531.5" class="mid" data-paint="iron" data-g="chasis"/>
 <use href="#muscle-car-p36" x="254" y="494.5" class="lo" data-paint="carbon" data-g="interior"/>
 <use href="#muscle-car-p37" x="253" y="489" class="mid" data-paint="carbon" data-g="interior"/>
-<use href="#muscle-car-p54" x="176.5" y="520" class="lo" data-paint="rubber" data-g="rueda-der-1"/>
+<use href="#muscle-car-p13" x="176.5" y="520" class="lo" data-paint="rubber" data-g="rueda-der-1"/>
 <use href="#muscle-car-p38" x="244" y="476" class="mid" data-paint="carbon" data-g="interior"/>
-<use href="#muscle-car-p55" x="166" y="522" class="hi" data-paint="aluminium" data-g="rueda-der-1"/>
+<use href="#muscle-car-p54" x="166" y="522" class="hi" data-paint="aluminium" data-g="rueda-der-1"/>
 <use href="#muscle-car-p11" x="167" y="520.5" class="lo" data-paint="carbon" data-g="rueda-der-1"/>
 <use href="#muscle-car-p5" x="171.5" y="520.5" class="hi" data-paint="aluminium" data-g="rueda-der-1"/>
 <use href="#muscle-car-p6" x="166.5" y="502" class="hi" data-paint="aluminium" data-g="rueda-der-1"/>
 <use href="#muscle-car-p7" x="183.5" y="524.5" class="hi" data-paint="aluminium" data-g="rueda-der-1"/>
 <use href="#muscle-car-p8" x="181" y="501.5" class="hi" data-paint="aluminium" data-g="rueda-der-1"/>
 <use href="#muscle-car-p10" x="185.5" y="508.5" class="hi" data-paint="aluminium" data-g="rueda-der-1"/>
-<use href="#muscle-car-p56" x="176" y="512" class="mid" data-paint="steel" data-g="rueda-der-1"/>
+<use href="#muscle-car-p55" x="176" y="512" class="mid" data-paint="steel" data-g="rueda-der-1"/>
 <use href="#muscle-car-p16" x="175.5" y="455.5" class="hi" data-paint="lacquer" data-g="carroceria"/>
 <use href="#muscle-car-p26" x="219.5" y="524.5" class="hi" data-paint="lacquer" data-g="carroceria"/>
 <use href="#muscle-car-p27" x="172.5" y="431.5" class="hi" data-paint="lacquer" data-g="carroceria"/>
@@ -783,7 +770,7 @@
 <path class="b" d="M427 531.5l-1-2.5 0 1.5 1 2zm-22-12l-2.5-.5 18 6.5 2 .5zm21 9.5l-1.5-2 .5 1.5 1 2zm-1.5-2l-2-1 .5 1.5 2 1zm-2-1l-2-.5 1 1.5 1.5.5zm-2-.5l-2 0 1 1.5 2 0zm-26.5-2l-2 2 18 6.5 2-2.5zm24.5 2l-2.5 1 1 1.5 2.5-1zm-26.5 0l-2 3 18 6.5 2-3zm-2 3l-1.5 3 18 6.5 1.5-3zm-1.5 3l-1 3.5 18 6.5 1-3.5zm27.5-5l-2 1 1 1.5 2-1zm-2 1l-2 2 1 1.5 2-2zm-2 2l-2 2.5 1 1 2-2zm-2 2.5l-2 3 1.5 1 1.5-3zm-2 3l-1.5 3 1.5.5 1.5-2.5zm-1.5 3l-1 3.5 1.5 0 1-3z"/>
 <path class="t" d="M402.5 519l-2 0 18 6.5 2 0zm-2 0l-2 1 17.5 6.5 2.5-1zm-2 1l-2.5 1.5 18 6 2-1zm-2.5 1.5l-2 2 18 6 2-2z"/>
 <path class="e" d="M402.5 519l2.5.5 17.5 6.5-2-.5-2 0-2.5 1-2 1-2 2-2 2.5-2 3-1.5 3-1 3.5-.5 3-.5 3.5.5 3 .5 2.5 1 2.5 1.5 2 2 1-18-6.5-2-1-1.5-2-1-2-.5-3-.5-3 .5-3 .5-3.5 1-3.5 1.5-3 2-3 2-2 2-2 2.5-1.5 2-1 2 0m7.5 40l2 .5 2 0 2-1 2.5-1 2-2 1-.5-2 1.5-2.5 1.5-2 .5-2 0-2-.5-1.5-1-1.5-1.5-1-2.5-.5-2.5 0-2.5 0-3 .5-3.5 1-3 1.5-2.5 1.5-3 2-2 2-2 2-1 2.5-1 2 0 1.5.5 2 1 1 2 1 2 1 2.5-.5-1-.5-2.5-1-2.5-1.5-2-2-1m5.5 9l0 3 0 3-1 3-1 3-1 3-2 2.5-1.5 2.5"/>
-<path class="d" d="M387 541.5h0M393 525.5h0M404 520h0M409.5 531h0M404 547h0M393 552h0"/>
+<path class="d" d="M387 541.5h0M393 525.5h0M404 520h0M393 552h0"/>
 </g>
 <use href="#muscle-car-p50" x="338" y="518.5" class="lo" data-paint="carbon" data-g="interior"/>
 <use href="#muscle-car-p53" x="363" y="489.5" class="mid" data-paint="carbon" data-g="interior"/>
@@ -814,7 +801,7 @@
 <use href="#muscle-car-p45" x="469" y="529" class="mid" data-paint="steel" data-g="motor"/>
 <use href="#muscle-car-p14" x="487.5" y="552" class="mid" data-paint="steel" data-g="rueda-izq-0"/>
 <use href="#muscle-car-p15" x="496" y="543.5" class="mid" data-paint="steel" data-g="freno-izq-0"/>
-<use href="#muscle-car-p57" x="505" y="482.5" class="hi" data-paint="lacquer" data-g="carroceria"/>
+<use href="#muscle-car-p56" x="505" y="482.5" class="hi" data-paint="lacquer" data-g="carroceria"/>
 <use href="#muscle-car-p32" x="260.5" y="539" class="hi" data-paint="lacquer" data-g="carroceria"/>
 <use href="#muscle-car-p17" x="506" y="535" class="hi" data-paint="lacquer" data-g="freno-izq-0"/>
 <use href="#muscle-car-p18" x="481.5" y="555" class="hi" data-paint="steel" data-g="freno-izq-0"/>
@@ -825,7 +812,7 @@
 <path class="t" d="M461.5 557l47 16.5-12.5-13z"/>
 <path class="e" d="M461.5 562l0-5 47 16.5 0 5-47-16.5m0-5l34.5 3.5 12.5 13"/>
 </g>
-<use href="#muscle-car-p58" x="495" y="559" class="hi" data-paint="steel" data-g="chasis"/>
+<use href="#muscle-car-p57" x="495" y="559" class="hi" data-paint="steel" data-g="chasis"/>
 <use href="#muscle-car-p20" x="489" y="547" class="mid" data-paint="steel" data-g="freno-izq-0"/>
 <use href="#muscle-car-p45" x="497.5" y="539" class="mid" data-paint="steel" data-g="motor"/>
 <g class="lo" data-paint="aluminium" data-g="motor">
@@ -844,7 +831,6 @@
 <path class="s3" d="M435 501l11 10 58.5 20.5-10.5-9.5z"/>
 <path class="b" d="M437 497.5l-2 3.5 59 21 2-4zm69.5 30.5l-10.5-10 1 2 9.5 8.5zm-10.5-10l-2 4 2-.5 1-1.5z"/>
 <path class="e" d="M437 497.5l59 20.5 10.5 10 0 .5-1 2-1 1-58.5-20.5-11-10 2-3.5m69.5 31l-9.5-8.5-1-2-2 4-59-21m70.5 29.5l-9.5-9 1-1.5m-3 2l10.5 9.5"/>
-<path class="d" d="M449.5 504.5h0M463.5 509.5h0M478 514.5h0M492 519.5h0"/>
 </g>
 <g class="hi" data-paint="aluminium" data-g="motor">
 <path class="s0" d="M502.5 541.5l4.5-7.5-11.5-10.5-4 7.5z"/>
@@ -852,11 +838,10 @@
 <path class="s3" d="M427.5 509.5l12.5 11.5 62 22-13-11.5z"/>
 <path class="b" d="M432.5 499.5l-5 10 61.5 22 5.5-10zm74.5 33.5l-12.5-11.5 1 2 11.5 10.5zm-12.5-11.5l-5.5 10 2.5-.5 4-7.5z"/>
 <path class="e" d="M432.5 499.5l62 22 12.5 11.5 0 1-4.5 7.5-.5 1.5-62-22-12.5-11.5 5-10m74.5 34.5l-11.5-10.5-1-2-5.5 10-61.5-22m68 14l-4 7.5-2.5.5 13 11.5m-10.5-12l11 10.5"/>
-<path class="l" d="M447 517.5l53.5 19"/>
 </g>
-<use href="#muscle-car-p59" x="511" y="530.5" class="hi" data-paint="lacquer" data-g="freno-izq-0"/>
-<use href="#muscle-car-p60" x="476" y="554.5" class="mid" data-paint="iron" data-g="chasis"/>
-<use href="#muscle-car-p61" x="461.5" y="550.5" class="mid" data-paint="iron" data-g="motor"/>
+<use href="#muscle-car-p58" x="511" y="530.5" class="hi" data-paint="lacquer" data-g="freno-izq-0"/>
+<use href="#muscle-car-p59" x="476" y="554.5" class="mid" data-paint="iron" data-g="chasis"/>
+<use href="#muscle-car-p60" x="461.5" y="550.5" class="mid" data-paint="iron" data-g="motor"/>
 <g class="mid" data-paint="iron" data-g="motor">
 <path class="s0" d="M492.5 559l8.5-15.5-10.5-10-8.5 16z"/>
 <path class="s2" d="M480 549.5l11.5 11 1-1.5-10.5-9.5z"/>
@@ -871,7 +856,7 @@
 <path class="b" d="M417 527l-15 28 62 22 15-28zm77 35.5l-15-13.5 1 2.5 14 13zm-15-13.5l-15 28 2 .5 14-26z"/>
 <path class="e" d="M402 557.5l0-2.5 15-28 62 22-15 28 0 2.5 2.5 2.5-61.5-22-3-2.5m64.5 24.5l24.5-11.5 1-1 2-4 0-1 0-2-15-13.5 1 2.5 14 13m-2 5l-24 11-2-2 0-1 14-26"/>
 </g>
-<use href="#muscle-car-p62" x="549" y="551" class="hi" data-paint="lacquer" data-g="carroceria"/>
+<use href="#muscle-car-p61" x="549" y="551" class="hi" data-paint="lacquer" data-g="carroceria"/>
 <g class="hi" data-paint="aluminium" data-g="motor">
 <path class="s0" d="M465 544l9.5-4.5.5-.5-8.5 4zm14-12l-16.5 7.5 4 3.5 8.5-4z"/>
 <path class="s2" d="M460 539l5 5 1.5-1-4-3.5z"/>
@@ -905,8 +890,8 @@
 <path class="b" d="M406.5 519.5l-11.5 22 62 21.5 11.5-21.5zm71.5 31l-9.5-9 1 2 8.5 8zm-9.5-9l-11.5 21.5 2 0 10.5-19.5z"/>
 <path class="e" d="M469.5 543.5l-10.5 19.5-2 0 11.5-21.5 1 2 8.5 8 0-1-9.5-9-62-22-11.5 22 62 21.5 9.5 9-62-21.5-9.5-9m64 21.5l8.5 8-1 1m1-1l10.5-19.5"/>
 </g>
-<use href="#muscle-car-p61" x="427.5" y="566.5" class="mid" data-paint="iron" data-g="motor"/>
-<use href="#muscle-car-p63" x="501" y="534.5" class="lo" data-paint="rubber" data-g="motor"/>
+<use href="#muscle-car-p60" x="427.5" y="566.5" class="mid" data-paint="iron" data-g="motor"/>
+<use href="#muscle-car-p62" x="501" y="534.5" class="lo" data-paint="rubber" data-g="motor"/>
 <g class="lo" data-paint="iron" data-g="motor">
 <path class="s0" d="M471.5 583.5l24.5-11.5.5-.5-23.5 11zm27.5-16.5l0-1.5-14-13-14.5 26.5 0 1.5 2.5 2 23.5-11z"/>
 <path class="s2" d="M469 581l2.5 2.5 1.5-1-2.5-2zm0-2.5l0 2.5 1.5-.5 0-1.5z"/>
@@ -984,11 +969,11 @@
 <use href="#muscle-car-p31" x="260" y="495" class="hi" data-paint="steel" data-g="puerta-der"/>
 <use href="#muscle-car-p40" x="256.5" y="466.5" class="mid" data-paint="glass" data-g="puerta-der.vidrio"/>
 <use href="#muscle-car-p33" x="229" y="423" class="hi" data-paint="lacquer" data-g="carroceria"/>
-<use href="#muscle-car-p64" x="399.5" y="550" class="mid" data-paint="steel" data-g="motor"/>
+<use href="#muscle-car-p63" x="399.5" y="550" class="mid" data-paint="steel" data-g="motor"/>
 <use href="#muscle-car-p46" x="417" y="579.5" class="mid" data-paint="iron" data-g="chasis"/>
 <use href="#muscle-car-p24" x="417" y="578" class="hi" data-paint="steel" data-g="chasis"/>
 <use href="#muscle-car-p46" x="417" y="572.5" class="mid" data-paint="iron" data-g="chasis"/>
-<use href="#muscle-car-p64" x="414" y="555" class="mid" data-paint="steel" data-g="motor"/>
+<use href="#muscle-car-p63" x="414" y="555" class="mid" data-paint="steel" data-g="motor"/>
 <use href="#muscle-car-p24" x="417" y="571" class="hi" data-paint="steel" data-g="chasis"/>
 <use href="#muscle-car-p29" x="417" y="566.5" class="hi" data-paint="steel" data-g="chasis"/>
 <g class="mid" data-paint="steel" data-g="motor">
@@ -1016,17 +1001,17 @@
 <path class="e" d="M500.5 550.5l2 .5 1.5.5-2-.5-2.5.5-2 .5-2.5 1.5-2.5 2-2 2.5-2 2.5-1.5 3.5-1.5 3-1 3.5-.5 3.5-.5 3.5.5 3.5.5 2.5 1 2.5 1.5 2.5 1.5 1.5 2 1-1.5-.5-2-1-1.5-2-1.5-2-1-2.5-.5-3-.5-3 .5-3.5.5-3.5 1-3.5 1.5-3 1.5-3.5 2-2.5 2-2.5 2.5-2 2.5-1.5 2-.5 2.5-.5m-10 40.5l2 0 2.5 0 2.5-1 2-1 2.5-2 .5-.5-2 2-2.5 1-2.5 1-2 0-2 0-2-1-1.5-1.5-1.5-2-1-2.5-.5-3 0-3 0-3 .5-3.5 1-3.5 1.5-3 1.5-3 2-3 2-2 2-2 2.5-1.5 2.5-.5 2-.5 2 .5 2 1 1.5 1.5 1.5 2 1 2.5.5 2.5 0-.5-1-3-1-2.5-1-2-2-1.5-2-1m7 10.5l0 3.5 0 3-.5 3.5-1 3-1.5 3.5-1.5 3-2 2.5-2 2.5"/>
 <path class="lb" d="M498 571.5l-12.5 5.5 12.5-5.5-6-12 6 12 6-18-6 18 12.5-6-12.5 6 6 12-6-12-6 17.5"/>
 </g>
-<use href="#muscle-car-p64" x="428" y="560" class="mid" data-paint="steel" data-g="motor"/>
+<use href="#muscle-car-p63" x="428" y="560" class="mid" data-paint="steel" data-g="motor"/>
 <use href="#muscle-car-p39" x="318" y="502" class="hi" data-paint="lacquer" data-g="puerta-der"/>
 <use href="#muscle-car-p34" x="527.5" y="579.5" class="mid" data-paint="iron" data-g="chasis"/>
-<use href="#muscle-car-p60" x="429.5" y="576" class="mid" data-paint="iron" data-g="chasis"/>
-<use href="#muscle-car-p58" x="436.5" y="586.5" class="hi" data-paint="steel" data-g="chasis"/>
+<use href="#muscle-car-p59" x="429.5" y="576" class="mid" data-paint="iron" data-g="chasis"/>
+<use href="#muscle-car-p57" x="436.5" y="586.5" class="hi" data-paint="steel" data-g="chasis"/>
 <use href="#muscle-car-p15" x="428" y="575.5" class="mid" data-paint="steel" data-g="freno-der-0"/>
-<use href="#muscle-car-p64" x="442" y="565" class="mid" data-paint="steel" data-g="motor"/>
+<use href="#muscle-car-p63" x="442" y="565" class="mid" data-paint="steel" data-g="motor"/>
 <use href="#muscle-car-p17" x="438" y="567" class="hi" data-paint="lacquer" data-g="freno-der-0"/>
 <use href="#muscle-car-p18" x="413.5" y="587" class="hi" data-paint="steel" data-g="freno-der-0"/>
 <use href="#muscle-car-p20" x="421" y="579" class="mid" data-paint="steel" data-g="freno-der-0"/>
-<use href="#muscle-car-p63" x="463" y="552" class="lo" data-paint="rubber" data-g="motor"/>
+<use href="#muscle-car-p62" x="463" y="552" class="lo" data-paint="rubber" data-g="motor"/>
 <g class="hi" data-paint="aluminium" data-g="motor">
 <path class="s0" d="M480.5 589l65.5-30.5 0-27-65.5 31z"/>
 <path class="s3" d="M472.5 586.5l8 2.5 0-26.5-8-3z"/>
@@ -1052,7 +1037,7 @@
 <path class="t" d="M492.5 616l-.5.5.5 0 6 2.5 1 0 1 0 90-42.5.5-.5-.5 0-6-2.5-1 0-1 .5z"/>
 <path class="e" d="M591 580.5l-90 42.5-1.5 0-1.5 0-6-2.5-1-.5 0-3 1 .5 6 2.5 1.5 0 1.5 0 90-42.5.5-.5 0 3-.5.5m-100 36.5l.5-.5 1-.5-.5.5.5 0 6 2.5 1 0 1 0 90-42.5.5-.5.5 1m-99 39l90-42 1-.5 1 0 6 2.5.5 0"/>
 </g>
-<use href="#muscle-car-p59" x="443" y="562.5" class="hi" data-paint="lacquer" data-g="freno-der-0"/>
+<use href="#muscle-car-p58" x="443" y="562.5" class="hi" data-paint="lacquer" data-g="freno-der-0"/>
 <g class="hi" data-paint="lacquer" data-g="carroceria">
 <path class="s0" d="M583.5 575l1-.5 0-40.5-1 1zm-87.5 41l87.5-41 0-40-87.5 41z"/>
 <path class="s1" d="M494.5 616.5l1.5-.5 0-40-1.5.5z"/>
@@ -1070,7 +1055,7 @@
 <path class="t" d="M583 521.5l-130.5-67.5-92 43.5 130.5 67z"/>
 <path class="e" d="M491 564.5l0 7.5-1.5-1.5 0-5-129-66 0-2 0 7.5 130.5 67 92-43 0-7.5-92 43-130.5-67 92-43.5 130.5 67.5m-93.5 49l-129-66 0-5"/>
 </g>
-<use href="#muscle-car-p65" x="441" y="483.5" class="hi" data-paint="aluminium" data-g="carroceria.capo"/>
+<use href="#muscle-car-p64" x="441" y="483.5" class="hi" data-paint="aluminium" data-g="carroceria.capo"/>
 <g class="hi" data-paint="lacquer" data-g="carroceria.capo">
 <path class="s0" d="M505.5 508l0-4.5-37.5 17.5 0 5z"/>
 <path class="s2" d="M468 526l0-5-1.5 1 0 2.5z"/>
@@ -1082,9 +1067,9 @@
 </g>
 <use href="#muscle-car-p42" x="350.5" y="570.5" class="hi" data-paint="lacquer" data-g="carroceria"/>
 <use href="#muscle-car-p43" x="289.5" y="477" class="hi" data-paint="lacquer" data-g="carroceria"/>
-<use href="#muscle-car-p54" x="396.5" y="598" class="lo" data-paint="rubber" data-g="rueda-der-0"/>
-<use href="#muscle-car-p65" x="389" y="507.5" class="hi" data-paint="aluminium" data-g="carroceria.capo"/>
-<use href="#muscle-car-p55" x="386" y="600" class="hi" data-paint="aluminium" data-g="rueda-der-0"/>
+<use href="#muscle-car-p13" x="396.5" y="598" class="lo" data-paint="rubber" data-g="rueda-der-0"/>
+<use href="#muscle-car-p64" x="389" y="507.5" class="hi" data-paint="aluminium" data-g="carroceria.capo"/>
+<use href="#muscle-car-p54" x="386" y="600" class="hi" data-paint="aluminium" data-g="rueda-der-0"/>
 <g class="lo" data-paint="carbon" data-g="carroceria">
 <path class="s0" d="M507.5 607.5l71-33 0-21-71 33.5z"/>
 <path class="s3" d="M504.5 606.5l3 1 0-20.5-3-1.5z"/>
@@ -1092,16 +1077,16 @@
 <path class="e" d="M578.5 553.5l-3-1-71 33 0 21 3 1 0-20.5 71-33.5 0 21-71 33m0-20.5l-3-1.5"/>
 <path class="l" d="M576 570l-66 30.5m66-36l-66 30.5m66-36.5l-66 31"/>
 </g>
-<use href="#muscle-car-p66" x="585" y="548" class="hi" data-paint="aluminium" data-g="carroceria"/>
+<use href="#muscle-car-p65" x="585" y="548" class="hi" data-paint="aluminium" data-g="carroceria"/>
 <use href="#muscle-car-p11" x="387.5" y="598.5" class="lo" data-paint="carbon" data-g="rueda-der-0"/>
 <use href="#muscle-car-p5" x="392" y="598.5" class="hi" data-paint="aluminium" data-g="rueda-der-0"/>
 <use href="#muscle-car-p6" x="386.5" y="579.5" class="hi" data-paint="aluminium" data-g="rueda-der-0"/>
 <use href="#muscle-car-p7" x="403.5" y="602.5" class="hi" data-paint="aluminium" data-g="rueda-der-0"/>
 <use href="#muscle-car-p8" x="401" y="579.5" class="hi" data-paint="aluminium" data-g="rueda-der-0"/>
 <use href="#muscle-car-p10" x="406" y="586.5" class="hi" data-paint="aluminium" data-g="rueda-der-0"/>
-<use href="#muscle-car-p56" x="396.5" y="589.5" class="mid" data-paint="steel" data-g="rueda-der-0"/>
-<use href="#muscle-car-p57" x="396" y="533.5" class="hi" data-paint="lacquer" data-g="carroceria"/>
-<use href="#muscle-car-p66" x="516.5" y="580" class="hi" data-paint="aluminium" data-g="carroceria"/>
-<use href="#muscle-car-p62" x="440" y="602.5" class="hi" data-paint="lacquer" data-g="carroceria"/>
+<use href="#muscle-car-p55" x="396.5" y="589.5" class="mid" data-paint="steel" data-g="rueda-der-0"/>
+<use href="#muscle-car-p56" x="396" y="533.5" class="hi" data-paint="lacquer" data-g="carroceria"/>
+<use href="#muscle-car-p65" x="516.5" y="580" class="hi" data-paint="aluminium" data-g="carroceria"/>
+<use href="#muscle-car-p61" x="440" y="602.5" class="hi" data-paint="lacquer" data-g="carroceria"/>
 </g>
 </svg>

@@ -394,9 +394,10 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
     }
     const f = pick ? params[pick] : 0;
     if (scene && (next !== pose || f !== front)) {
+      // Con el orden en reposo (el del SVG recién dibujado) no hay nada que deshacer: ahorra mover todas las piezas.
+      if (pose || front) for (const n of base) scene.append(n);
       pose = next;
       front = f;
-      for (const n of base) scene.append(n);
       const q = r?.poses[pose - 1] ?? [];
       for (let i = 1; i < q.length; i += 2) scene.insertBefore(base[q[i]], base[q[i + 1]] ?? null);
       // La pieza elegida se pinta encima de todo: aunque esté dentro del bloque, se ve entera entre las atenuadas.
@@ -563,6 +564,8 @@ export interface OrbitHandle {
   stop(): void;
 }
 
+const KEYS = new Map<string, [number, number]>([["ArrowLeft", [-15, 0]], ["ArrowRight", [15, 0]], ["ArrowUp", [0, 5]], ["ArrowDown", [0, -5]]]);
+
 /**
  * Carga el giro solo cuando hace falta, como `@defer (prefetch on hover; on interaction)`: al pasar el puntero o
  * enfocar la figura se precarga; al presionar el dibujo o un botón de giro se activa.
@@ -593,15 +596,24 @@ export function orbitOnDemand(el: HTMLElement, load: () => Promise<OrbitHandle>)
     const v = Number(b.dataset["orbit"]);
     get().then((o) => (v ? o.turn(v) : o.reset()));
   };
+  // Con el dibujo enfocado, ← → giran 15° y ↑ ↓ cambian la elevación 5°; igual que los botones, y sin quitarle sus flechas a un control.
+  const key = (e: KeyboardEvent) => {
+    const k = KEYS.get(e.key);
+    if (!k || e.altKey || e.ctrlKey || e.metaKey) return;
+    e.preventDefault();
+    get().then((o) => o.turn(...k));
+  };
   el.addEventListener("pointerenter", warm, { once: true });
   el.addEventListener("focusin", warm, { once: true });
   svg?.addEventListener("pointerdown", down);
+  svg?.addEventListener("keydown", key);
   window.addEventListener("pointerup", up);
   el.addEventListener("click", click);
   return () => {
     el.removeEventListener("pointerenter", warm);
     el.removeEventListener("focusin", warm);
     svg?.removeEventListener("pointerdown", down);
+    svg?.removeEventListener("keydown", key);
     window.removeEventListener("pointerup", up);
     el.removeEventListener("click", click);
     orbit?.stop();

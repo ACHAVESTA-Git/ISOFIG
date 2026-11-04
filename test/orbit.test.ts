@@ -96,9 +96,9 @@ test("turn redibuja una esfera y una cápsula desde otra cámara, con su orden d
   orbit.stop();
 });
 
-test("el giro tiene tope a cada lado: el botón de ese lado se marca aria-disabled y reset vuelve a la vista inicial", () => {
+test("con `range`, el giro tiene tope a cada lado: el botón de ese lado se marca aria-disabled y reset vuelve a la vista inicial", () => {
   const f = orbiting();
-  const orbit = enableOrbit(f.el, spec, { lang: "en" });
+  const orbit = enableOrbit(f.el, spec, { lang: "en", range: 40 });
   const left = f.q('[data-orbit="-20"]');
   const right = f.q('[data-orbit="20"]');
   orbit.turn(100);

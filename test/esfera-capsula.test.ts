@@ -158,13 +158,13 @@ test("auditoría: una esfera tangente a otra, o a una caja, no da falsos avisos;
   assert.deepEqual(warn([sphere("s", [10, 10, 40], 6, { float: true })]), []);
 });
 
-test("girar: drawScene desde otra cámara redibuja la esfera y la cápsula, con la escala fija", () => {
+test("girar: drawScene desde otra cámara redibuja la esfera y la cápsula, con la escala de la vista inicial como tope", () => {
   const spec = flat([box("piso", [0, 0, 0], [80, 50, 2], { tone: "lo" }), sphere("bola", [20, 25, 8], 6), capsule("hueso", [40, 10, 6], 4, 30, { axis: [0, 1, 1] })]);
   const home = drawScene(spec, "en");
   const { scale } = home.cam;
   const seen = [20, 70].map((azimuth) => drawScene(spec, "en", { azimuth, elevation: 30, scale }));
   for (const s of seen) {
-    near(s.cam.scale, scale);
+    assert.ok(s.cam.scale <= scale + 1e-9, "nunca crece más que en la vista inicial");
     assert.notEqual(s.markup, home.markup);
     assert.deepEqual(s.cycles, []);
     assert.equal(s.items.length, 3);

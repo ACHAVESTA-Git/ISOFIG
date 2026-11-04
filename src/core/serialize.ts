@@ -15,7 +15,7 @@ function join(tokens: string[]): string {
   let out = "";
   let prev = "";
   for (const tk of tokens) {
-    const glue = out === "" || /[a-zA-Z]$/.test(out) || tk.startsWith("-") || (tk.startsWith(".") && prev.includes("."));
+    const glue = out === "" || tk.startsWith("-") || (tk.startsWith(".") && prev.includes("."));
     out += (glue ? "" : " ") + tk;
     prev = tk;
   }
