@@ -55,6 +55,10 @@
       "default": "./dist/zoom/index.js"
     },
     "./astro": "./src/astro/Figure.astro",
+    "./astro/client": {
+      "types": "./dist/astro/client.d.ts",
+      "default": "./dist/astro/client.js"
+    },
     "./theme.css": "./src/theme/theme.css",
     "./package.json": "./package.json"
   },

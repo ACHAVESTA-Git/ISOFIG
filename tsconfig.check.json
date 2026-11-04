@@ -19,6 +19,7 @@
     "src/node",
     "src/kit",
     "src/zoom",
+    "src/astro",
     "examples",
     "test"
   ]

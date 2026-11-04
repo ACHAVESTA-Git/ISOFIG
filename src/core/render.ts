@@ -14,6 +14,12 @@ export interface RenderOptions {
   orbit?: boolean;
   /** `false` quita el chip «Ampliar» (el módulo isofig/zoom se carga al pulsarlo). */
   zoom?: boolean;
+  /**
+   * Nombre de esta copia de la figura para el DOM: sustituye a `spec.id` en los `id` (`-t`, `-d`, `-p0…`) y en el
+   * `name` de los radios, de modo que la misma figura pueda aparecer varias veces en una página. No toca
+   * `data-isofig` ni el JSON del runtime. Por defecto, `spec.id`: el marcado sale igual que sin esta opción.
+   */
+  instance?: string;
 }
 
 export interface RuntimeData {
@@ -80,6 +86,7 @@ const only = (issues: Issue[], severity: Issue["severity"]) => issues.filter((i)
 export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Rendered {
   const lang = options.lang ?? "en";
   const issues = validateSpec(spec, { lang });
+  if (options.instance !== undefined && !/^[a-z0-9][a-z0-9-]*$/i.test(options.instance)) issues.push(makeIssue(lang, "instance-invalid", "instance", { id: options.instance }));
   // Con la estructura rota, o con una cuenta que no termina, no hay nada que dibujar: solo los errores.
   if (issues.some((i) => i.code === "spec-not-object" || i.code === "type-invalid" || i.code === "count-too-large")) return failed(lang, issues);
   // Una spec rota no lanza: da sus errores. Si el dibujo falla por algo que la validación no explica, se dice aquí.
@@ -95,16 +102,17 @@ function draw(spec: FigureSpec, options: RenderOptions, lang: string, issues: Is
   const labels = LABELS[lang] ?? LABELS["en"];
   const W = spec.width ?? 640;
   const H = spec.height ?? 400;
-  const { markup, basis, spins, items, cycles, cam } = drawScene(spec, lang);
+  const { markup, basis, spins, items, cycles, cam } = drawScene(spec, lang, { instance: options.instance });
 
   const id = spec.id;
+  const dom = options.instance ?? id;
   const title = textOf(spec.title, lang);
   const caption = textOf(spec.caption, lang);
   const alt = textOf(spec.alt, lang);
-  const desc = alt && alt !== caption ? `<desc id="${esc(id)}-d">${esc(alt)}</desc>` : "";
+  const desc = alt && alt !== caption ? `<desc id="${esc(dom)}-d">${esc(alt)}</desc>` : "";
   const svg =
-    `<svg class="isofig-art${options.orbit ? " isofig-orbitable" : ""}" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${esc(id)}-t"${desc ? ` aria-describedby="${esc(id)}-d"` : ""}>` +
-    `<title id="${esc(id)}-t">${esc(title)}</title>${desc}` +
+    `<svg class="isofig-art${options.orbit ? " isofig-orbitable" : ""}" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${esc(dom)}-t"${desc ? ` aria-describedby="${esc(dom)}-d"` : ""}>` +
+    `<title id="${esc(dom)}-t">${esc(title)}</title>${desc}` +
     `<g class="isofig-scene">${markup}</g></svg>`;
 
   const fmt = new Intl.NumberFormat(lang);
@@ -159,7 +167,7 @@ function draw(spec: FigureSpec, options: RenderOptions, lang: string, issues: Is
         return (
           `<fieldset class="isofig-param isofig-choice"><legend>${label}</legend>` +
           opts
-            .map((o, k) => `<label><input type="radio" name="${esc(id)}-${esc(p.id)}" value="${k}" data-param="${esc(p.id)}"${k === num(p.value) ? " checked" : ""}><span>${esc(o)}</span></label>`)
+            .map((o, k) => `<label><input type="radio" name="${esc(dom)}-${esc(p.id)}" value="${k}" data-param="${esc(p.id)}"${k === num(p.value) ? " checked" : ""}><span>${esc(o)}</span></label>`)
             .join("") +
           `</fieldset>`
         );

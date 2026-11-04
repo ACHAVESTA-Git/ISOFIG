@@ -48,6 +48,11 @@ const CATALOG = {
     en: (v, q) => `id ${q(v.id)}: use letters, numbers and hyphens.`,
     es: (v, q) => `id ${q(v.id)}: usa letras, números y guiones.`,
   },
+  "instance-invalid": {
+    severity: "error",
+    en: (v, q) => `instance ${q(v.id)}: use letters, numbers and hyphens.`,
+    es: (v, q) => `instance ${q(v.id)}: usa letras, números y guiones.`,
+  },
   "title-missing": {
     severity: "warning",
     en: () => "The figure has no title: the SVG <title> would be empty.",
@@ -459,6 +464,18 @@ const CATALOG = {
     severity: "warning",
     en: (v) => `--set ${v.id}: the spec has no such parameter.`,
     es: (v) => `--set ${v.id}: la spec no tiene ese parámetro.`,
+  },
+
+  // Lo que un sitio cambia de una figura (applyOverrides y la prop overrides de <Figure>)
+  "override-unknown-param": {
+    severity: "error",
+    en: (v, q) => `${v.where} names ${q(v.param)}, which is not a parameter of the figure${v.suggest ? `; did you mean ${q(v.suggest)}?` : "."} Parameters: ${v.known || "none"}.`,
+    es: (v, q) => `${v.where} nombra ${q(v.param)}, que no es un parámetro de la figura${v.suggest ? `; ¿querías ${q(v.suggest)}?` : "."} Parámetros: ${v.known || "ninguno"}.`,
+  },
+  "override-action-value": {
+    severity: "error",
+    en: (v, q) => `${q(v.param)} is an action: it has no initial value (a preset presses it with 'press').`,
+    es: (v, q) => `${q(v.param)} es una acción: no tiene valor inicial (un desvío la pulsa con 'press').`,
   },
 
   // Color (los mensajes viven junto a la paleta)

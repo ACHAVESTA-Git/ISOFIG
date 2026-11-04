@@ -44,7 +44,7 @@ returns its errors.
 | Code | What |
 |---|---|
 | `spec-not-object`, `type-invalid` | The spec, or a field that must be a list or an object, is not |
-| `id-invalid` | The figure `id` is not letters, numbers and hyphens |
+| `id-invalid`, `instance-invalid` | The figure `id`, or the `instance` passed to `renderFigure`, is not letters, numbers and hyphens |
 | `parts-missing` | No `parts`, no `root`, no `map` |
 | `part-id-missing`, `kind-missing`, `kind-unknown` | A part without id or kind, or with a kind that does not exist (the message lists the kinds) |
 | `field-missing` | A part lacks a field it cannot be drawn without (`size` of a box, `on` of a detail…) |
@@ -55,6 +55,7 @@ returns its errors.
 | `on-unknown`, `on-not-solid` | A detail on a part that does not exist, or that is itself a detail |
 | `dimension-invalid`, `camera-invalid`, `spin-plane-invalid` | `width`, `height`, `pad`, the camera angles or a spin plane that cannot be used |
 | `draw-failed`, `model-invalid`, `model-throws`, `presets-need-model` | The drawing or the model failed; `--presets` without `--model` |
+| `override-unknown-param`, `override-action-value` | `applyOverrides` (and the `overrides` prop of `<Figure>`) names an id that is not a parameter, or gives an initial value to an action. What it changes is also checked with the `param-value-*`, `toggle-value-invalid`, `choice-value-invalid` and `preset-*` codes, so the messages are the same |
 
 **Warnings** (the ones marked ↑ become errors in 1.0)
 

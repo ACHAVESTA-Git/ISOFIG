@@ -130,6 +130,8 @@ function fitPoints(spec: FigureSpec, items: Item[]): Vec3[] {
 export interface View extends CameraOptions {
   /** Escala fija: al girar, la figura no cambia de tamaño. */
   scale?: number;
+  /** Prefijo de los ids de `<defs>`; por defecto, el id de la spec (ver `RenderOptions.instance`). */
+  instance?: string;
 }
 
 export interface Scene {
@@ -150,7 +152,7 @@ export function drawScene(spec: FigureSpec, lang: string, view: View = {}): Scen
   const options = { ...spec.camera, ...(view.azimuth !== undefined ? { azimuth: view.azimuth } : {}), ...(view.elevation !== undefined ? { elevation: view.elevation } : {}) };
   const cam = fitCamera(options, fitPoints(spec, items), W, H, spec.pad ?? 24, view.scale);
   const { order, cycles } = paintOrder(cam, items.map((i) => i.box), items.map((i) => i.id));
-  const { defs, art } = artOf(spec.id, cam, items, order, lang, customPaints(spec));
+  const { defs, art } = artOf(view.instance ?? spec.id, cam, items, order, lang, customPaints(spec));
   const spins: Record<string, number[]> = {};
   for (const [g, def] of Object.entries(spec.groups ?? {})) {
     if (!def.spin) continue;
