@@ -42,7 +42,7 @@
           { "id": "worker", "is": "function", "name": "Worker" }
         ]
       },
-      { "id": "files", "is": "storage", "name": { "es": "Objetos", "en": "Objects" } },
+      { "id": "files", "is": "storage", "paint": "data", "name": { "es": "Objetos", "en": "Objects" } },
       { "id": "mail", "is": "external", "name": { "es": "Correo", "en": "Mail" } }
     ],
     "links": [
@@ -58,8 +58,8 @@
       { "from": "worker", "to": "mail" }
     ],
     "flows": [
-      { "id": "compra", "path": ["phone", "cdn", "lb", "app-1", "queue", "worker", "mail"], "label": { "es": "compra", "en": "purchase" }, "every": 3 },
-      { "id": "cache", "path": ["laptop", "cdn", "lb", "app-2", "cache"], "label": { "es": "acierto de caché", "en": "cache hit" }, "paint": "copper", "delay": 1 }
+      { "id": "compra", "path": ["phone", "cdn", "lb", "app-1", "queue", "worker", "mail"], "label": { "es": "compra", "en": "purchase" }, "every": 3, "paint": "messaging" },
+      { "id": "cache", "path": ["laptop", "cdn", "lb", "app-2", "cache"], "label": { "es": "acierto de caché", "en": "cache hit" }, "paint": "data", "delay": 1 }
     ]
   }
 }

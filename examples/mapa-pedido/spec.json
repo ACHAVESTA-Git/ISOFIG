@@ -26,7 +26,7 @@
     ],
     "flows": [
       { "id": "pedido", "path": ["cart", "pay", "stock", "queue", "ship"], "label": { "es": "pedido aprobado", "en": "approved order" } },
-      { "id": "rechazo", "path": ["cart", "pay", "notice"], "label": { "es": "pago rechazado", "en": "rejected payment" }, "paint": "lacquer", "delay": 2.5 }
+      { "id": "rechazo", "path": ["cart", "pay", "notice"], "label": { "es": "pago rechazado", "en": "rejected payment" }, "paint": "client", "delay": 2.5 }
     ]
   }
 }

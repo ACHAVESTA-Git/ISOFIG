@@ -52,13 +52,13 @@ export interface LinkDraw {
   z: number;
 }
 
-export const RW = 4.4;
-export const RT = 1.4;
+export const RW = 5.6;
+export const RT = 2;
 const DASH = 7;
 const SKIP = 5;
 
 export const HEAD: Record<Exclude<End, "none">, { len: number; half: number }> = {
-  arrow: { len: 9, half: 4.4 },
+  arrow: { len: 10, half: 5.4 },
   triangle: { len: 13, half: 7 },
   diamond: { len: 17, half: 5.6 },
   "diamond-filled": { len: 17, half: 5.6 },
@@ -96,7 +96,7 @@ export function headPlan(kind: Exclude<End, "none">, tip: Pt, dir: Pt): Vec2[] {
   return area < 0 ? [...pts].reverse() : pts;
 }
 
-const ribbonTone = { tone: "mid" as const, paint: "steel" };
+const ribbonTone = { tone: "mid" as const };
 
 interface Seg {
   axis: "x" | "y";
@@ -254,7 +254,7 @@ export function drawLinks(draws: LinkDraw[], s: number, nodes: Rect[], shadows: 
       if (drawn.has(key)) return;
       drawn.add(key);
       const filled = h.kind === "arrow" || h.kind === "diamond-filled";
-      parts.push(prism(`l${d.index}-head${k}`, headPlan(h.kind, h.tip, h.dir), d.z, RT + 0.6, filled ? { tone: "mid", ...(d.paint ? isRole(d.paint) : { paint: "iron" }), bevel: 0.3, float: d.z > 0, ground: true } : { tone: "hi", bevel: 0.3, float: d.z > 0, ground: true }));
+      parts.push(prism(`l${d.index}-head${k}`, headPlan(h.kind, h.tip, h.dir), d.z, RT + 0.6, filled ? { tone: h.kind === "diamond-filled" ? "lit" : "lo", ...isRole(d.paint), bevel: 0.3, float: d.z > 0, ground: true } : { tone: "hi", bevel: 0.3, float: d.z > 0, ground: true }));
     });
     if (d.label !== undefined) {
       const w = widthOf(d.label, s);

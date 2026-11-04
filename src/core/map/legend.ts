@@ -96,11 +96,11 @@ export function buildLegend(input: LegendInput): { node: TreeNode; fx: number; f
         const tip: [number, number] = toEnd ? [ox + 3.5, oy + markW] : [ox + 3.5, oy];
         const dir: [number, number] = toEnd ? [0, 1] : [0, -1];
         const [a, b] = toEnd ? [oy, oy + markW - len] : [oy + len, oy + markW];
-        const ribbon = { tone: "mid" as const, paint: "steel", radius: 0.8, bevel: 0.25 } as never;
+        const ribbon = { tone: "mid" as const, radius: 0.8, bevel: 0.25 };
         if (style.dashed) {
           for (const [p, q] of [[a, a + 4], [a + 7, Math.min(b, a + 11)]]) if (q > p) parts.push(box(`${id}-d${p}`, [ox + 3.5 - RW / 2, p, 2.5], [RW, q - p, RT], ribbon));
         } else parts.push(box(`${id}-r`, [ox + 3.5 - RW / 2, a, 2.5], [RW, b - a, RT], ribbon));
-        if (head) parts.push(prism(`${id}-h`, headPlan(head, tip, dir), 2.5, RT + 0.6, head === "arrow" || head === "diamond-filled" ? ({ tone: "mid", paint: "iron", bevel: 0.3 } as never) : { tone: "hi", bevel: 0.3 }));
+        if (head) parts.push(prism(`${id}-h`, headPlan(head, tip, dir), 2.5, RT + 0.6, head === "diamond-filled" ? { tone: "lit", bevel: 0.3 } : head === "arrow" ? { tone: "lo", bevel: 0.3 } : { tone: "hi", bevel: 0.3 }));
         after = markW;
       } else {
         const paint = e.mark === "packet" ? (e.paint ? { tone: "hi", paint: e.paint } : { tone: "lit" }) : { tone: "hi", paint: e.paint };
