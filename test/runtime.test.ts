@@ -532,7 +532,7 @@ test("el estado del grupo (ok, warn, fail) tiñe sus piezas y se quita cuando el
 test("un grupo con spin gira dentro de su plano alrededor de su centro: 180° es un reflejo respecto del centro proyectado", () => {
   motion.reduced = true;
   const spec = demoSpec();
-  spec.parts.push({ id: "wheel", kind: "cylinder", at: [90, 35, 6], r: 12, h: 4, axis: "z", group: "wheel", tone: "hi" });
+  spec.parts!.push({ id: "wheel", kind: "cylinder", at: [90, 35, 6], r: 12, h: 4, axis: "z", group: "wheel", tone: "hi" });
   spec.groups!["wheel"] = { spin: { center: [90, 35, 6], plane: "xy" } };
   const f = build(spec);
   let angle = 0;
