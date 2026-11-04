@@ -23,7 +23,7 @@ Al instalar eliges el alcance: usuario (todos tus proyectos), proyecto o local. 
 `~/.claude/skills/isofig`, bórrala: si no, la skill aparecerá dos veces.
 
 Para compilar las figuras, la skill usa el paquete npm: si el proyecto no lo tiene, la skill te pedirá
-`npm i github:ACHAVESTA-Git/ISOFIG#v0.10.0`.
+`npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1`.
 
 ## 2. Invocar la skill
 

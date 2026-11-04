@@ -150,7 +150,7 @@ a single offline HTML file, in both styles and both themes.
 ### 1. Install
 
 ```sh
-npm i github:ACHAVESTA-Git/ISOFIG#v0.10.0
+npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1
 ```
 
 Node 22.18 or later. The package builds itself on install. The name `isofig` on the npm registry does not belong to this project yet: until it is published there, install only from this repository.

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.1 · 2026-11-04
+
+- Security: the Claude Code skill and the guides no longer run `npm i isofig` or `npx isofig`. That name is not published on npm by this project, so whoever registered it would run code on every plugin user's machine. Installs now come from this repository pinned to a tag (`npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1`) and the CLI runs with `npx --no-install`, which never downloads a package. Added `SECURITY.md`.
+- The package now ships `examples/muscle-car` and `examples/sistema-oseo`, which the skill cites; a test checks that every example the skill and the guides cite is in `files`.
+
 ## 0.10.0 · 2026-11-04
 
 Feedback from the first outside review: picking a part now flies the camera to it, figures turn a full 360°, nodes
