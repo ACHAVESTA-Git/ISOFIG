@@ -98,8 +98,8 @@ software, las dos en JSON puro con nombres y notas en español e inglés.
 </p>
 
 <p align="center"><sub><code>examples/muscle-car/spec.json</code>: un muscle car tipo Camaro, un esquema propio y sin logos.
-13 piezas con nombre y 9 pasos, <b>27,4 KB gzip</b>. Salen primero el capó, las puertas y los vidrios; luego el interior
-y el V8, y al final las ruedas con sus frenos, hasta dejar el chasis solo. Elige «Motor V8» y la cámara entra.</sub></p>
+13 piezas con nombre y 9 pasos, <b>27,4 KB gzip</b>. Salen primero el capó, las puertas y los vidrios; luego el interior,
+las ruedas y el tren motriz, y al final el V8 sale por delante, hasta dejar el chasis solo. Elige «Motor V8» y la cámara entra.</sub></p>
 
 <p align="center">
   <img src="docs/assets/sistema-oseo-luxe-dark.png" width="32%" alt="Un esqueleto humano en posición anatómica sobre un soporte de exhibición">

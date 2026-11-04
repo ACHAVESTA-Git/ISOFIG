@@ -3,12 +3,12 @@
   "title": {"es": "Muscle car tipo Camaro", "en": "Camaro-style muscle car"},
   "hint": {"es": "Desármalo paso a paso o elige una pieza", "en": "Take it apart step by step, or pick a part"},
   "caption": {
-    "es": "Esquema propio, inspirado en el Camaro de quinta y sexta generación: capó largo, cabina baja y retrasada, V8 delante y tracción trasera. Al desarmarlo sale primero lo de fuera (capó, puertas, vidrios, carrocería), luego el interior y el tren motriz, y al final las ruedas con sus frenos: queda el chasis solo.",
-    "en": "A schematic of our own, inspired by the fifth- and sixth-generation Camaro: long hood, low set-back cabin, front V8 and rear-wheel drive. Taking it apart removes the outside first (hood, doors, glass, body), then the interior and the drivetrain, and finally the wheels with their brakes, leaving the bare chassis."
+    "es": "Esquema propio, inspirado en el Camaro de quinta y sexta generación: capó largo, cabina baja y retrasada, V8 delante y tracción trasera. Al desarmarlo sale primero lo de fuera (capó, puertas, vidrios, carrocería), luego el interior, las ruedas con sus frenos y el tren motriz, y al final el motor con su radiador por delante: queda el chasis solo.",
+    "en": "A schematic of our own, inspired by the fifth- and sixth-generation Camaro: long hood, low set-back cabin, front V8 and rear-wheel drive. Taking it apart removes the outside first (hood, doors, glass, body), then the interior, the wheels with their brakes and the drivetrain, and finally the engine and radiator out the front, leaving the bare chassis."
   },
   "alt": {
-    "es": "Muscle car de dos puertas en vista isométrica que se desarma en nueve pasos: capó y maletera, puertas, vidrios, carrocería, asientos y tablero, motor V8, caja y cardán, diferencial y escape, y ruedas con frenos. Queda el chasis con su suspensión.",
-    "en": "A two-door muscle car in isometric view that comes apart in nine steps: hood and trunk lid, doors, glass, body, seats and dashboard, V8 engine, gearbox and driveshaft, differential and exhaust, and wheels with brakes. The chassis and its suspension remain."
+    "es": "Muscle car de dos puertas en vista isométrica que se desarma en nueve pasos: capó y maletera, puertas, vidrios, carrocería, asientos y tablero, ruedas con frenos, caja y cardán, diferencial y escape, y el motor V8 con su radiador. Queda el chasis con su suspensión.",
+    "en": "A two-door muscle car in isometric view that comes apart in nine steps: hood and trunk lid, doors, glass, body, seats and dashboard, wheels with brakes, gearbox and driveshaft, differential and exhaust, and the V8 engine with its radiator. The chassis and its suspension remain."
   },
   "width": 760,
   "height": 720,
