@@ -7,6 +7,7 @@ export { checkModel, type CheckModelOptions } from "./check.ts";
 export { applyOverrides, OverridesError, type FigureOverrides, type OverridesOptions } from "./overrides.ts";
 export { fromCompose, type ComposeFile } from "./importers/compose.ts";
 export { assemble, assembleTree, usesCatalog, type Assembled, type AssembleOptions, type Catalog, type CatalogResult, type TreeProblem } from "./tree.ts";
+export { fromMermaid, fromMermaidDetailed, type MermaidResult } from "./importers/mermaid.ts";
 export { compileMap, resolveMap, GLYPHS, type CompiledMap, type CompileOptions, type GlyphName, type LinkKind, type MapFlow, type MapLayout, type MapLink, type MapNode, type MapSpec, type ResolvedMap } from "./map/index.ts";
 export type * from "./spec.ts";
 export { makeCamera, fitCamera, project, depthOf } from "./camera.ts";

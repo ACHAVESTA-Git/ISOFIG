@@ -6,6 +6,7 @@ import { parseArgs } from "node:util";
 import type { Model } from "../runtime/index.ts";
 import { checkModel } from "../core/check.ts";
 import { fromCompose } from "../core/importers/compose.ts";
+import { fromMermaidDetailed } from "../core/importers/mermaid.ts";
 import { formatIssue, makeIssue, messageLang, PREFIXES, type Issue, type IssueCode, type V } from "../core/issues.ts";
 import { renderFigure } from "../core/render.ts";
 import { assembleTree, type Catalog } from "../core/tree.ts";
@@ -133,9 +134,15 @@ async function main() {
   }
   if (command === "import") {
     const source = positionals[2];
-    if (file !== "compose" || !source) return usage("cli-missing-argument", { id: "import", expected: "compose <file.json|->" });
+    if (!["compose", "mermaid"].includes(file) || !source) return usage("cli-missing-argument", { id: "import", expected: "compose|mermaid <file|->" });
     const raw = source === "-" ? readFileSync(0, "utf8") : readFileSync(resolve(source), "utf8");
-    const spec = fromCompose(JSON.parse(raw));
+    let spec: FigureSpec;
+    if (file === "compose") spec = fromCompose(JSON.parse(raw));
+    else {
+      const r = fromMermaidDetailed(raw);
+      spec = r.spec;
+      for (const line of r.skipped) console.error(`skipped: ${line}`);
+    }
     const json = JSON.stringify(spec, null, 2) + "\n";
     if (values.out) writeFileSync(values.out, json);
     else process.stdout.write(json);
