@@ -27,10 +27,21 @@ const HELP = `isofig: isometric figures from a spec
 const here = dirname(fileURLToPath(import.meta.url));
 const pkg = resolve(here, "..", "..");
 
+async function importModule(abs: string): Promise<{ default?: FigureSpec; spec?: FigureSpec }> {
+  try {
+    return await import(pathToFileURL(abs).href);
+  } catch (e) {
+    // Node no quita tipos bajo node_modules (el ejemplo que trae el paquete): se quitan aquí y se importa el resultado.
+    if ((e as { code?: string }).code !== "ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING") throw e;
+    const code = `${bundle(abs, "__spec")}\nexport default __spec.default;\nexport const spec = __spec.spec;`;
+    return import(`data:text/javascript;base64,${Buffer.from(code).toString("base64")}`);
+  }
+}
+
 async function loadSpec(file: string): Promise<FigureSpec> {
   const abs = resolve(file);
   if (extname(abs) === ".json") return JSON.parse(readFileSync(abs, "utf8"));
-  const mod = await import(pathToFileURL(abs).href);
+  const mod = await importModule(abs);
   const spec = mod.default ?? mod.spec;
   if (!spec) throw new Error(`${file} must export default (or export const spec) a FigureSpec`);
   return spec;

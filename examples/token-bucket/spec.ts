@@ -1,4 +1,4 @@
-import type { FigureSpec } from "../../src/core/spec.ts";
+import type { FigureSpec } from "isofig";
 
 const CAP = 8;
 const COIN_Z = 14;
