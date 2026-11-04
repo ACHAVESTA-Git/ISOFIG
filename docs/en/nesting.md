@@ -87,9 +87,11 @@ If any node has `explode`, the figure gets, on its own:
   `explode` and its ancestors', each within its stage's window: moving to step 3 moves what belongs to stage 3, and
   whatever is inside it travels along.
 - **The parts list** ("Part"): one button per name, in tree order; two nodes with the same name (both heads) are a
-  single entry. Picking one fades the rest and the readout shows its `name` and `note`. Picking a node shows its parts
-  and the inner ones that don't come off on their own: what leaves separately is another part. With the figure
-  assembled, the rest turns see-through and the part shows inside (the pistons in their bank).
+  single entry. Picking one zooms the camera onto it with an animation, brings it to the front (it paints over
+  everything) and leaves the rest at 35 %, see-through but visible; the readout shows its `name` and `note`, and "All"
+  returns to the full frame. Picking a node shows its parts and the inner ones that don't come off on their own: what
+  leaves separately is another part. With the figure assembled the part shows inside (the pistons in their bank), and
+  the zoom follows the part when you move "Take apart" or turn the figure.
 - **The readout**: "Step 3 of 7: heads off", or "Cylinder head · closes the cylinders…" with a part picked. Screen
   readers hear the step when it moves (`aria-valuetext`), and the list is a radio group with its legend.
 
