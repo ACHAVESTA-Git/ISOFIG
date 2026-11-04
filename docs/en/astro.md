@@ -1,7 +1,7 @@
 # isofig with Astro
 
 The `Figure` component generates the SVG at build time. The page receives the figure's HTML, the theme CSS (once,
-inline) and a ~1.3 KB gzip bootstrap. The runtime (~3.5 KB gzip), the model, the orbit and the enlarge dialog download
+inline) and a ~1.3 KB gzip bootstrap. The runtime (~4.2 KB gzip), the model, the orbit and the enlarge dialog download
 later, when the reader gets close to the figure or uses it, and the runtime only works while the figure is on screen.
 
 ## 1. Install
@@ -133,7 +133,7 @@ reader could move or lose. Everything else downloads with `import()`:
 | What | When | Weight (gzip) |
 |---|---|---|
 | `<Figure>` bootstrap | With the page; only if it has a figure | ~1.3 KB |
-| Runtime and model | According to `load` | ~3.5 KB + the model |
+| Runtime and model | According to `load` | ~4.2 KB + the model |
 | Orbit (`isofig/orbit`) | When the pointer hovers, focuses or touches the figure | ~8.5 KB |
 | Enlarge (`isofig/zoom`) | When "Enlarge" is pressed | ~0.8 KB |
 

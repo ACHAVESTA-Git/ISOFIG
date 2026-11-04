@@ -89,8 +89,9 @@ Read each PNG (the Read tool shows images) and answer, in this order:
 7. **Does each preset show its change?** Capture the preset's state and compare it with the default.
 8. **Does the motion tell the story?** With `--advance` at two or three values, does the state progress as the model
    says? Under reduced motion, does the settled state make sense?
-9. **Assembly:** assembled, halfway and taken apart; each picked part against the rest; no part painted over the one
-   that should hide it.
+9. **Assembly:** assembled, halfway and taken apart; each picked part against the rest (`--set pick=N`): the camera
+   must frame it whole, it must read up close (detail, material) and its note must say something; no part painted
+   over the one that should hide it.
 10. **Map:** roles stay apart in dark; the legend lists every color in use; every node name reads enlarged (at 390 px it
     cannot, by design); ribbons arrive by a visible side; packets switch off inside objects. More in `maps.md`.
 

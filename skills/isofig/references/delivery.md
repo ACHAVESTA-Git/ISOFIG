@@ -41,7 +41,7 @@ import bucket from "../figures/bucket";
 that presses a non-action fails the build. `transition:persist` works (give both pages the same name) and `<ClientRouter />`
 needs no extra code.
 
-Weight to expect: about 2 KB of bootstrap with the page, then the runtime (about 3.5 KB) and the model on demand, the
+Weight to expect: about 2 KB of bootstrap with the page, then the runtime (about 4.2 KB) and the model on demand, the
 orbit (several KB) only when someone turns the figure, and about 0.8 KB for the enlarge dialog when the chip is
 pressed.
 

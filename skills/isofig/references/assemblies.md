@@ -1,10 +1,13 @@
 # Nested assemblies and teardown
 
-Use this when the thing the reader should understand is **what it is made of**: an engine, a lock, a rack, a valve.
+Use this when the thing the reader should understand is **what it is made of**: an engine, a lock, a rack, a valve, and
+also things outside software, a car or a human skeleton (see "Beyond software" below).
 The structure is already a tree, so write it as one: nodes in plain JSON, no model, no functions. isofig flattens the
 tree to draw it and gives you, for free, the "Take apart" control, the parts list and the readout.
 Full reference: `node_modules/isofig/docs/en/nesting.md`. Complete examples: `examples/motor-v8/spec.json` (215 parts,
-7 steps, 12 pickable parts, 16.6 KB gzip) and `examples/motor-cohete/spec.json`.
+7 steps, 12 pickable parts, 16.6 KB gzip), `examples/motor-cohete/spec.json`, `examples/muscle-car/spec.json` (a
+Camaro-style car, 13 pickable parts, 9 steps) and `examples/sistema-oseo/spec.json` (the human skeleton, 12 pickable
+parts, 7 steps, an anatomical note on each). Open the one closest to your subject before writing.
 
 ## The tree
 
@@ -65,10 +68,44 @@ The top-level `parts`, if present, are the fixed scenery in world coordinates (a
 - **The parts list**: one button per name, in tree order; two nodes with the same name (both heads) are one entry.
   Picking a part zooms onto it, paints it in front and leaves the rest at 35 %; the readout shows its `name · note`.
   Assembled, the part shows inside the see-through rest (the pistons in their bank). Give every entry a part worth
-  zooming into: a name for a tiny bolt makes a close-up of nothing.
+  zooming into (next section).
 - **The readout** ("Step 3 of 7: heads off"); screen readers hear the step.
 - **Paint order per pose.** It is computed at rest and at the end of every stage, and the runtime reorders the DOM when
   it crosses a threshold, so a part is never painted over the one that hid it.
+
+## Every entry of "Part" must be worth zooming into
+
+Picking a part moves the camera to it (the part fills about two thirds of the card and the camera never goes closer
+than 3×), paints it in front and leaves the rest at 35 %. So the parts list is a list of **destinations**:
+
+- **8 to 14 entries**, each a real sub-assembly with its own look (a head, a differential, a pelvis), not a fastener.
+  Fold nuts, bolts and small bits into the part they belong to: a part under about a fifth of the figure never fills
+  the card, and the zoom lands on a smudge.
+- **Give each entry something to see up close:** its own shape detail (`dots` for bolts or pores, `line` and `ticks`
+  for fins or scales, a short `label`), and its own material (`paint`), so the close-up is not a grey slab.
+- **Give each entry a `note` with a real, concrete fact** (numbers, what it connects to, why it is shaped so). The
+  readout shows `name · note` the moment the camera arrives; "the part that holds the other part" is filler.
+- **Write the names and notes in both languages** (`{ es, en }`): the list and the readout come from them.
+- Mirrored or repeated nodes (left and right door, four wheels) that share a `name` are one entry: the camera frames
+  them together.
+
+## Beyond software: cars, anatomy, chemistry
+
+isofig is not only for software. The same tree, `explode` and `note` explain a workshop assembly, a body or a molecule,
+and a different audience (a client, a student) can then take it apart and zoom in.
+
+- **A vehicle or a machine** (`examples/muscle-car/spec.json`): a schematic of your own, never a manufacturer's logo or
+  trademarked badge; paint by material (`lacquer` for the body, `glass`, `rubber`, `steel`, `aluminium`, `carbon`).
+  Tell the story outside-in: body panels and glass, the interior, then the drivetrain, then wheels and brakes,
+  leaving the chassis. Nothing may clip through another part on the way out.
+- **Anatomy** (`examples/sistema-oseo/spec.json`): `capsule` for long bones and ribs, `sphere` for joints and the
+  skull, `glass` for the cartilage between them, a plinth under the feet to give it scale. Group by region (skull,
+  rib cage, pelvis, thigh), name in the language of the textbook, and make each note a verifiable fact (counts, what
+  articulates with what). Say it is a teaching schematic, not a medical atlas, and check every number against a
+  reliable source before writing it.
+- **Chemistry:** `sphere` for atoms and `capsule` (with `axis` as a vector) for bonds; a molecule as a tree
+  (functional groups as nodes) comes apart by group. No molecule ships as a reference figure yet: apply the same rules
+  and look at the captures with extra care.
 
 ## Combining with a model, and limits
 
