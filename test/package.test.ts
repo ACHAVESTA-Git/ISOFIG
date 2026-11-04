@@ -12,7 +12,7 @@ const cli = join(root, "src/cli/index.ts");
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
 
 test("exports solo publica rutas con salida estable; el componente de Angular se copia, no se importa", () => {
-  assert.deepEqual(Object.keys(pkg.exports), [".", "./runtime", "./orbit", "./kit", "./node", "./zoom", "./astro", "./astro/client", "./theme.css", "./package.json"]);
+  assert.deepEqual(Object.keys(pkg.exports), [".", "./runtime", "./orbit", "./kit", "./node", "./zoom", "./astro", "./astro/client", "./theme.css", "./themes/luxe.css", "./package.json"]);
   assert.equal("./angular" in pkg.exports, false);
   for (const need of ["src/angular", "src/theme", "src/astro", "CHANGELOG.md"]) assert.ok(pkg.files.includes(need), `files no incluye ${need}`);
   for (const [name, target] of Object.entries<any>(pkg.exports)) {
@@ -20,6 +20,7 @@ test("exports solo publica rutas con salida estable; el componente de Angular se
     if (!file.startsWith("./dist/")) assert.ok(existsSync(join(root, file)), `${name} apunta a ${file}, que no existe`);
   }
   assert.equal(pkg.sideEffects.includes("./src/theme/theme.css"), true);
+  assert.equal(pkg.sideEffects.includes("./src/theme/luxe.css"), true);
   assert.match(pkg.scripts.prepack, /npm run build/);
   assert.match(pkg.scripts.prepublishOnly, /check/);
   assert.match(pkg.scripts.prepublishOnly, /npm test/);

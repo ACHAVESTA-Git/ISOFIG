@@ -60,10 +60,12 @@
       "default": "./dist/astro/client.js"
     },
     "./theme.css": "./src/theme/theme.css",
+    "./themes/luxe.css": "./src/theme/luxe.css",
     "./package.json": "./package.json"
   },
   "sideEffects": [
     "./src/theme/theme.css",
+    "./src/theme/luxe.css",
     "./src/astro/Figure.astro",
     "./src/angular/isofig-figure.ts"
   ],
@@ -92,7 +94,9 @@
     "test": "node --no-warnings --test \"test/**/*.test.ts\"",
     "prepack": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\" && npm run build",
     "prepublishOnly": "npm run check && npm test",
-    "example": "node src/cli/index.ts build examples/token-bucket/spec.ts --format page -o examples/token-bucket/preview.html --model examples/token-bucket/model.ts"
+    "example": "node src/cli/index.ts build examples/token-bucket/spec.ts --format page -o examples/token-bucket/preview.html --model examples/token-bucket/model.ts",
+    "gallery": "node scripts/galeria.mjs",
+    "screenshots": "node scripts/capturas.mjs"
   },
   "peerDependencies": {
     "astro": ">=5"

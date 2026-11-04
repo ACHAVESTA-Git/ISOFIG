@@ -1,5 +1,5 @@
 import { contrast, deltaE, hexOf, inGamut, linearOf, labOfLch, parseColor, VISIONS, type Lch, type Linear, type Vision } from "./color.ts";
-import { edgeOf, faceOf, INKS, MODES, THEME, type Mode } from "./theme.ts";
+import { edgeOf, faceOf, INKS, MODES, THEME, type Mode, type ThemeColors } from "./theme.ts";
 
 /**
  * Lo que un juego de pinturas promete, en cada tema:
@@ -45,10 +45,11 @@ export interface SetMeasure {
 export const lin = (lch: Lch): Linear => linearOf(labOfLch(lch));
 
 /** La tinta que más contrasta sobre la tapa de esa pintura. */
-export function inkFor(c: Linear, mode: Mode): { ink: keyof typeof INKS; text: number } {
-  const top = faceOf(c, "t", mode);
-  const dark = contrast(parseColor(INKS.dark), top);
-  const light = contrast(parseColor(INKS.light), top);
+export function inkFor(c: Linear, mode: Mode, theme?: ThemeColors): { ink: keyof typeof INKS; text: number } {
+  const top = faceOf(c, "t", mode, theme);
+  const inks = theme?.inks ?? INKS;
+  const dark = contrast(parseColor(inks.dark), top);
+  const light = contrast(parseColor(inks.light), top);
   return dark >= light ? { ink: "dark", text: dark } : { ink: "light", text: light };
 }
 
@@ -66,19 +67,19 @@ function nearestOf(c: Linear, self: string, others: Swatch[]): Record<Vision, Ne
   return out;
 }
 
-export const reservedOf = (mode: Mode, accent?: Linear): Swatch[] => [
-  { name: "accent", color: accent ?? parseColor(THEME[mode].accent) },
-  ...(["warn", "fail"] as const).map((s) => ({ name: s, color: parseColor(THEME[mode][s]) })),
+export const reservedOf = (mode: Mode, accent?: Linear, theme: ThemeColors = THEME[mode]): Swatch[] => [
+  { name: "accent", color: accent ?? parseColor(theme.accent) },
+  ...(["warn", "fail"] as const).map((s) => ({ name: s, color: parseColor(theme[s]) })),
 ];
 
-/** Mide un juego en un tema. Con `reserved`, también lo separa del acento y de los estados. */
-export function measureSet(set: Swatch[], mode: Mode, reserved?: Swatch[]): SetMeasure {
+/** Mide un juego en un tema (con `theme`, el de otro estilo). Con `reserved`, también lo separa del acento y de los estados. */
+export function measureSet(set: Swatch[], mode: Mode, reserved?: Swatch[], theme: ThemeColors = THEME[mode]): SetMeasure {
   const failures: string[] = [];
-  const t = THEME[mode];
+  const t = theme;
   const paints = set.map((s): PaintMeasure => {
     if (!inGamut(s.color)) failures.push(`${s.name}: fuera de sRGB`);
-    const { ink, text } = inkFor(s.color, mode);
-    const e = edgeOf(s.color, mode);
+    const { ink, text } = inkFor(s.color, mode, t);
+    const e = edgeOf(s.color, mode, t);
     const edge = Math.min(contrast(e, parseColor(t.paper)), contrast(e, parseColor(t.card)));
     const nearest = nearestOf(s.color, s.name, set);
     const m: PaintMeasure = { name: s.name, hex: hexOf(s.color), ink, text, edge, nearest };

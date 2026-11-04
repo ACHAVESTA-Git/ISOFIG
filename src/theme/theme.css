@@ -375,8 +375,14 @@
   border-radius: 999px;
   cursor: pointer;
 }
+/* El radio es invisible pero ocupa sitio: sin ancho propio y sin ancla (su label), una lista larga de piezas ensanchaba la página. */
+.isofig-choice label {
+  position: relative;
+}
 .isofig-choice input {
   position: absolute;
+  width: 1px;
+  min-height: 1px;
   opacity: 0;
   pointer-events: none;
 }

@@ -113,3 +113,9 @@ ancho: una tarjeta con `inline-size` contenido no puede medirse por lo que tiene
 `isofig-controls`, `isofig-chip`, `isofig-param`, `isofig-value`, `isofig-note`. Cámbialas con selectores de dos clases
 (`.mi-figura .isofig-card { … }`) o con las variables de arriba; no dependas de los selectores internos del dibujo
 (`.isofig-art .lit`, `--fx`, `--ft`…), que pueden cambiar entre versiones.
+
+## Un estilo opcional encima
+
+`isofig/themes/luxe.css` es un segundo archivo, opcional, que cambia los tokens de arriba (y añade unos pocos) cuando
+la figura o un ancestro lleva la clase `isofig-luxe`. Es una receta que puedes copiar para tu propio estilo; está en
+[lujo.md](lujo.md).
