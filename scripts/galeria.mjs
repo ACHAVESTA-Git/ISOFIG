@@ -19,7 +19,7 @@ const { values } = parseArgs({ options: { lang: { type: "string", default: "es" 
 const lang = values.lang === "en" ? "en" : "es";
 const out = resolve(root, values.out ?? "examples/galeria/index.html");
 
-const { assemble, renderFigure, textOf, usesCatalog } = await import(pathToFileURL(join(root, "src/core/index.ts")).href);
+const { assemble, renderFigure, textOf } = await import(pathToFileURL(join(root, "src/core/index.ts")).href);
 const { catalog } = await import(pathToFileURL(join(root, "src/kit/index.ts")).href);
 // Una spec con `map` se compila con resolveMap (src/core/map): se carga solo si el repositorio lo trae.
 const mapFile = join(root, "src/core/map/index.ts");
@@ -253,9 +253,9 @@ if (!examples.length) throw new Error("no hay ejemplos en examples/*/spec.*");
 
 const figures = examples.map(({ name, spec }, i) => {
   const r = renderFigure(spec, { lang, n: i + 1, orbit: true });
-  // Una spec anidada trae sus controles (Desarmar, Pieza) al armarse; el giro la arma él mismo, salvo que use el kit.
+  // El giro recibe la spec ya armada: así no carga el árbol, el catálogo ni los mapas en el navegador.
   const flat = spec.root || spec.map ? assemble(spec, { catalog, resolveMap }) : spec;
-  const orbitSpec = spec.root && usesCatalog(spec) ? flat : spec;
+  const orbitSpec = flat;
   if (r.errors.length) throw new Error(`${name}: ${r.errors.join("; ")}`);
   for (const w of r.warnings) console.error(`aviso en ${name}: ${w}`);
   const title = NOTES[name]?.title?.[lang] ?? (textOf(spec.title, lang) || name);
