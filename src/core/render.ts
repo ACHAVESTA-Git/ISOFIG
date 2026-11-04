@@ -9,6 +9,8 @@ export interface RenderOptions {
   n?: number | string;
   /** Añade los controles para girar la figura (el módulo isofig/orbit se carga al usarlos). */
   orbit?: boolean;
+  /** `false` quita el chip «Ampliar» (el módulo isofig/zoom se carga al pulsarlo). */
+  zoom?: boolean;
 }
 
 export interface RuntimeData {
@@ -19,10 +21,11 @@ export interface RuntimeData {
   basis: number[];
   spins: Record<string, number[]>;
   params: { id: string; value: number; unit: string; spoken: string; options?: string[] }[];
-  presets?: { values: Record<string, number>; note: string; reset?: boolean }[];
+  presets?: { values: Record<string, number>; note: string; reset?: boolean; press?: string[] }[];
   bind: FigureSpec["bind"];
   readout: string;
   lang: string;
+  settle?: number;
 }
 
 export interface Rendered {
@@ -35,16 +38,25 @@ export interface Rendered {
   errors: string[];
 }
 
-const LABELS: Record<string, Record<"play" | "pause" | "fig" | "presets" | "orbit" | "left" | "right" | "reset" | "drag", string>> = {
+type Label = "play" | "pause" | "fig" | "presets" | "orbit" | "left" | "right" | "reset" | "drag" | "zoom" | "close";
+
+const LABELS: Record<string, Record<Label, string>> = {
   es: {
     play: "Reproducir", pause: "Pausar", fig: "Fig.", presets: "Prueba a romperlo", orbit: "Girar la figura",
     left: "Girar a la izquierda", right: "Girar a la derecha", reset: "Vista inicial", drag: "arrastra para girar",
+    zoom: "Ampliar", close: "Cerrar",
   },
   en: {
     play: "Play", pause: "Pause", fig: "Fig.", presets: "Try to break it", orbit: "Turn the figure",
     left: "Turn left", right: "Turn right", reset: "Initial view", drag: "drag to turn",
+    zoom: "Enlarge", close: "Close",
   },
 };
+
+// Cuatro esquinas que se abren: el chip se entiende aunque el texto quede corto.
+const ZOOM_ICON =
+  `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">` +
+  `<path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 const num = (v: unknown): number => {
   const n = Number(v);
@@ -77,7 +89,12 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
     spoken: textOf(p.spoken, lang) || textOf(p.unit, lang),
     ...(p.kind === "choice" ? { options: (p.options ?? []).map((o) => textOf(o, lang)) } : {}),
   }));
-  const presets = (spec.presets ?? []).map((p) => ({ values: p.values, note: textOf(p.note, lang), ...(p.reset ? { reset: true } : {}) }));
+  const presets = (spec.presets ?? []).map((p) => ({
+    values: p.values,
+    note: textOf(p.note, lang),
+    ...(p.reset ? { reset: true } : {}),
+    ...(p.press?.length ? { press: p.press } : {}),
+  }));
   const template = textOf(spec.readout, lang);
   const readout = params.reduce((s, p) => s.replaceAll(`{${p.id}}`, String(p.value)), template);
   const data: RuntimeData = {
@@ -92,6 +109,7 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
     readout: template,
     lang,
     ...(presets.length ? { presets } : {}),
+    ...(spec.motion?.settle ? { settle: num(spec.motion.settle) } : {}),
   };
 
   const play = data.autoplay || spec.model
@@ -142,9 +160,13 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
     : "";
   const hint = [textOf(spec.hint, lang), options.orbit ? labels.drag : ""].filter(Boolean).join(" · ");
   const n = options.n !== undefined ? `<span class="isofig-n">${labels.fig} ${esc(String(options.n))}</span>` : "";
+  // Oculto hasta que el runtime monta con un cargador de isofig/zoom: sin JavaScript no queda un chip muerto.
+  const zoom = options.zoom === false
+    ? ""
+    : `<button type="button" class="isofig-chip isofig-zoom" data-zoom data-close="${labels.close}" hidden>${ZOOM_ICON}${labels.zoom}</button>`;
   const html =
     `<figure class="isofig" data-isofig="${esc(id)}"><div class="isofig-card">` +
-    `<div class="isofig-top">${n}<span class="isofig-title" aria-hidden="true">${esc(title)}</span></div>` +
+    `<div class="isofig-top">${n}<span class="isofig-title" aria-hidden="true">${esc(title)}</span>${zoom}</div>` +
     svg +
     `<div class="isofig-bottom"><span class="isofig-hint">${esc(hint)}</span>` +
     `<span class="isofig-readout">${esc(readout)}</span></div></div>` +

@@ -125,6 +125,8 @@ export interface PresetSpec {
   note: Text;
   /** Vuelve a empezar el modelo con los valores nuevos. */
   reset?: boolean;
+  /** Ids de parámetros `action` que el desvío pulsa después de fijar `values` (y de `reset`). */
+  press?: string[];
 }
 
 /** Enlace declarativo parámetro → grupo, para figuras sin modelo propio. */
@@ -156,7 +158,11 @@ export interface FigureSpec {
   /** Nombre con el que la página registra el modelo en el runtime. */
   model?: string;
   autoplay?: boolean;
-  motion?: { tau?: number };
+  /**
+   * `tau`: constante de la interpolación (s). `settle`: con movimiento reducido, segundos que se simulan de golpe al
+   * montar y tras cada control o desvío, para mostrar el estado ya asentado sin animarlo.
+   */
+  motion?: { tau?: number; settle?: number };
   /** Presupuesto en KB gzip para `isofig check`. */
   budget?: number;
 }

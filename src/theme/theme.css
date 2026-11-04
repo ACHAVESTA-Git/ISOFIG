@@ -296,3 +296,110 @@
   padding: 0 10px;
   font-size: 1rem;
 }
+
+/* ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ * Ampliar: el chip de la tarjeta y el diálogo de isofig/zoom. A 390 px los rótulos del dibujo miden de 2 a 5 px;
+ * el diálogo muestra el mismo SVG a --isofig-zoom-width (1150 px), o más ancho si sus rótulos lo piden
+ * (--isofig-zoom-need, que calcula isofig/zoom), con desplazamiento y pellizco.
+ * ─────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+.isofig-zoom {
+  display: inline-flex;
+  flex: none;
+  align-self: center;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  margin-block: -5px;
+  padding: 0 11px;
+}
+.isofig-zoom[hidden] {
+  display: none;
+}
+
+.isofig-zoombox[open] {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: var(--isofig-paper);
+  color: var(--isofig-ink);
+  font-family: var(--isofig-font);
+}
+.isofig-zoombox::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+@media (min-width: 900px) {
+  .isofig-zoombox[open] {
+    width: calc(100% - 48px);
+    height: calc(100% - 48px);
+    margin: auto;
+    border-radius: var(--isofig-radius);
+    box-shadow: 0 24px 64px -24px rgb(0 0 0 / 0.5);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .isofig-zoombox[open] {
+    animation: isofig-zoom-in 0.2s ease-out;
+  }
+}
+@keyframes isofig-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+/* Mientras el diálogo está abierto, la página de atrás no se desplaza (y la figura sigue a la vista del runtime). */
+html:has(.isofig-zoombox[open]) {
+  overflow: hidden;
+}
+
+.isofig-zoombar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 10px 16px;
+  background: var(--isofig-card);
+  font-size: 0.82rem;
+}
+.isofig-zoomtitle {
+  flex: 1;
+  font-weight: 600;
+}
+.isofig-zoomclose {
+  flex: none;
+}
+.isofig-zoombar .isofig-readout {
+  order: 1;
+  flex-basis: 100%;
+  text-align: left;
+}
+
+.isofig-zoompane {
+  display: flex;
+  flex: 1;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 16px;
+}
+.isofig-zoompane:focus-visible {
+  outline: 2px solid var(--isofig-focus);
+  outline-offset: -4px;
+}
+/* El margen automático centra el dibujo si cabe y lo deja al inicio si se desborda (así se puede desplazar). */
+.isofig-zoompane > .isofig-art {
+  flex: none;
+  width: max(var(--isofig-zoom-width, 1150px), var(--isofig-zoom-need, 0px));
+  margin: auto;
+  touch-action: pan-x pan-y pinch-zoom;
+}
+.isofig-zoomhold {
+  margin: 6px 0;
+}

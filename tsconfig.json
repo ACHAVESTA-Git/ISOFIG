@@ -28,6 +28,7 @@
     "src/cli",
     "src/orbit",
     "src/node",
-    "src/kit"
+    "src/kit",
+    "src/zoom"
   ]
 }

@@ -112,8 +112,9 @@ function page(html: string, modelFile: string | undefined, name: string | undefi
       `\n${bundle(resolve(orbitSpec), "__specModule")}\n` +
       `document.querySelectorAll("[data-isofig]").forEach((el) => orbitOnDemand(el, async () => __orbit.enableOrbit(el, __specModule.default, { lang: ${JSON.stringify(lang)} })));\n`
     : "";
+  const zoom = `${bundle(resolve(pkg, fromSource ? "src/zoom/index.ts" : "dist/zoom/index.js"), "__zoom")}\nzoomOnDemand(async () => __zoom);\n`;
   const css = readFileSync(resolve(pkg, "src/theme/theme.css"), "utf8");
-  const boot = (modelFile && name ? `${model}\nregister(${JSON.stringify(name)}, __model);\n` : "") + orbit;
+  const boot = zoom + (modelFile && name ? `${model}\nregister(${JSON.stringify(name)}, __model);\n` : "") + orbit;
   return `<!doctype html><html lang="en" data-theme="${theme}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>isofig preview</title>
 <style>${css}

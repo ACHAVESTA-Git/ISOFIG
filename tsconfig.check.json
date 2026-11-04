@@ -18,6 +18,7 @@
     "src/orbit",
     "src/node",
     "src/kit",
+    "src/zoom",
     "examples",
     "test"
   ]

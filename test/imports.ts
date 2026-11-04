@@ -8,7 +8,9 @@ export function specifiers(entry: string, seen = new Set<string>()): string[] {
   if (seen.has(entry)) return [];
   seen.add(entry);
   const found: string[] = [];
-  for (const [, from] of readFileSync(entry, "utf8").matchAll(IMPORT)) {
+  // Los comentarios pueden citar un import de ejemplo («import("isofig/zoom")») que no es una dependencia.
+  const code = readFileSync(entry, "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+  for (const [, from] of code.matchAll(IMPORT)) {
     if (from.startsWith(".")) found.push(...specifiers(resolve(dirname(entry), from), seen));
     else found.push(from);
   }

@@ -149,3 +149,23 @@ test("las piezas idénticas se dibujan una vez y se repiten con use", () => {
   assert.equal((r.svg.match(/<use href="#rep-p0"/g) ?? []).length, 4);
   assert.match(r.svg, /<use href="#rep-p0" x="[\d.]+" y="[\d.]+" class="hi" data-g="caja-0"\/>/);
 });
+
+test("el chip «Ampliar» sale oculto en la tarjeta y se quita con zoom: false", () => {
+  const r = renderFigure(tokenBucket, { lang: "es" });
+  assert.match(r.html, /<button type="button" class="isofig-chip isofig-zoom" data-zoom data-close="Cerrar" hidden><svg [^>]*aria-hidden="true"[^>]*>.*?<\/svg>Ampliar<\/button><\/div>/);
+  assert.match(renderFigure(tokenBucket).html, /data-close="Close" hidden>.*?Enlarge</);
+  assert.doesNotMatch(renderFigure(tokenBucket, { zoom: false }).html, /data-zoom/);
+});
+
+test("press y motion.settle llegan a los datos del runtime solo si se usan", () => {
+  const base = { id: "p", title: "t", parts: [{ id: "a", kind: "box" as const, at: [0, 0, 0] as [number, number, number], size: [4, 4, 4] as [number, number, number] }] };
+  const r = renderFigure({
+    ...base,
+    motion: { settle: 6 },
+    params: [{ id: "go", label: "Ir", kind: "action", min: 0, max: 99, value: 0 }],
+    presets: [{ label: "Pulsa", values: {}, press: ["go"], note: "n" }, { label: "Sin", values: {}, press: [], note: "n" }],
+  });
+  assert.equal(r.data.settle, 6);
+  assert.deepEqual(r.data.presets, [{ values: {}, note: "n", press: ["go"] }, { values: {}, note: "n" }]);
+  assert.equal("settle" in renderFigure(base).data, false);
+});

@@ -50,6 +50,10 @@
       "types": "./dist/node/index.d.ts",
       "default": "./dist/node/index.js"
     },
+    "./zoom": {
+      "types": "./dist/zoom/index.d.ts",
+      "default": "./dist/zoom/index.js"
+    },
     "./astro": "./src/astro/Figure.astro",
     "./theme.css": "./src/theme/theme.css",
     "./package.json": "./package.json"
