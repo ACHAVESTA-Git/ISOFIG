@@ -26,13 +26,14 @@ A `FigureSpec` is a plain object: it can be written in TypeScript (with autocomp
 | `motion.tau` | `number` | Time constant of the interpolation (s), 0.18 by default. |
 | `motion.settle` | `number` | With reduced motion, seconds simulated at once on mount and after every control or preset (presets simulate 8 if unset). |
 | `budget` | `number` | KB gzip it must not exceed (40 by default). |
+| `palette` | `{ base?, use? }` | The figure's roles (`use`, in legend order) and, optionally, the brand color they derive from (`base`). See [color.md](color.md). |
 
 `Text` is `"text"` or `{ es: "…", en: "…" }`.
 
 ## Solid parts
 
 All accept: `id`, `tone` (`lo` base, `mid` structure, `hi` subject, `lit` the single accent), `group`, `hidden`,
-`repeat`, `float`, `mount` and `shadow`.
+`repeat`, `float`, `mount`, `shadow` and `paint` (a role or a material: `"data"`, `"steel"`…; see [color.md](color.md)).
 
 | `kind` | Fields | Notes |
 |---|---|---|
