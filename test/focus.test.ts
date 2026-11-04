@@ -42,6 +42,7 @@ test("elegir una pieza la pinta encima, aparta lo demás y acerca la cámara; «
   assert.ok(near[2] < full[2] / 2, `se acerca: ${near.join(" ")} frente a ${full.join(" ")}`);
   assert.ok(Math.abs(near[2] / near[3] - full[2] / full[3]) < 1e-3, "con el formato de la figura");
   assert.ok(near[0] >= full[0] && near[0] + near[2] <= full[0] + full[2] + 1e-6, "sin salirse del marco");
+  assert.equal(f.svg.style.overflow, "hidden", "lo que queda fuera del encuadre no asoma sobre los controles");
 
   const picked = chosen(f, 2);
   const last = f.q(".isofig-scene").lastElementChild!;
@@ -56,6 +57,7 @@ test("elegir una pieza la pinta encima, aparta lo demás y acerca la cámara; «
   choose(f, 0);
   clock.run(2);
   assert.deepEqual(box(f), full);
+  assert.equal(f.svg.style.overflow, "");
   assert.deepEqual([...new Set(f.all("[data-g]").map((n) => n.getAttribute("opacity")))], ["1"], "con «Todo», nada queda atenuado");
 });
 

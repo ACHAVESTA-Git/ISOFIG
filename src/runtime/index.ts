@@ -414,7 +414,11 @@ export function mount(el: HTMLElement, model?: Model<any, any>, data?: FigureDat
         return v + (goal[i] - v) * k;
       });
       const box = vb.map((v) => +v.toFixed(2)).join(" ");
-      if (svg.getAttribute("viewBox") !== box) svg.setAttribute("viewBox", box);
+      if (svg.getAttribute("viewBox") !== box) {
+        svg.setAttribute("viewBox", box);
+        // Con la cámara cerca, lo que queda fuera del encuadre no debe asomar sobre los controles.
+        svg.style.overflow = vb.every((v, i) => v === full[i]) ? "" : "hidden";
+      }
     }
     return moving;
   };
