@@ -111,3 +111,8 @@ it a width: a card with contained `inline-size` cannot be sized by what is insid
 `isofig-controls`, `isofig-chip`, `isofig-param`, `isofig-value`, `isofig-note`. Change them with two-class selectors
 (`.my-figure .isofig-card { … }`) or with the variables above; do not rely on the drawing's internal selectors
 (`.isofig-art .lit`, `--fx`, `--ft`…), which may change between versions.
+
+## An optional style on top
+
+`isofig/themes/luxe.css` is a second, optional file that changes the tokens above (and adds a few) when the figure or an
+ancestor carries the `isofig-luxe` class. It is a recipe you can copy for your own style; it is in [luxe.md](luxe.md).
