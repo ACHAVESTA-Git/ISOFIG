@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -30,6 +30,16 @@ test("los ejemplos que se publican solo importan por el nombre del paquete", () 
   for (const file of pkg.files.filter((f: string) => f.startsWith("examples/"))) {
     for (const from of specifiers(join(root, file))) assert.match(from, /^isofig(\/|$)/, `${file} importa «${from}»`);
   }
+});
+
+test("cada ejemplo que citan la skill y las guías viaja en el paquete", () => {
+  const read = (dir: string): string[] =>
+    readdirSync(join(root, dir), { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? read(join(dir, e.name)) : e.name.endsWith(".md") ? [join(dir, e.name)] : []));
+  const cited = new Set(read("skills").concat(read("docs/es"), read("docs/en")).flatMap((f) => [...readFileSync(join(root, f), "utf8").matchAll(/examples\/([a-z0-9-]+)\//g)].map((m) => m[1]!)));
+  // Solo los ejemplos de verdad: `examples/galeria` es la galería que se genera.
+  const specs = [...cited].filter((n) => ["spec.json", "spec.ts"].some((f) => existsSync(join(root, "examples", n, f))));
+  assert.ok(specs.length >= 5, `se citan ${specs.length} ejemplos`);
+  for (const name of specs) assert.ok(pkg.files.some((f: string) => f.startsWith(`examples/${name}/`)), `examples/${name} se cita pero no está en «files»`);
 });
 
 test("isofig add angular copia el componente", () => {

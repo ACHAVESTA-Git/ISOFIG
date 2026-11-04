@@ -7,7 +7,7 @@ cuando el lector se acerca a la figura o la usa, y el runtime solo trabaja mient
 ## 1. Instalar
 
 ```sh
-npm i github:ACHAVESTA-Git/ISOFIG#v0.10.0
+npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1
 ```
 
 Requiere Node 22.18 o superior (para cargar specs escritas en TypeScript) y Astro 5 o superior.

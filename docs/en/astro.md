@@ -7,7 +7,7 @@ later, when the reader gets close to the figure or uses it, and the runtime only
 ## 1. Install
 
 ```sh
-npm i github:ACHAVESTA-Git/ISOFIG#v0.10.0
+npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1
 ```
 
 Requires Node 22.18 or later (to load specs written in TypeScript) and Astro 5 or later.
