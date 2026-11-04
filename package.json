@@ -1,7 +1,7 @@
 {
   "name": "isofig",
   "version": "0.10.2",
-  "description": "Explain technical ideas as small, crafted isometric machines: build-time SVG, a tiny animation runtime, Astro and Angular adapters, and a Claude Code skill.",
+  "description": "Interactive 3D figures in pure SVG that take themselves apart, turn 360° and zoom to any part: machines, cars, anatomy, topologies and UML from nested JSON. No WebGL, a 4.3 KB runtime, Astro and Angular adapters and a Claude Code plugin.",
   "type": "module",
   "license": "MIT",
   "keywords": [
@@ -16,7 +16,15 @@
     "astro",
     "angular",
     "claude-code",
-    "skill"
+    "skill",
+    "3d",
+    "exploded-view",
+    "teardown",
+    "interactive",
+    "uml",
+    "topology",
+    "no-webgl",
+    "claude-code-plugin"
   ],
   "homepage": "https://github.com/ACHAVESTA-Git/ISOFIG#readme",
   "bugs": {
@@ -27,7 +35,7 @@
     "url": "git+https://github.com/ACHAVESTA-Git/ISOFIG.git"
   },
   "bin": {
-    "isofig": "./dist/cli/index.js"
+    "isofig": "dist/cli/index.js"
   },
   "exports": {
     ".": {
