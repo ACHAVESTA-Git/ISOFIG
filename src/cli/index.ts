@@ -8,6 +8,7 @@ import { checkModel } from "../core/check.ts";
 import { fromCompose } from "../core/importers/compose.ts";
 import { fromMermaidDetailed } from "../core/importers/mermaid.ts";
 import { formatIssue, makeIssue, messageLang, PREFIXES, type Issue, type IssueCode, type V } from "../core/issues.ts";
+import { resolveMap } from "../core/map/index.ts";
 import { renderFigure } from "../core/render.ts";
 import { assembleTree, type Catalog } from "../core/tree.ts";
 import { catalog } from "../kit/index.ts";
@@ -177,7 +178,7 @@ async function main() {
     process.exit(1);
   }
   // --set llega también a los controles que añade el despiece de una spec anidada («explode», «pick»).
-  const flat = assembleTree(spec, { catalog: catalog as Catalog }).spec;
+  const flat = assembleTree(spec, { catalog: catalog as Catalog, resolveMap }).spec;
   const notes: Issue[] = [];
   const start: Record<string, number> = {};
   for (const { id, value } of sets) {

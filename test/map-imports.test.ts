@@ -156,3 +156,14 @@ test("isofig import mermaid escribe el mapa en JSON, y compose sigue funcionando
   assert.equal(JSON.parse(c.stdout).map.nodes[0].is, "database");
   assert.equal(run(["import", "otro", "-"], "").status, 1);
 });
+
+test("la vista previa con --orbit pide la spec en .ts: un JSON no se puede empaquetar en la página", () => {
+  const cli = fileURLToPath(new URL("../src/cli/index.ts", import.meta.url));
+  const spec = fileURLToPath(new URL("../examples/mapa-pedido/spec.json", import.meta.url));
+  const r = spawnSync(process.execPath, ["--no-warnings", cli, "build", spec, "--format", "page", "--orbit"], { encoding: "utf8" });
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /--orbit needs the spec as a \.ts file/);
+  const ok = spawnSync(process.execPath, ["--no-warnings", cli, "build", spec, "--format", "page"], { encoding: "utf8" });
+  assert.equal(ok.status, 0, ok.stderr);
+  assert.match(ok.stdout, /<figure class="isofig" data-isofig="mapa-pedido"/);
+});

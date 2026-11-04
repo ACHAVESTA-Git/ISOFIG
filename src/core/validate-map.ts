@@ -1,5 +1,5 @@
 import { GLYPHS, type LinkKind } from "./map/types.ts";
-import { ROLES } from "./map/glyphs/index.ts";
+import { PAINT } from "./palette/sets.ts";
 import { checkKeys, checkVector, isNum, isObj, show, words, type Reporter } from "./validate-shared.ts";
 
 const TRACK_KEYS = ["group", "path", "period", "delay", "loop", "hide"] as const;
@@ -36,8 +36,8 @@ const FLOW_KEYS = ["id", "path", "label", "every", "speed", "delay", "paint"] as
 const LAYOUTS = ["flow", "layers", "grid"];
 const LINK_KINDS: LinkKind[] = ["link", "inherits", "implements", "composes", "aggregates", "depends", "associates"];
 const ARROWS = ["end", "start", "both", "none"];
-/** Los roles de color de un mapa y los materiales que puede usar un paquete o una cinta. */
-const PAINTS = [...ROLES, "aluminium", "steel", "iron", "copper", "brass", "rubber", "carbon", "glass", "lacquer"];
+/** Los roles de color de un mapa y los materiales de la paleta: lo que puede pintar un nodo, una cinta o un paquete. */
+const PAINTS = [...PAINT.keys()];
 
 const option = (rep: Reporter, path: string, got: unknown, expected: readonly string[]) =>
   rep.add("option-invalid", path, { field: path.split(".").pop() ?? path, got: String(got), expected: expected.join(", ") });

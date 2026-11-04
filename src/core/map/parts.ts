@@ -1,13 +1,10 @@
 import { solidBox, type Solid } from "../items.ts";
-import type { BoxPart, CylinderPart, DotsPart, LabelPart, LinePart, Part, PrismPart, Text, TicksPart, Tone, Vec2, Vec3 } from "../spec.ts";
-
-/** Las piezas llevan `paint` (un rol de color) cuando la rama de la paleta está; aquí se escribe sin depender de ella. */
-type Extra = { paint?: string };
+import type { BoxPart, CylinderPart, DotsPart, LabelPart, LinePart, Part, PrismPart, Text, TicksPart, Vec2, Vec3 } from "../spec.ts";
 
 /** En un objeto del catálogo, el cuerpo se pinta con el rol que le toque: este marcador se cambia al compilar. */
 export const ROLE = "$role";
 
-type Opts<T> = Partial<Omit<T, "id" | "kind">> & Extra;
+type Opts<T> = Partial<Omit<T, "id" | "kind">>;
 
 export const box = (id: string, at: Vec3, size: Vec3, o: Opts<BoxPart> = {}): Part => ({ id, kind: "box", at, size, ...o }) as Part;
 export const cyl = (id: string, at: Vec3, r: number, h: number, o: Opts<CylinderPart> = {}): Part => ({ id, kind: "cylinder", at, r, h, ...o }) as Part;
@@ -18,26 +15,11 @@ export const ticks = (id: string, on: string, o: Omit<TicksPart, "id" | "kind" |
 export const label = (id: string, on: string, at: Vec3, text: Text, size: number, o: Partial<Pick<LabelPart, "face" | "align">> = {}): Part =>
   ({ id, kind: "label", on, at, text, size, face: "x", ...o }) as LabelPart;
 
-export const tone = (p: Part, t: Tone): Part => ({ ...p, tone: t }) as Part;
-
 /** Rectángulo de `len` × `wid` centrado en `[cx, cy]` y girado `deg` grados: una planta antihoraria para un prisma. */
 export function rectPlan(cx: number, cy: number, len: number, wid: number, deg: number): Vec2[] {
   const a = (deg * Math.PI) / 180;
   const [c, s] = [Math.cos(a), Math.sin(a)];
   return ([[-1, -1], [1, -1], [1, 1], [-1, 1]] as Vec2[]).map(([u, v]): Vec2 => [cx + (u * len * c - v * wid * s) / 2, cy + (u * len * s + v * wid * c) / 2]);
-}
-
-/** Polígono regular antihorario de `n` lados. */
-export function ngon(cx: number, cy: number, r: number, n: number, deg = 0): Vec2[] {
-  return Array.from({ length: n }, (_, i): Vec2 => {
-    const a = ((deg + (360 * i) / n) * Math.PI) / 180;
-    return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
-  });
-}
-
-/** Los puntos de una polilínea cerrada de un rectángulo en el plano `x = x0` (una cara que mira al lector). */
-export function frameX(x0: number, y0: number, y1: number, z0: number, z1: number): Vec3[] {
-  return [[x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [x0, y0, z1], [x0, y0, z0]];
 }
 
 const moveVec = (v: Vec3, d: Vec3): Vec3 => [v[0] + d[0], v[1] + d[1], v[2] + d[2]];
@@ -62,7 +44,7 @@ export function shiftPart(p: Part, d: Vec3): Part {
 
 /** Cambia el marcador `ROLE` de las piezas por el rol de color del nodo. */
 export function withRole(parts: Part[], role: string): Part[] {
-  return parts.map((p) => ((p as Extra).paint === ROLE ? ({ ...p, paint: role } as unknown as Part) : p));
+  return parts.map((p) => (p.paint === ROLE ? { ...p, paint: role } : p));
 }
 
 const isSolid = (p: Part): p is Solid => p.kind === "box" || p.kind === "cylinder" || p.kind === "cone" || p.kind === "prism";

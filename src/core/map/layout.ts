@@ -148,7 +148,7 @@ const shadow = (front: number, k: number, extra = 0): number => Math.round(front
  */
 export function arrange(kids: Placed[], layout: MapLayout, edges: Edge[], k: number): { fx: number; fy: number } {
   if (!kids.length) return { fx: 0, fy: 0 };
-  if (layout === "grid") return arrangeGrid(kids);
+  if (layout === "grid") return arrangeGrid(kids, k);
   const along = layout === "flow" ? "fy" : "fx";
   const across = layout === "flow" ? "fx" : "fy";
   const gapAlong = layout === "flow" ? GAP.rank : GAP.layer;
@@ -176,7 +176,7 @@ export function arrange(kids: Placed[], layout: MapLayout, edges: Edge[], k: num
   return layout === "flow" ? { fx: wide, fy: heads.total } : { fx: heads.total, fy: wide };
 }
 
-function arrangeGrid(kids: Placed[]): { fx: number; fy: number } {
+function arrangeGrid(kids: Placed[], k: number): { fx: number; fy: number } {
   const declared = kids.filter((k) => k.node.cell);
   const cols = declared.length ? Math.max(...declared.map((k) => k.node.cell![0])) + 1 : Math.ceil(Math.sqrt(kids.length));
   const taken = new Map<string, Placed>();
@@ -202,7 +202,9 @@ function arrangeGrid(kids: Placed[]): { fx: number; fy: number } {
   const width = Array.from({ length: nc }, (_, i) => Math.max(0, ...[...cells].filter(([, [a]]) => a === i).map(([k]) => k.fy)));
   const depth = Array.from({ length: nr }, (_, i) => Math.max(0, ...[...cells].filter(([, [, b]]) => b === i).map(([k]) => k.fx)));
   const ys = stack(width, GAP.rank);
-  const xs = stack(depth, GAP.lane);
+  // La fila de adelante tapa a la de atrás: entre filas, lo que haga falta según lo alto que sea la de adelante.
+  const rowTall = Array.from({ length: nr }, (_, i) => Math.max(0, ...[...cells].filter(([, [, b]]) => b === i).map(([n]) => tallOf(n))));
+  const xs = stack(depth, (i) => Math.max(GAP.lane, shadow(rowTall[i + 1], k, 12)));
   for (const [k, [a, b]] of cells) {
     k.ry = ys.at[a] + (width[a] - k.fy) / 2;
     k.rx = xs.at[b] + (depth[b] - k.fx) / 2;

@@ -1,6 +1,6 @@
 ---
 import type { HTMLAttributes } from "astro/types";
-import { applyOverrides, assemble, renderFigure, type Catalog, type FigureOverrides, type FigureSpec } from "isofig";
+import { applyOverrides, assemble, renderFigure, resolveMap, type Catalog, type FigureOverrides, type FigureSpec } from "isofig";
 import { catalog } from "isofig/kit";
 import { checkBudget, measure } from "isofig/node";
 import themeCss from "isofig/theme.css?inline";
@@ -41,7 +41,7 @@ for (const w of [...figure.warnings, ...checkBudget(spec, measure(figure.html), 
 const style = theme && firstOnPage(Astro.request, "theme") ? `<style data-isofig-theme>${themeCss}</style>` : "";
 // El giro vuelve a dibujar la escena en el navegador y necesita la spec; el SVG ya trae todo lo demás. Un árbol viaja
 // ya armado: así el giro no descarga el aplanador, el catálogo del kit ni el validador.
-const orbitSpec = spec.root ? assemble(spec, { catalog: catalog as Catalog }) : spec;
+const orbitSpec = spec.root || spec.map ? assemble(spec, { catalog: catalog as Catalog, resolveMap }) : spec;
 const specJson = orbit ? `<script type="application/json" class="isofig-spec">${JSON.stringify(orbitSpec).replace(/</g, "\\u003c")}</script>` : "";
 ---
 

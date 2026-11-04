@@ -6,6 +6,7 @@ import { escapeHtml as esc } from "./serialize.ts";
 import { textOf, type FigureSpec, type FlatSpec } from "./spec.ts";
 import { assembleTree, type Catalog } from "./tree.ts";
 import { catalog as kit } from "../kit/index.ts";
+import { resolveMap } from "./map/index.ts";
 import { trackData, type TrackData } from "./tracks.ts";
 import { validateSpec } from "./validate.ts";
 
@@ -115,7 +116,7 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
   // Una spec rota no lanza: da sus errores. Si el dibujo falla por algo que la validación no explica, se dice aquí.
   try {
     // Una spec anidada se aplana aquí; los problemas del árbol ya los dijo la validación.
-    const tree = assembleTree(spec, { catalog });
+    const tree = assembleTree(spec, { catalog, resolveMap });
     const flat = tree.spec;
     for (const n of tree.notes) issues.push(makeIssue(lang, n.code, n.path, n.vars));
     const start = options.values ?? {};

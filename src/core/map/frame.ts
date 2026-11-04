@@ -1,4 +1,4 @@
-import type { Part, Text, Vec3 } from "../spec.ts";
+import type { Part, Text } from "../spec.ts";
 import { CATALOG, PULL_OUT, type Cabinet, type Role } from "./glyphs/index.ts";
 import { box, label, shiftPart, withRole } from "./parts.ts";
 import { widthOf } from "./text.ts";
@@ -63,5 +63,3 @@ export function buildLeaf(node: MapNode, name: Text, s: number, az: number): Lea
   }
   return { fx, fy, h: g.h + dz, role, parts: out, children };
 }
-
-export const at3 = (x: number, y: number, z: number): Vec3 => [x, y, z];

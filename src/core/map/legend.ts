@@ -1,23 +1,10 @@
 import type { Part, Text } from "../spec.ts";
+import { PAINT } from "../palette/sets.ts";
 import { plateHeight } from "./frame.ts";
 import { HEAD, RT, RW, headPlan, styleOf } from "./links.ts";
 import { box, label, prism } from "./parts.ts";
 import { widthOf } from "./text.ts";
 import type { LinkKind, TreeNode } from "./types.ts";
-
-/**
- * Los nombres de los roles de color. Hueco: cuando la rama de la paleta esté fusionada, salen de `legendOf()` (el
- * `label` de cada rol); mientras tanto se repiten aquí.
- */
-const ROLE_LABELS: Record<string, Text> = {
-  client: { es: "cliente", en: "client" },
-  edge: { es: "borde", en: "edge" },
-  compute: { es: "cómputo", en: "compute" },
-  data: { es: "datos", en: "data" },
-  messaging: { es: "mensajería", en: "messaging" },
-  storage: { es: "almacenamiento", en: "storage" },
-  external: { es: "externo", en: "external" },
-};
 
 /** En un diagrama de clases los colores son otra cosa: clase e interfaz. */
 const UML_LABELS: Record<string, Text> = { compute: { es: "clase", en: "class" }, edge: { es: "interfaz", en: "interface" } };
@@ -55,7 +42,7 @@ const SWATCH = 9;
 export function buildLegend(input: LegendInput): { node: TreeNode; fx: number; fy: number } | undefined {
   const { s } = input;
   const entries: Entry[] = [
-    ...input.roles.map((r): Entry => ({ mark: "swatch", paint: r, text: (input.uml ? UML_LABELS[r] : undefined) ?? ROLE_LABELS[r] ?? r })),
+    ...input.roles.map((r): Entry => ({ mark: "swatch", paint: r, text: (input.uml ? UML_LABELS[r] : undefined) ?? PAINT.get(r)?.label ?? r })),
     ...input.flows.map((f): Entry => ({ mark: "packet", paint: f.paint, text: f.label })),
     ...input.kinds.filter((k): k is Exclude<LinkKind, "link"> => k !== "link").map((k): Entry => ({ mark: "link", kind: k, text: LINK_LABELS[k] })),
   ];

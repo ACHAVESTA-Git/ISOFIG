@@ -211,6 +211,17 @@ test("los paquetes de un mapa salen de sus flujos y siguen la cinta entre los no
   for (const t of c.tracks) assert.ok(t.path.length >= 2 && t.period > 0);
 });
 
+test("assembleTree compila el mapa solo si se le da el compilador: el giro no lo trae a las figuras sin mapa", async () => {
+  const { assembleTree } = await import("../src/core/tree.ts");
+  const spec = example("mapa-pedido");
+  const bare = assembleTree(spec);
+  assert.deepEqual([bare.spec.parts.length, bare.notes], [0, []], "sin compilador no hay piezas ni sale un error");
+  const full = assembleTree(spec, { resolveMap });
+  assert.ok(full.spec.parts.length > 100);
+  assert.ok(full.spec.tracks!.length > 0);
+  assert.equal("map" in full.spec, false);
+});
+
 test("compilar dos veces da lo mismo, byte a byte", () => {
   const spec = example("mapa-tienda");
   assert.equal(JSON.stringify(compileMap(spec.map!)), JSON.stringify(compileMap(spec.map!)));

@@ -343,5 +343,3 @@ export function simplify(pts: Pt[]): Pt[] {
     return !((same(a[0], p[0]) && same(p[0], b[0])) || (same(a[1], p[1]) && same(p[1], b[1])));
   });
 }
-
-export const lengthOf = (pts: Pt[]): number => pts.slice(1).reduce((s, p, i) => s + Math.abs(p[0] - pts[i][0]) + Math.abs(p[1] - pts[i][1]), 0);

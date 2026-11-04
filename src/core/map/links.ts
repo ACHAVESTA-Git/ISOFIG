@@ -232,7 +232,7 @@ export function drawLinks(draws: LinkDraw[], s: number, nodes: Rect[], shadows: 
   const solid: Seg[] = [];
   const parts: Part[] = [];
   const drawn = new Set<string>();
-  const isRole = (p?: string) => (p ? { paint: p } : {});
+  const painted = (p?: string) => (p ? { paint: p } : {});
   for (const d of draws) {
     const heads: { kind: Exclude<End, "none">; tip: Pt; dir: Pt }[] = [];
     let pts = d.pts;
@@ -254,7 +254,7 @@ export function drawLinks(draws: LinkDraw[], s: number, nodes: Rect[], shadows: 
       if (drawn.has(key)) return;
       drawn.add(key);
       const filled = h.kind === "arrow" || h.kind === "diamond-filled";
-      parts.push(prism(`l${d.index}-head${k}`, headPlan(h.kind, h.tip, h.dir), d.z, RT + 0.6, filled ? { tone: h.kind === "diamond-filled" ? "lit" : "lo", ...isRole(d.paint), bevel: 0.3, float: d.z > 0, ground: true } : { tone: "hi", bevel: 0.3, float: d.z > 0, ground: true }));
+      parts.push(prism(`l${d.index}-head${k}`, headPlan(h.kind, h.tip, h.dir), d.z, RT + 0.6, filled ? { tone: h.kind === "diamond-filled" ? "lit" : "lo", ...painted(d.paint), bevel: 0.3, float: d.z > 0, ground: true } : { tone: "hi", bevel: 0.3, float: d.z > 0, ground: true }));
     });
     if (d.label !== undefined) {
       const w = widthOf(d.label, s);

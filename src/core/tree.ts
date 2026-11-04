@@ -1,6 +1,6 @@
 import { add, boxOf, centerOf, dot, length, mul, unit, type Vec3 } from "./math.ts";
 import { expandIndexed, isSolid, shift, solidBox } from "./items.ts";
-import { resolveMap, type Note } from "./map/index.ts";
+import type { ResolvedMap, Note } from "./map/index.ts";
 import type { BindSpec, FigureSpec, FlatSpec, GroupSpec, Node, NodeDef, ParamSpec, Part, Text, Tone } from "./spec.ts";
 
 /** Lo que devuelve una entrada del catálogo: un subárbol y, si hace falta, sus grupos (un depósito con `extent`). */
@@ -15,6 +15,11 @@ export interface AssembleOptions {
    * `isofig/kit`; aquí no se importa, para que el giro (que dibuja en el navegador) no cargue el kit si no lo usa.
    */
   catalog?: Catalog;
+  /**
+   * Compila el `map` de una spec a su árbol (`resolveMap` de `isofig`). `renderFigure`, `<Figure>` y el CLI lo ponen; el giro
+   * recibe la spec ya armada y no trae el compilador.
+   */
+  resolveMap?: (spec: FigureSpec) => ResolvedMap;
 }
 
 /** Un problema del árbol que impide armarlo tal cual; `validateSpec` lo convierte en un `Issue`. */
@@ -107,7 +112,7 @@ const lower = (s: string, lang: string) => (/^\p{Lu}\p{Ll}/u.test(s) ? s[0].toLo
  */
 export function assembleTree(input: FigureSpec, options: AssembleOptions = {}): Assembled {
   // Un `map` se compila primero a su árbol `root` y a sus recorridos; el resto es igual que para una spec anidada.
-  const { spec, notes } = resolveMap(input);
+  const { spec, notes } = input.map && options.resolveMap ? options.resolveMap(input) : { spec: input, notes: [] as Note[] };
   return { ...assembleResolved(spec, options), notes };
 }
 
