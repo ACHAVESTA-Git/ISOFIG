@@ -30,6 +30,7 @@ const MEASURES: { name: string; what: string; run: () => Promise<number> }[] = [
   { name: "zoom", what: "isofig/zoom", run: () => bundled("dist/zoom/index.js") },
   { name: "orbit", what: "isofig/orbit (con drawScene)", run: () => bundled("dist/orbit/index.js") },
   { name: "kit", what: "isofig/kit", run: () => bundled("dist/kit/index.js") },
+  { name: "map", what: "isofig/map (el compilador de mapas: objetos, reparto, rutas, leyenda)", run: () => bundled("dist/core/map/index.js") },
   { name: "core", what: "isofig (el núcleo, que también corre en el navegador)", run: () => bundled("dist/core/index.js") },
   { name: "astro-client", what: "arranque de isofig/astro/client", run: () => startup("dist/astro/client.js") },
   { name: "theme.css", what: "isofig/theme.css", run: () => css("src/theme/theme.css") },

@@ -1,5 +1,6 @@
 import type { Axis } from "./mesh.ts";
 import type { Vec2, Vec3 } from "./math.ts";
+import type { MapSpec } from "./map/types.ts";
 
 export type { Vec2, Vec3, Axis };
 
@@ -33,6 +34,11 @@ export interface PartBase {
   paint?: string;
   /** Grupo que la lleva además del suyo: lo pone el ensamblado cuando una pieza animada por un modelo se despieza. */
   outer?: string;
+  /**
+   * Una pieza del piso (una bandeja, una cinta pegada al suelo): se pinta antes que todo lo que se apoya o pasa sobre
+   * ella, sin pelear el orden con las piezas que se alzan. Los mapas la usan para sus bandejas y sus rutas.
+   */
+  ground?: boolean;
 }
 
 export interface BoxPart extends PartBase {
@@ -212,6 +218,26 @@ export interface Node {
 /** Un subárbol reutilizable de `defs`: el `id` lo pone quien lo usa. */
 export type NodeDef = Omit<Node, "id"> & { id?: string };
 
+/**
+ * Un recorrido declarativo, sin modelo: el grupo viaja por la polilínea `path` a velocidad constante (según la
+ * longitud del arco) y vuelve a empezar. Respeta el botón de pausa; con movimiento reducido se queda quieto a mitad
+ * de camino.
+ */
+export interface TrackSpec {
+  /** Grupo (el `group` de sus piezas) que viaja. Sus piezas se dibujan donde empieza `path`. */
+  group: string;
+  /** Puntos del recorrido en el mundo; el primero es donde están dibujadas las piezas. */
+  path: Vec3[];
+  /** Segundos que tarda en recorrer `path` entera. */
+  period: number;
+  /** Segundos que espera antes de salir la primera vez. */
+  delay?: number;
+  /** `false`: lo recorre una vez y se queda al final. Por defecto vuelve a empezar. */
+  loop?: boolean;
+  /** Tramos del recorrido, como fracciones del arco (`[0.4, 0.5]`), en que el grupo no se ve: pasa por dentro de un objeto. */
+  hide?: [number, number][];
+}
+
 export interface FigureSpec {
   id: string;
   title: Text;
@@ -233,6 +259,10 @@ export interface FigureSpec {
   groups?: Record<string, GroupSpec>;
   params?: ParamSpec[];
   bind?: BindSpec[];
+  /** Grupos que recorren una polilínea sin modelo (los paquetes de un mapa). */
+  tracks?: TrackSpec[];
+  /** Una topología, un mapa de flujo o un diagrama UML: se compila a un árbol `root` y a `tracks` (ver `docs/es/mapas.md`). */
+  map?: MapSpec;
   readout?: Text;
   presets?: PresetSpec[];
   /** Nombre con el que la página registra el modelo en el runtime. */

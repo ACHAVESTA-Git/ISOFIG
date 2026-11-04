@@ -46,6 +46,10 @@
       "types": "./dist/kit/index.d.ts",
       "default": "./dist/kit/index.js"
     },
+    "./map": {
+      "types": "./dist/core/map/index.d.ts",
+      "default": "./dist/core/map/index.js"
+    },
     "./node": {
       "types": "./dist/node/index.d.ts",
       "default": "./dist/node/index.js"

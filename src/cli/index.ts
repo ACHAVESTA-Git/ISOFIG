@@ -6,7 +6,9 @@ import { parseArgs } from "node:util";
 import type { Model } from "../runtime/index.ts";
 import { checkModel } from "../core/check.ts";
 import { fromCompose } from "../core/importers/compose.ts";
+import { fromMermaidDetailed } from "../core/importers/mermaid.ts";
 import { formatIssue, makeIssue, messageLang, PREFIXES, type Issue, type IssueCode, type V } from "../core/issues.ts";
+import { resolveMap } from "../core/map/index.ts";
 import { renderFigure } from "../core/render.ts";
 import { assembleTree, type Catalog } from "../core/tree.ts";
 import { catalog } from "../kit/index.ts";
@@ -133,9 +135,15 @@ async function main() {
   }
   if (command === "import") {
     const source = positionals[2];
-    if (file !== "compose" || !source) return usage("cli-missing-argument", { id: "import", expected: "compose <file.json|->" });
+    if (!["compose", "mermaid"].includes(file) || !source) return usage("cli-missing-argument", { id: "import", expected: file === "mermaid" ? "mermaid <file.mmd|->" : "compose <file.json|->" });
     const raw = source === "-" ? readFileSync(0, "utf8") : readFileSync(resolve(source), "utf8");
-    const spec = fromCompose(JSON.parse(raw));
+    let spec: FigureSpec;
+    if (file === "compose") spec = fromCompose(JSON.parse(raw));
+    else {
+      const r = fromMermaidDetailed(raw);
+      spec = r.spec;
+      for (const line of r.skipped) console.error(`skipped: ${line}`);
+    }
     const json = JSON.stringify(spec, null, 2) + "\n";
     if (values.out) writeFileSync(values.out, json);
     else process.stdout.write(json);
@@ -170,14 +178,14 @@ async function main() {
     process.exit(1);
   }
   // --set llega también a los controles que añade el despiece de una spec anidada («explode», «pick»).
-  const flat = assembleTree(spec, { catalog: catalog as Catalog }).spec;
+  const flat = assembleTree(spec, { catalog: catalog as Catalog, resolveMap }).spec;
   const notes: Issue[] = [];
   const start: Record<string, number> = {};
   for (const { id, value } of sets) {
     if (flat.params?.some((q) => q.id === id)) start[id] = value;
     else notes.push(makeIssue(lang, "set-unknown-param", "", { id }));
   }
-  const r = renderFigure(spec, { lang: values.lang, n: values.n, orbit: values.orbit, values: start });
+  const r = renderFigure(spec, { lang: values.lang, n: values.n, orbit: values.orbit, values: start, resolveMap });
   const size = measure(r.html);
   const issues = [...notes, ...r.issues, ...budgetIssues(spec, size, lang)];
 

@@ -54,6 +54,9 @@ no lanza: devuelve sus errores.
 | `id-duplicate` | Dos piezas sólidas con el mismo id después del `repeat` |
 | `on-unknown`, `on-not-solid` | Un detalle sobre una pieza que no existe, o que es otro detalle |
 | `node-id-missing`, `node-id-duplicate`, `use-unknown`, `use-cycle`, `use-failed`, `stage-invalid`, `axis-zero` | En un árbol ([anidar.md](anidar.md)): un nodo sin id o con el de un hermano, un `use` que no está en `defs` ni en el catálogo, que se usa a sí mismo o cuyas opciones rechaza el kit, un `stage` que no es un número, un eje `[0, 0, 0]` |
+| `map-compiler-missing` | `renderFigure` recibió un `map` pero no un `resolveMap` (de `isofig/map`) que lo compile; `isofig build`, `isofig check` y `<Figure>` se lo pasan solos |
+| `map-node-id-duplicate`, `map-glyph-unknown`, `map-node-unknown` | En un `map` ([mapas.md](mapas.md)): un id de nodo repetido, un `is` que no está en el catálogo (un contenedor puede ser cualquier cosa), un enlace o flujo que nombra un nodo que no existe |
+| `track-path-short`, `track-period-invalid` | Un `tracks` cuyo `path` tiene menos de 2 puntos distintos o cuyo `period` no es un número mayor que 0 |
 | `dimension-invalid`, `camera-invalid`, `spin-plane-invalid` | `width`, `height`, `pad`, los ángulos de la cámara o el plano de un giro que no sirven |
 | `draw-failed`, `model-invalid`, `model-throws`, `presets-need-model` | Falló el dibujo o el modelo; `--presets` sin `--model` |
 | `cli-unknown-command`, `cli-unknown-format`, `cli-missing-argument`, `set-value-invalid` | Mal uso de la línea de comandos: un comando o `--format` desconocido, un argumento que falta, un `--set` que no es `param=número`. Se avisan antes de leer la spec, con la ayuda y código de salida 1 |
@@ -68,6 +71,7 @@ no lanza: devuelve sus errores.
 | Controles | `param-id-missing` ↑, `param-id-duplicate` ↑, `param-number-invalid` ↑, `param-range-invalid` ↑, `param-step-invalid`, `param-value-out-of-range` ↑, `param-value-off-step` ↑, `param-label-missing`, `choice-options-missing` ↑, `choice-value-invalid` ↑, `toggle-value-invalid` |
 | `bind` | `bind-unknown-param` ↑, `bind-unknown-group` ↑, `bind-spin-no-pivot` ↑, `bind-no-effect`, `bind-window-invalid` |
 | Árbol | `stage-without-explode`, `explode-on-root`, `root-repeat` |
+| Mapa y recorridos | `map-flow-short`, `map-cell-collision`, `map-cell-invalid`, `map-paint-unknown`, `track-delay-invalid`, `track-group-unknown` y, del compilador, `map-label-small`, `map-route-blocked` |
 | Desvíos y lectura | `preset-unknown-param` ↑, `preset-value-invalid` ↑, `preset-value-out-of-range` ↑, `preset-value-off-step` ↑, `preset-press-invalid` ↑, `preset-no-effect`, `preset-label-missing`, `preset-note-missing`, `readout-unknown-param`, `readout-long` |
 | Auditoría | `part-floats`, `parts-overlap`, `paint-order-ambiguous`, `label-unreadable`, y `weight-over-budget`, que necesita Node: lo dan `isofig check` y `budgetIssues(spec, measure(html), lang)` de `isofig/node` |
 | Color ([color.md](color.md)) | `paint-unknown` ↑, `paint-is-state`, `palette-base-invalid`, `palette-use-invalid`, y sobre el dibujo `palette-roles-unmet`, `palette-too-many-colors`, `paint-indistinct`, `paint-text-contrast` |

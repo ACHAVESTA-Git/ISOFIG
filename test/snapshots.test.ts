@@ -4,6 +4,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { fromCompose } from "../src/core/importers/compose.ts";
+import { resolveMap } from "../src/core/map/index.ts";
 import { renderFigure } from "../src/core/render.ts";
 import type { FigureSpec } from "../src/core/spec.ts";
 import { diffText, expectSnapshot, pretty, SNAPSHOTS } from "./snapshot.ts";
@@ -34,9 +35,9 @@ test("hay ejemplos con instantánea, y al menos token-bucket y compose", () => {
 for (const { name, file } of found) {
   test(`el SVG de examples/${name} no cambia (UPDATE_SNAPSHOTS=1 npm test lo actualiza)`, async () => {
     const spec = await load(file);
-    const r = renderFigure(spec, { lang: "en" });
+    const r = renderFigure(spec, { lang: "en", resolveMap });
     assert.deepEqual(r.errors, []);
-    assert.equal(renderFigure(spec, { lang: "en" }).svg, r.svg, "dos builds iguales dan el mismo texto");
+    assert.equal(renderFigure(spec, { lang: "en", resolveMap }).svg, r.svg, "dos builds iguales dan el mismo texto");
     expectSnapshot(`${name}.svg`, pretty(r.svg));
   });
 }

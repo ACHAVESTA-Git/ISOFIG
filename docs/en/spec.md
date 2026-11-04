@@ -22,9 +22,11 @@ A `FigureSpec` is a plain object: it can be written in TypeScript (with autocomp
 | `groups` | `Record<string, GroupSpec>` | What moves and how far, so it fits in any pose. |
 | `params` | `ParamSpec[]` | Sliders. |
 | `bind` | `BindSpec[]` | Parameter → group links without writing a model. |
+| `tracks` | `TrackSpec[]` | Groups that travel along a polyline without a model (a map's packets). See [Tracks](#tracks). |
+| `map` | `MapSpec` | A topology, a flow map or a UML diagram, compiled to a `root` tree and to `tracks`. See [maps.md](maps.md). |
 | `readout` | `Text` | Readout template, with `{param}`. The model can replace it. |
 | `model` | `string` | Name under which the model is registered in the runtime. |
-| `autoplay` | `boolean` | Defaults to `true` if there is a model. With reduced motion it always starts paused. |
+| `autoplay` | `boolean` | Defaults to `true` if there is a model or there are tracks. With reduced motion it always starts paused. |
 | `motion.tau` | `number` | Time constant of the interpolation (s), 0.18 by default. |
 | `motion.settle` | `number` | With reduced motion, seconds simulated at once on mount and after every control or preset (presets simulate 8 if unset). |
 | `budget` | `number` | KB gzip it must not exceed (40 by default). |
@@ -35,7 +37,9 @@ A `FigureSpec` is a plain object: it can be written in TypeScript (with autocomp
 ## Solid parts
 
 All accept: `id`, `tone` (`lo` base, `mid` structure, `hi` subject, `lit` the single accent), `group`, `hidden`,
-`repeat`, `float`, `mount`, `shadow` and `paint` (a role or a material: `"data"`, `"steel"`…; see [color.md](color.md)).
+`repeat`, `float`, `mount`, `shadow`, `paint` (a role or a material: `"data"`, `"steel"`…; see [color.md](color.md)) and
+`ground` (a floor piece, such as a tray or a ribbon laid on the ground: it is painted before everything that stands or
+passes over it, and never takes part in paint-order doubts; maps use it).
 
 | `kind` | Fields | Notes |
 |---|---|---|
@@ -193,10 +197,37 @@ mountAll();
 
 `renderFigure(spec, { zoom: false })` removes the chip. `--isofig-zoom-width` changes the dialog's minimum width.
 
+## Tracks
+
+`tracks` moves a group along a polyline with no model: the packets of a map, a cart on a rail.
+
+```json
+"tracks": [
+  { "group": "packet", "path": [[0, 0, 0], [0, 120, 0], [60, 120, 0]], "period": 6, "delay": 1, "hide": [[0.4, 0.5]] }
+]
+```
+
+| Field | Purpose |
+|---|---|
+| `group` | The group (the `group` of its parts) that travels. Its parts are drawn where `path` starts. |
+| `path` | World points of the route; at least two distinct ones. |
+| `period` | Seconds to walk `path` end to end, at constant speed along the arc. Greater than 0. |
+| `delay` | Seconds it waits before leaving the first time. |
+| `loop` | `false`: walks it once and stays at the end. By default it starts over. |
+| `hide` | Stretches of the route, as fractions of the arc (`[0.4, 0.5]`), where the group is not shown: it goes through an object. |
+
+The group fades in and out at the ends of the route. The build computes the arc once; the runtime only interpolates,
+and it does so with or without a model of your own (a model's groups and the tracks are drawn together). The pause
+button stops them (a figure with tracks starts playing: `autoplay` defaults to `true`), and with reduced motion each
+group rests halfway along and in sight. A group that no part has is a warning (`track-group-unknown`); a `period` that
+is not greater than 0, or a `path` with fewer than two distinct points, is an error. Whatever travels is painted last,
+so it is always seen. Cost in the runtime: 207 B gzip.
+
 ## Import and preview
 
-- `isofig import compose <file.json|->` builds a spec from `docker compose config --format json` (see
-  [import.md](import.md)). It is a starting point: enrich it by hand.
+- `isofig import compose <file.json|->` builds a map from `docker compose config --format json`, and `isofig import
+  mermaid <file.mmd|->` one from a Mermaid flowchart or class diagram (see [import.md](import.md) and
+  [maps.md](maps.md)). They are a starting point: edit them by hand.
 - `isofig build <spec> --format page --model <model> --advance 3` writes a standalone page that bundles the model
   and the local files it imports, and opens 3 s into the simulation so headless Chrome can capture it.
 - A warning such as "ambiguous paint order near A ↔ B, C" names the parts in the cycle: separate their boxes on

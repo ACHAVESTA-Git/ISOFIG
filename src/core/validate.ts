@@ -1,6 +1,7 @@
 import type { Issue } from "./issues.ts";
 import { validatePalette } from "./palette/validate.ts";
 import { validateBind, validateParams, validatePresets, validateReadout } from "./validate-controls.ts";
+import { validateMap, validateTracks } from "./validate-map.ts";
 import { validateParts } from "./validate-parts.ts";
 import { validateTree } from "./validate-tree.ts";
 import type { Catalog } from "./tree.ts";
@@ -130,6 +131,8 @@ export function validateSpec(spec: unknown, options: ValidateOptions = {}): Issu
   for (const id of added) if (!byId.has(id)) byId.set(id, { id, kind: id === "pick" ? "choice" : "range" });
   validateBind(rep, spec["bind"], byId, generated ? undefined : groups, spins, Boolean(spec["model"]));
   validatePresets(rep, spec["presets"], byId);
+  validateTracks(rep, spec["tracks"], generated ? undefined : groups);
+  if (spec["map"] !== undefined) validateMap(rep, spec["map"]);
   validateReadout(rep, spec["readout"], spec["params"], byId);
   validatePalette(rep, spec);
   return issues;

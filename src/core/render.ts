@@ -4,14 +4,20 @@ import { paletteIssues, paletteStyle } from "./palette/figure.ts";
 import { drawScene } from "./scene.ts";
 import { escapeHtml as esc } from "./serialize.ts";
 import { textOf, type FigureSpec, type FlatSpec } from "./spec.ts";
-import { assembleTree, type Catalog } from "./tree.ts";
+import { assembleTree, type AssembleOptions, type Catalog } from "./tree.ts";
 import { catalog as kit } from "../kit/index.ts";
+import { trackData, type TrackData } from "./tracks.ts";
 import { validateSpec } from "./validate.ts";
 
 export interface RenderOptions {
   lang?: string;
   /** Número de figura que se muestra en la tarjeta («Fig. 3»). */
   n?: number | string;
+  /**
+   * Compila el `map` de la spec (`resolveMap` de `isofig/map`). No va dentro de `renderFigure` para que el núcleo no
+   * cargue el compilador (~21 KB gzip) cuando nadie dibuja un mapa; `isofig build`, `isofig check` y `<Figure>` lo ponen.
+   */
+  resolveMap?: AssembleOptions["resolveMap"];
   /** Añade los controles para girar la figura (el módulo isofig/orbit se carga al usarlos). */
   orbit?: boolean;
   /** `false` quita el chip «Ampliar» (el módulo isofig/zoom se carga al pulsarlo). */
@@ -38,6 +44,9 @@ export interface RuntimeData {
   params: { id: string; value: number; unit: string; spoken: string; options?: string[]; texts?: string[] }[];
   presets?: { values: Record<string, number>; note: string; reset?: boolean; press?: string[] }[];
   bind: FigureSpec["bind"];
+  /** Recorridos sin modelo (ver `tracks` en la spec) y el segundo en que se queda el reloj con movimiento reducido. */
+  tracks?: TrackData[];
+  rest?: number;
   readout: string;
   lang: string;
   settle?: number;
@@ -111,13 +120,15 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
   // Una spec rota no lanza: da sus errores. Si el dibujo falla por algo que la validación no explica, se dice aquí.
   try {
     // Una spec anidada se aplana aquí; los problemas del árbol ya los dijo la validación.
-    const tree = assembleTree(spec, { catalog });
+    const tree = assembleTree(spec, { catalog, resolveMap: options.resolveMap });
+    if (spec.map && !options.resolveMap) issues.push(makeIssue(lang, "map-compiler-missing", "map"));
     const flat = tree.spec;
+    for (const n of tree.notes) issues.push(makeIssue(lang, n.code, n.path, n.vars));
     const start = options.values ?? {};
     if (flat.params) flat.params = flat.params.map((p) => (p.id in start ? { ...p, value: start[p.id] } : p));
     const r = draw(flat, options, lang, issues);
     // La auditoría habla de la spec aplanada: sus `parts[k]` se traducen al lugar del árbol de donde sale cada pieza.
-    if (spec.root) {
+    if (spec.root || spec.map) {
       for (const i of r.issues) {
         const m = /^parts\[(\d+)\]/.exec(i.path);
         const src = m ? tree.sources.get(flat.parts[Number(m[1])]) : undefined;
@@ -166,11 +177,15 @@ function draw(spec: FlatSpec, options: RenderOptions, lang: string, issues: Issu
     ...(p.press?.length ? { press: p.press } : {}),
   }));
   const template = textOf(spec.readout, lang);
+  const tracks = trackData(spec.tracks);
+  for (const g of new Set(tracks.data.map((t) => t.g))) {
+    if (!items.some((i) => i.group === g)) issues.push(makeIssue(lang, "track-group-unknown", "tracks", { group: g }));
+  }
   const readout = fillReadout(template, params);
   const data: RuntimeData = {
     id,
     model: spec.model,
-    autoplay: spec.autoplay ?? Boolean(spec.model),
+    autoplay: spec.autoplay ?? (Boolean(spec.model) || tracks.data.length > 0),
     tau: spec.motion?.tau ?? 0.18,
     basis,
     spins,
@@ -181,6 +196,7 @@ function draw(spec: FlatSpec, options: RenderOptions, lang: string, issues: Issu
     ...(presets.length ? { presets } : {}),
     ...(spec.motion?.settle ? { settle: num(spec.motion.settle) } : {}),
     ...(reorder ? { reorder } : {}),
+    ...(tracks.data.length ? { tracks: tracks.data, rest: tracks.rest } : {}),
   };
 
   const play = data.autoplay || spec.model
