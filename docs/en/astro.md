@@ -218,11 +218,17 @@ All colors are `--isofig-*` CSS variables. To connect them to your site's tokens
   --isofig-card: var(--surface);
   --isofig-ink: var(--ink);
   --isofig-accent: var(--accent);
+  --isofig-on-accent: var(--accent-contrast); /* ink of the engraved text on the accent */
 }
 ```
 
-The theme rules sit inside `:where()`, so any selector of yours with one class wins over them. The dark theme is enabled with `prefers-color-scheme: dark` or with `data-theme="dark"` on `<html>`.
-`data-theme="light"` forces the light one.
+The theme tokens sit inside `:where()` (specificity 0), the dark-theme ones included: a `.isofig { … }` of yours always
+wins, whether it loads before or after `theme.css`, and you do not need to touch `--fx` or go up to two classes. That rule
+holds in light and dark; for a different value in each theme use `light-dark()`. The dark theme turns on with
+`prefers-color-scheme: dark` or with `data-theme="dark"` on `<html>`; `data-theme="light"` forces the light one.
+
+The card answers to its own width (container query) and reserves height for the readout, so it does not jump while the
+figure runs. What each variable controls, the ink on the accent and on states, and `--isofig-readout-lines`: [theme.md](theme.md).
 
 **Where the theme CSS goes.** `<Figure>` inlines it in a `<style>` tag at the start of the first figure of each page
 (about 2.8 KB gzip per page). All three options were tried in an Astro 7 project with `<ClientRouter />` (Chromium and

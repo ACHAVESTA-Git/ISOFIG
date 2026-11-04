@@ -218,11 +218,17 @@ Todos los colores son variables CSS `--isofig-*`. Para conectarlas a los tokens 
   --isofig-card: var(--surface);
   --isofig-ink: var(--ink);
   --isofig-accent: var(--accent);
+  --isofig-on-accent: var(--accent-contrast); /* tinta del texto grabado sobre el acento */
 }
 ```
 
-Las reglas del tema van dentro de `:where()`, así que cualquier selector tuyo con una clase les gana. El tema oscuro se activa con `prefers-color-scheme: dark` o con `data-theme="dark"` en `<html>`.
-`data-theme="light"` fuerza el claro.
+Los tokens del tema van dentro de `:where()` (especificidad 0), también los del tema oscuro: un `.isofig { … }` tuyo gana
+siempre, se cargue antes o después de `theme.css`, y no hace falta tocar `--fx` ni subir a dos clases. Esa regla vale en
+claro y en oscuro; para un valor distinto en cada tema usa `light-dark()`. El tema oscuro se activa con
+`prefers-color-scheme: dark` o con `data-theme="dark"` en `<html>`; `data-theme="light"` fuerza el claro.
+
+La tarjeta responde a su propio ancho (container query) y reserva altura para la lectura, así que no salta mientras la
+figura corre. Qué controla cada variable, la tinta sobre el acento y los estados, y `--isofig-readout-lines`: [tema.md](tema.md).
 
 **Dónde va el CSS del tema.** `<Figure>` lo incrusta en una etiqueta `<style>` al principio de la primera figura de cada
 página (unos 2,8 KB gzip por página). Se probaron las tres formas en un proyecto Astro 7 con `<ClientRouter />` (Chromium y WebKit, con la hoja retrasada 500 ms):

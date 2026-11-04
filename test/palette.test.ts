@@ -58,7 +58,7 @@ test("los roles son más sobrios que el acento", () => {
 
 test("theme.css lleva el bloque de pinturas generado y los mismos colores base que el espejo del tema", () => {
   assert.ok(css.includes(themeBlock()), "regenera el bloque con themeBlock() si cambiaste sets.ts");
-  for (const [mode, sel] of [["light", /^\.isofig \{([\s\S]*?)\n\}/m], ["dark", /:where\(:root\[data-theme="dark"\]\) \.isofig \{([\s\S]*?)\n\}/m]] as const) {
+  for (const [mode, sel] of [["light", /^:where\(\.isofig\) \{([\s\S]*?)\n\}/m], ["dark", /:where\(:root\[data-theme="dark"\] \.isofig\) \{([\s\S]*?)\n\}/m]] as const) {
     const block = sel.exec(css)![1];
     for (const [k, v] of Object.entries(THEME[mode])) {
       if (k === "ok" || k === "warn" || k === "fail" || k === "accent" || k === "paper" || k === "card" || k === "edge" || k === "light" || k === "shade") {
