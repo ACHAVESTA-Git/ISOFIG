@@ -1,9 +1,9 @@
-import { depthOf, fitCamera, project, screenBasis, type Camera, type CameraOptions } from "./camera.ts";
+import { depthOf, fitCamera, makeCamera, project, screenBasis, type Camera, type CameraOptions } from "./camera.ts";
 import { add, centerOf, dot, mul, type Box3, type Vec3 } from "./math.ts";
-import { buildItems, linesOf, meshOf, type Item } from "./items.ts";
+import { buildItems, endsOf, isRound, linesOf, meshOf, type Item } from "./items.ts";
 import { axisOf } from "./mesh.ts";
 import { hullOf, paintOrder, shapesApart, type Ordered, type Shape } from "./order.ts";
-import { drawMesh, SHADES } from "./shade.ts";
+import { drawMesh, drawRound, SHADES, stadium } from "./shade.ts";
 import { customPaints, paintAttr } from "./palette/paint.ts";
 import { dotsOf, escapeHtml as esc, pathOf } from "./serialize.ts";
 import { textOf, type FigureSpec, type FlatSpec, type LabelPart } from "./spec.ts";
@@ -44,7 +44,8 @@ const INLINE: Record<string, string> = {
 
 function itemBody(c: Camera, item: Item, lang: string, inline = false): string {
   const cls = (k: string) => (inline ? `style="${INLINE[k]}"` : `class="${k}"`);
-  const drawn = drawMesh(c, meshOf(item.solid, c));
+  const solid = item.solid;
+  const drawn = isRound(solid) ? drawRound(c, endsOf(solid), solid.r) : drawMesh(c, meshOf(solid, c));
   const lines = linesOf(item.details);
   const proj = (pts: Vec3[]) => pts.map((p) => project(c, p));
   let body = "";
@@ -103,26 +104,33 @@ function artOf(id: string, c: Camera, items: Item[], order: number[], lang: stri
 function shadowSvg(c: Camera, items: Item[]): string {
   const polys = items
     .filter((i) => i.shadow)
-    .map(({ box: { min, max } }) => {
+    .map(({ box: { min, max }, solid }) => {
       const pad = 3;
       const z = min[2];
-      const ring: Vec3[] = [
-        [min[0] - pad, min[1] - pad, z],
-        [max[0] + pad, min[1] - pad, z],
-        [max[0] + pad, max[1] + pad, z],
-        [min[0] - pad, max[1] + pad, z],
-      ];
+      // Una pieza redonda lleva un halo redondo: el contorno de su huella (un círculo o un estadio) en el piso.
+      const ring: Vec3[] = isRound(solid)
+        ? stadium(...endsOf(solid), solid.r + pad).map(([x, y]): Vec3 => [x, y, z])
+        : [
+            [min[0] - pad, min[1] - pad, z],
+            [max[0] + pad, min[1] - pad, z],
+            [max[0] + pad, max[1] + pad, z],
+            [min[0] - pad, max[1] + pad, z],
+          ];
       return ring.map((p) => project(c, p));
     });
   return polys.length ? `<path class="h" d="${pathOf(polys, true)}"/>` : "";
 }
 
-function fitPoints(spec: FigureSpec, items: Item[]): Vec3[] {
+function fitPoints(spec: FigureSpec, items: Item[], view: Camera): Vec3[] {
   const pts: Vec3[] = [];
   const extentOf = (g?: string): Vec3[] => (g ? (spec.groups?.[g]?.extent ?? []) : []);
   for (const it of items) {
     const { min, max } = it.box;
-    const corners: Vec3[] = [min, max, [min[0], max[1], min[2]], [max[0], min[1], max[2]], [min[0], min[1], max[2]], [max[0], max[1], min[2]]];
+    // El círculo de una pieza redonda cabe exacto: su caja, vista de lado, sería hasta un 57 % más grande.
+    const s = it.solid;
+    const corners: Vec3[] = isRound(s)
+      ? endsOf(s).flatMap((p) => [view.right, view.down].flatMap((v) => [add(p, mul(v, s.r)), add(p, mul(v, -s.r))]))
+      : [min, max, [min[0], max[1], min[2]], [max[0], min[1], max[2]], [min[0], min[1], max[2]], [max[0], max[1], min[2]]];
     const own = extentOf(it.group);
     const outer = extentOf(it.outer);
     const moves = [[0, 0, 0] as Vec3, ...own, ...outer, ...own.flatMap((a) => outer.map((b) => add(a, b)))];
@@ -133,17 +141,24 @@ function fitPoints(spec: FigureSpec, items: Item[]): Vec3[] {
 
 const isWorldAxis = (n: Vec3) => n.some((v) => Math.abs(v) > 1 - 1e-9);
 
-/** Lo que el orden de pintado necesita de una pieza inclinada o extruida de lado: vértices y normales de sus caras. */
+/** Lo que el orden de pintado necesita de una pieza inclinada, redonda o extruida de lado: vértices y normales de sus caras. */
 function shapeOf(c: Camera, item: Item): Omit<Shape, "hull"> {
-  const mesh = meshOf(item.solid, c);
-  const axes: Vec3[] = [];
   const s = item.solid;
-  const normals = s.kind === "prism" ? mesh.faces.map((f) => f.n) : s.kind === "box" ? [] : [axisOf(s.axis)];
+  const axes: Vec3[] = [];
+  let pts: Vec3[];
+  let normals: Vec3[];
+  if (isRound(s)) {
+    // Los centros de sus puntas (y el radio, aparte): solo el eje de una cápsula, si es oblicuo, separa a otras piezas.
+    [pts, normals] = [endsOf(s), s.kind === "capsule" ? [axisOf(s.axis)] : []];
+  } else {
+    const mesh = meshOf(s, c);
+    [pts, normals] = [mesh.v, s.kind === "prism" ? mesh.faces.map((f) => f.n) : s.kind === "box" ? [] : [axisOf(s.axis)]];
+  }
   for (const n of normals) {
     if (isWorldAxis(n) || axes.some((m) => Math.abs(dot(m, n)) > 1 - 1e-9)) continue;
     axes.push(n);
   }
-  return { pts: mesh.v, axes };
+  return isRound(s) ? { pts, axes, r: s.r } : { pts, axes };
 }
 
 /** Desplazamiento de cada grupo con el parámetro `param` en `value`, según los `bind` con `move`. */
@@ -221,15 +236,16 @@ export function drawScene(spec: FlatSpec, lang: string, view: View = {}): Scene 
   const H = spec.height ?? 400;
   const { items } = buildItems(spec.parts);
   const options = { ...spec.camera, ...(view.azimuth !== undefined ? { azimuth: view.azimuth } : {}), ...(view.elevation !== undefined ? { elevation: view.elevation } : {}) };
-  const cam = fitCamera(options, fitPoints(spec, items), W, H, spec.pad ?? 24, view.scale);
+  const cam = fitCamera(options, fitPoints(spec, items, makeCamera(options)), W, H, spec.pad ?? 24, view.scale);
   const names = items.map((i) => i.id);
-  const oriented = items.some((i) => i.solid.kind === "prism" || ((i.solid.kind === "cylinder" || i.solid.kind === "cone") && !isWorldAxis(axisOf(i.solid.axis))));
+  const oriented = items.some((i) => isRound(i.solid) || i.solid.kind === "prism" || ((i.solid.kind === "cylinder" || i.solid.kind === "cone") && !isWorldAxis(axisOf(i.solid.axis))));
   // La forma de cada pieza se calcula una vez; en cada pose solo se traslada (y su silueta, en pantalla).
   const base: (Shape | undefined)[] = [];
   const shapeAt = (k: number): Shape => {
     if (!base[k]) {
       const s = shapeOf(cam, items[k]);
-      base[k] = { ...s, hull: hullOf(s.pts.map((p) => project(cam, p))) };
+      const p = s.pts.map((q) => project(cam, q));
+      base[k] = { ...s, hull: s.r === undefined ? hullOf(p) : stadium(p[0], p[1], s.r * cam.scale) };
     }
     return base[k];
   };
@@ -242,7 +258,7 @@ export function drawScene(spec: FlatSpec, lang: string, view: View = {}): Scene 
       if (!cache[k]) {
         const s = shapeAt(k);
         const [dx, dy] = [cam.scale * dot(d, cam.right), cam.scale * dot(d, cam.down)];
-        cache[k] = { pts: s.pts.map((p) => add(p, d)), axes: s.axes, hull: s.hull.map(([x, y]): [number, number] => [x + dx, y + dy]) };
+        cache[k] = { ...s, pts: s.pts.map((p) => add(p, d)), hull: s.hull.map(([x, y]): [number, number] => [x + dx, y + dy]) };
       }
       return cache[k];
     });
