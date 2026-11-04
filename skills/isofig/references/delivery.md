@@ -48,7 +48,7 @@ pressed.
 ## Angular (19 or later)
 
 ```sh
-npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1
+npm i isofig
 npx --no-install isofig add angular src/app/isofig        # copies the component into your project: the only way to install it
 npx --no-install isofig build figures/bucket.ts --format module --lang en -o src/app/figures/bucket.figure.ts
 ```

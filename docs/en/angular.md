@@ -9,7 +9,7 @@ Tested with Angular 22: standalone, signals, zoneless and `OnPush`.
 ## 1. Install
 
 ```sh
-npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1
+npm i isofig
 npx --no-install isofig add angular src/app/isofig
 ```
 
