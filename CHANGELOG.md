@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.3 · 2026-11-04
+
+- The package no longer declares `astro` as an optional peer dependency, so it has no dependencies of any kind and scanners stop reporting alerts from Astro's own tree. The `isofig/astro` adapter still works the same: it runs inside an Astro 5+ project, which brings Astro; the guides now say to install Astro first.
+- npm metadata: a description and keywords for 0.10 (3D, teardown, 360°, Claude Code plugin), and the `bin` path written the way npm normalizes it, so `npm publish` no longer warns.
+
 ## 0.10.2 · 2026-11-04
 
 - isofig is on npm: `npm i isofig`, published by its author. The README, the guides, the Claude Code skill and `SECURITY.md` install from npm again; the CLI keeps running as `npx --no-install isofig`.
