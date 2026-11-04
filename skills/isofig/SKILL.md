@@ -1,6 +1,6 @@
 ---
 name: isofig
-description: Explain a technical idea as a small, crafted isometric figure whose working IS the concept (a rate limiter as a token dispenser, a cache as a pin-tumbler lock, a V8 as an assembly that comes apart, a request path as a map), written as a declarative isofig spec and rendered to light, animated SVG for Astro or Angular. Covers machines with a model, declarative machines (bind, tracks), nested assemblies with exploded view or teardown, and maps (topology, flow, UML). Use it for an explanatory figure, interactive diagram, isometric illustration, exploded view, architecture or topology map, UML diagram, simulator or any "how does X work" visual (in Spanish, figura, despiece, vista explosionada, mapa de topología, «cómo funciona») for docs, courses, blogs and landing pages, or to turn a sketch, screenshot or compose file into a figure, even if nobody says "isometric" or "isofig". Decides first when NOT to draw (pure comparisons) and verifies with check plus screenshots.
+description: Explain a technical idea as a small, crafted isometric figure whose working IS the concept (a rate limiter as a token dispenser, a cache as a pin-tumbler lock, a V8, a car or a skeleton as an assembly that comes apart, a request path as a map), written as a declarative isofig spec and rendered to light, animated SVG for Astro or Angular. Covers machines with a model, declarative machines (bind, tracks), nested assemblies with teardown and part zoom (engines, cars, anatomy), and maps (topology, flow, UML). Use it for an explanatory figure, interactive diagram, isometric illustration, exploded view, architecture or topology map, UML diagram, simulator or any "how does X work" visual (in Spanish, figura, despiece, vista explosionada, mapa de topología, «cómo funciona») for docs, courses, blogs and landing pages, or to turn a sketch, screenshot or compose file into a figure, even if nobody says "isometric" or "isofig". Decides first when NOT to draw (pure comparisons) and verifies with check plus screenshots.
 license: MIT
 compatibility: Node 22.18+. Astro 5+ or Angular 19+. Playwright or Chrome for the screenshots.
 ---
@@ -8,7 +8,7 @@ compatibility: Node 22.18+. Astro 5+ or Angular 19+. Playwright or Chrome for th
 # isofig
 
 You write a **spec** (data, JSON or TypeScript), never drawing code. The isofig core turns it into light SVG at build
-time; a runtime of about 3.5 KB gzip animates it. Answer in the user's language and write the figure's texts in it
+time; a runtime of about 4.2 KB gzip animates it. Answer in the user's language and write the figure's texts in it
 (`{ es, en }` when the project is bilingual). If `isofig` is not installed in the project, run `npm i isofig` first.
 Its guides are in `node_modules/isofig/docs/en/` (Spanish in `docs/es/`); this skill's detail is in `references/`.
 
@@ -26,6 +26,7 @@ then build it from many small parts. Never boxes with arrows and labels.
 | Circuit breaker | A breaker panel with a lever that trips and resets |
 | Database index | A card catalogue drawer vs. searching a loose pile |
 | A V8, a rocket engine | The engine itself, as a nested assembly that comes apart step by step |
+| A car, a human skeleton, a molecule | The thing itself, as a nested assembly of named parts: the reader takes it apart and picks a part to zoom onto it |
 | A request crossing services | A map: nodes with a role and a color, the links, the flow and a legend |
 
 Two failures to avoid: **too abstract** (floating slabs, labelled boxes) and **too bare** (one slab with a few lines).
@@ -57,7 +58,7 @@ Start with the simplest that tells the story: `bind` before a model, an assembly
 |---|---|---|---|
 | A mechanism that evolves with numbers (a queue fills, a breaker trips) | **Machine with a model** | `parts`, `groups`, `params`, `model` (a file with `init`/`step`/`view`) | `references/machines.md`, `references/models.md` |
 | A machine that only answers to its controls, or a loop that circulates | **Declarative machine** | `bind` (a parameter moves a group), `tracks` (a group travels a polyline in a loop, with `hide` for the stretch inside an object) | `references/models.md`, `references/maps.md` |
-| What a thing is made of, or how it is built | **Nested assembly with teardown** | `root`, `defs`, `explode`, `stage` (plain JSON, no model) | `references/assemblies.md` |
+| What a thing is made of, or how it is built (an engine, a car, a skeleton) | **Nested assembly with teardown** | `root`, `defs`, `explode`, `stage` (plain JSON, no model) | `references/assemblies.md` |
 | Who talks to whom, how a flow crosses a system, classes | **Map** | `map`: `nodes` (17 objects, containers), `links` (UML kinds), `flows`, `layout`; compiled to a `root` and `tracks` | `references/maps.md` |
 
 The formats mix: an assembly can carry a model (a wheel the model spins) and a machine can sit on a `bind`. A figure
@@ -69,8 +70,9 @@ that needs no model is a plain JSON file; a model is the only part written in co
    the motion must be true. Run the "when NOT" test and pick the format.
 2. **Invent the object.** One sentence: what moves (or comes apart, or flows) and what that means.
 3. **Parts list before geometry.** 30–80 parts for a machine (an assembly may have many more: the V8 example has
-   215 in 16.6 KB gzip): base, structure, mechanism, controls, subject. Each part rests on another. Take the common
-   ones from the kit.
+   215 in 16.6 KB gzip, the skeleton about 490 in 34 KB): base, structure, mechanism, controls, subject. Each part
+   rests on another. Take the common ones from the kit. For an assembly, also list the 8–14 named sub-assemblies the
+   reader will zoom onto (`references/assemblies.md`).
 4. **Plan the world.** ~1 unit = 1 px; `x`, `y` on the floor, `z` up; larger `x`/`y` is nearer the reader. Moving
    parts travel where they do not pass behind other parts.
 5. **Write the spec.** Use `repeat` for rows and a pool of hidden parts for what comes and goes.
@@ -78,6 +80,15 @@ that needs no model is a plain JSON file; a model is the only part written in co
 7. **Verify** (mandatory, see below), read the screenshots, iterate.
 
 Craft rules for machines (tones, detail, volume, composition, motion, paint-order lessons): `references/machines.md`.
+
+## Beyond software
+
+isofig explains anything made of parts that fit together, not only software: a workshop assembly, a car, a skeleton
+or a joint, a molecule (`sphere` for atoms, `capsule` for bonds), a cell, a lock. If the user asks for one of these, use
+a nested assembly. Picking a part in the list moves the camera to it, so write each name and note for that moment: 8–14
+entries, each a sub-assembly worth a close-up and a note with a real fact, not a bolt. The rules for cars, anatomy and
+chemistry (no brand logos, notes that can be verified, a teaching schematic and not an atlas) are in
+`references/assemblies.md`; the two reference figures are `examples/muscle-car/` and `examples/sistema-oseo/`.
 
 ## Starting from what the user already has
 
@@ -204,5 +215,6 @@ Props, loading, `overrides`, several copies of a figure, view transitions: `refe
 | `references/delivery.md` | Astro, Angular, theme, overrides |
 
 Reference figures in the package: `examples/token-bucket/` (machine and model), `examples/motor-v8/spec.json` and
-`examples/motor-cohete/spec.json` (assemblies), `examples/mapa-tienda/`, `mapa-pedido/` and `mapa-uml/` (maps).
-Open one before you start.
+`examples/motor-cohete/spec.json` (assemblies), `examples/muscle-car/spec.json` and `examples/sistema-oseo/spec.json`
+(assemblies outside software: a car, with materials, and the human skeleton, with `sphere`, `capsule` and an anatomical
+note per part), `examples/mapa-tienda/`, `mapa-pedido/` and `mapa-uml/` (maps). Open one before you start.

@@ -1,6 +1,6 @@
 {
   "name": "isofig",
-  "description": "Explain technical ideas as interactive isometric figures in pure SVG: machines with a model, nested JSON that takes itself apart, and topology, flow and UML maps made of real objects.",
+  "description": "Explain technical ideas as interactive isometric figures in pure SVG: machines with a model, nested JSON that takes itself apart and zooms to a part (engines, cars, anatomy), and topology, flow and UML maps made of real objects.",
   "version": "0.9.1",
   "author": {
     "name": "ACHAVESTA-Git",
