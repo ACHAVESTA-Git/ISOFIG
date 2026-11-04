@@ -150,10 +150,11 @@ todos los ejemplos en un solo HTML que funciona sin conexión, en los dos estilo
 ### 1. Instalar
 
 ```sh
-npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1
+npm i isofig
 ```
 
-Node 22.18 o superior. El paquete se compila solo al instalarse. El nombre `isofig` en el registro de npm todavía no es de este proyecto: hasta que se publique ahí, instala solo desde este repositorio.
+Node 22.18 o superior. El paquete está en npm como [`isofig`](https://www.npmjs.com/package/isofig), publicado por su
+autor (`anthonychavesta`). Para seguir el repositorio: `npm i github:ACHAVESTA-Git/ISOFIG#v0.10.2`.
 
 ### 2. Escribir una figura en JSON
 
@@ -404,8 +405,7 @@ estables, así que la IA puede revisar su propio trabajo y corregirlo.
 
 ## Hoja de ruta
 
-- 1.0: los avisos marcados con ↑ en la [guía de validación](docs/es/validar.md) pasan a ser errores, y el paquete se
-  publica en npm.
+- 1.0: los avisos marcados con ↑ en la [guía de validación](docs/es/validar.md) pasan a ser errores.
 - Despiece con giro: bisagras que se abren al desarmar (una puerta, un capó), hoy el despiece solo traslada.
 - Más objetos de mapa e importadores (OpenAPI, manifiestos de Kubernetes).
 - Adaptadores para otros frameworks.

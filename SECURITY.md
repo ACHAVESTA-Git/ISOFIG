@@ -7,18 +7,17 @@ Please report security problems privately through GitHub: open the repository's 
 
 ## Installing safely
 
-- isofig is published only from this repository: `npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1`, or the Claude Code
-  plugin from `claude plugin marketplace add ACHAVESTA-Git/ISOFIG`.
-- The name `isofig` on the npm registry does not belong to this project yet. Do not install a package with that name
-  from npm until this file says it is published there.
-- Run the CLI as `npx --no-install isofig`: it uses your installed copy and never downloads a package.
-- The package has no runtime dependencies. Installing it runs only `tsc` (the `prepare` script) to build `dist/`.
+- isofig is published on npm as [`isofig`](https://www.npmjs.com/package/isofig) by its author (`anthonychavesta`), and
+  from this repository (`npm i github:ACHAVESTA-Git/ISOFIG#v0.10.2`). The Claude Code plugin comes from
+  `claude plugin marketplace add ACHAVESTA-Git/ISOFIG`.
+- Run the CLI as `npx --no-install isofig`: it uses your installed copy and never downloads a package on its own.
+- The package has no runtime dependencies. Installing it from npm runs nothing; installing it from GitHub runs only
+  `tsc` (the `prepare` script) to build `dist/`.
 - The plugin has no hooks, MCP servers or commands that run on their own: everything it does goes through Claude
   Code's normal permission prompts.
 
 ## Seguridad (español)
 
 Reporta los problemas de seguridad en privado desde la pestaña **Security** del repositorio, con **Report a
-vulnerability**, y no en un issue público. Instala isofig solo desde este repositorio
-(`npm i github:ACHAVESTA-Git/ISOFIG#v0.10.1`) y usa la CLI con `npx --no-install isofig`. El nombre `isofig` en el
-registro de npm todavía no es de este proyecto.
+vulnerability**, y no en un issue público. Instala isofig desde npm (`npm i isofig`, publicado por su autor
+`anthonychavesta`) o desde este repositorio, y usa la CLI con `npx --no-install isofig`.
