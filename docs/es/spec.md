@@ -47,8 +47,20 @@ pasa sobre ella y no entra en las dudas del orden de pintado; los mapas la usan)
 | `cylinder` | `at` (centro de la cara inicial), `r`, `h`, `axis` (`x`/`y`/`z` o un vector como `[1, 0, 1]`), `bevel` | Ruedas, perillas, fichas, postes; con un vector, una biela o un pistón inclinados. |
 | `cone` | `at`, `r` (cara inicial), `r2` (la otra; 0 es una punta), `h`, `axis` | Tronco de cono: toberas, embudos, trompetas. La primera pieza de revolución. |
 | `prism` | `plan` (convexa), `z`, `h`, `axis` (`z` por defecto; `y` o `x`), `bevel` | Cualquier planta convexa. Con `axis: "y"` la planta es `[x, z]` y se extruye a lo largo de y desde `z`: el perfil de un bloque en V o de una viga. Las cóncavas se arman con varias piezas. |
+| `sphere` | `at` (el **centro**), `r` | Bolas, articulaciones, cráneos, átomos, cuentas. |
+| `capsule` | `at` (centro de la cara inicial del tramo recto), `r`, `h` (largo del tramo recto), `axis` (`x`/`y`/`z` o un vector como `[1, 0, 1]`) | Un cilindro con media esfera de radio `r` en cada punta: mide `h + 2r` de punta a punta. Huesos largos, bielas redondeadas, tubos, enlaces de una molécula. Con `h: 0` es una esfera. |
 
 - `bevel` corta el canto de la tapa: entre 0,4 y 1,6 se ve como una pieza fabricada.
+- **Esferas y cápsulas** se ven siempre como un círculo y un «estadio» (la envolvente de dos círculos), mires desde donde
+  mires; el volumen lo dan seis capas de tono, con la misma luz y los mismos tonos de cara que las demás piezas, y el
+  canto lleva el mismo trazo. `tone`, `paint`, `shadow` (un halo redondo) y los estados `ok`/`warn`/`fail` funcionan
+  igual, y el giro y el despiece las mueven sin cambios. Como no hay z-buffer, dos piezas que se atraviesan se pintan una
+  encima de la otra: apoya una cápsula en una esfera, o declara el encaje con `mount`.
+
+  ```json
+  { "id": "cabeza", "kind": "sphere", "at": [20, 20, 12], "r": 10, "tone": "hi" }
+  { "id": "femur", "kind": "capsule", "at": [40, 20, 8], "r": 5, "h": 50, "axis": [1, 0, 1], "tone": "hi" }
+  ```
 - `repeat: { count, step, from }` crea copias desplazadas. `{i}` en `id` o `group` se reemplaza por el índice; si `id`
   no lo lleva, se agrega `-i`. `from` es el primer valor de `{i}` (0 por defecto): la copia número k se desplaza
   `step × k` y se llama `from + k`, así dos filas se reparten los números de un mismo grupo (`fila-0…13` y
@@ -161,20 +173,50 @@ La auditoría trabaja sobre cajas: es rápida y gruesa. Revisa siempre la figura
 
 ## Girar la figura (órbita)
 
-`renderFigure(spec, { orbit: true })` añade botones para girar y la pista «arrastra para girar». En la página, el
-giro se carga solo cuando hace falta:
+`renderFigure(spec, { orbit: true })` añade botones para girar y la pista «arrastra o usa las flechas para girar». En la
+página, el giro se carga solo cuando hace falta:
 
 ```ts
 import { orbitOnDemand } from "isofig/runtime";
 
 orbitOnDemand(el, async () => {
   const { enableOrbit } = await import("isofig/orbit");
-  return enableOrbit(el, spec, { lang: "es", range: 40 });
+  return enableOrbit(el, spec, { lang: "es" });
 });
 ```
 
-Al pasar el puntero o enfocar la figura se precarga; al presionar el dibujo o un botón se activa. El módulo pesa
-~8,5 KB gzip más la spec, y solo lo descarga quien gira la figura.
+Al pasar el puntero o enfocar la figura se precarga; al presionar el dibujo, un botón o una flecha se activa. El módulo
+pesa ~10 KB gzip más la spec, y solo lo descarga quien gira la figura.
+
+Opciones de `enableOrbit`:
+
+| Opción | Por defecto | Qué hace |
+|---|---|---|
+| `lang` | `"en"` | Idioma de los rótulos al redibujar. |
+| `range` | sin tope | Grados que puede girar el azimut a cada lado del de la spec. Sin él da la **vuelta entera** (módulo 360°) y ningún botón se deshabilita; con él, el botón del tope se marca `aria-disabled`. |
+| `minElevation`, `maxElevation` | `12`, `60` | Límites de la elevación, en grados. |
+| `instance` | el del SVG | Nombre de la copia en el DOM (ver `RenderOptions.instance`). |
+
+**Cómo se mueve**
+
+- **Arrastrar** gira 0,35° por píxel (y con ratón, 0,25° de elevación por píxel; con el dedo solo gira de lado). **Al soltar
+  sigue girando con inercia y frena con suavidad** (la velocidad cae al 37 % cada 0,18 s). Agarrar la figura la detiene.
+  Con `prefers-reduced-motion` no hay inercia ni deslizamiento: la cámara salta al ángulo pedido.
+- **Teclado.** El dibujo se enfoca (`tabindex="0"`, `aria-keyshortcuts`) y su pista se lee tras su descripción. Con el foco
+  en él, ←/→ giran 15° (como ↺/↻) y ↑/↓ cambian la elevación 5°; con Ctrl, Alt o Meta no hacen nada, y los controles
+  conservan sus flechas. «Vista inicial» vuelve por el camino corto.
+- **Cabe desde cualquier ángulo.** La escala de la vista inicial es el **tope**: desde otro azimut o elevación la cámara se
+  achica lo justo para que la figura entera quepa en el marco, en todas las poses del despiece (`groups.*.extent`). El
+  cambio es continuo, sin saltos, y nunca agranda. El `viewBox` no cambia: lo mueve el acercamiento a la pieza.
+- **Nada se ve a través ni en espejo.** Los puntos, líneas, marcas (`ticks`) y rótulos grabados en una cara que no mira al
+  lector no se dibujan. Una tapa con rótulo (`face: "top"`) vista desde el otro lado gira el texto media vuelta sobre su
+  ancla para que se lea al derecho; el de una cara de lado (`x`, `y`) que no mira al lector se oculta. Esto vale también
+  en la vista inicial: lo que estaba grabado en una cara de atrás ya no asoma.
+- **Fluidez.** Mientras la cámara se mueve (arrastre, inercia, flechas) la escena se dibuja en **borrador**: sin compartir
+  piezas idénticas con `<use>`, con menos capas en las esferas y cápsulas y calculando solo el orden de pintado de la pose
+  del despiece que se ve (el valor del control de `reorder`). En cuanto se detiene, se dibuja completa, igual que desde ese
+  ángulo con `drawScene`. Si el lector mueve el control del despiece, durante 1,2 s se calculan todas las poses. Con
+  `drawScene(spec, lang, { draft: true, pose: valor })` puedes pedir lo mismo a mano.
 
 El giro dibuja la spec **armada**. Una spec anidada (`root`, ver [anidar.md](anidar.md)) se aplana al compilar con
 `assemble(spec)` de `isofig`, y a la página viaja la aplanada (`<Figure orbit>` y `isofig build --format page --orbit`

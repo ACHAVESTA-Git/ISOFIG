@@ -1,7 +1,7 @@
 # isofig con Astro
 
 El componente `Figure` genera el SVG al compilar. A la página llegan el HTML de la figura, el CSS del tema (una vez, en
-línea) y un arranque de ~1,3 KB gzip. El runtime (~3,5 KB gzip), el modelo, el giro y la ampliación se descargan después,
+línea) y un arranque de ~1,3 KB gzip. El runtime (~4,2 KB gzip), el modelo, el giro y la ampliación se descargan después,
 cuando el lector se acerca a la figura o la usa, y el runtime solo trabaja mientras la figura está en pantalla.
 
 ## 1. Instalar
@@ -133,8 +133,8 @@ perder ni mover. Lo demás se descarga con `import()`:
 | Qué | Cuándo | Peso (gzip) |
 |---|---|---|
 | Arranque de `<Figure>` | Con la página; solo si tiene una figura | ~1,3 KB |
-| Runtime y modelo | Según `load` | ~3,5 KB + el modelo |
-| Giro (`isofig/orbit`) | Al pasar el puntero, enfocar o tocar la figura | ~8,5 KB |
+| Runtime y modelo | Según `load` | ~4,2 KB + el modelo |
+| Giro (`isofig/orbit`) | Al pasar el puntero, enfocar o tocar la figura | ~10 KB |
 | Ampliación (`isofig/zoom`) | Al pulsar «Ampliar» | ~0,8 KB |
 
 - `load="visible"` (por defecto): al acercarse a 600 px de la pantalla, o al pasar el puntero, enfocar o tocar la figura.
@@ -159,7 +159,8 @@ la spec.
 
 ## 7. Girar y ampliar la figura
 
-`orbit` añade los botones de giro y el arrastre. El giro vuelve a dibujar la escena en el navegador, así que la spec
+`orbit` añade los botones de giro, el arrastre (con inercia) y las flechas del teclado con el dibujo enfocado; da la vuelta
+entera y la figura cabe desde cualquier ángulo (opciones y detalles en [spec.md](spec.md#girar-la-figura-órbita)). El giro vuelve a dibujar la escena en el navegador, así que la spec
 viaja en la página (como un `<script type="application/json">`): cuesta ~1,9 KB gzip por figura con giro en el token
 bucket de ejemplo (40 piezas). Una spec anidada (`root`) viaja ya aplanada, así que el giro no descarga el aplanador del árbol,
 el catálogo del kit ni el validador. El código del giro se descarga solo cuando el lector lo usa.

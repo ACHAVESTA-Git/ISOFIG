@@ -3,12 +3,12 @@
 **Interactive 3D machines, maps and diagrams as pure SVG. No WebGL. No renders. No images.**
 
 Describe a machine, a network or a UML model as (nested) JSON. isofig draws it in isometric 3D at build time,
-brings it to life with a 3.6 KB runtime, and takes it apart piece by piece without you writing a single function.
-It ships with Astro and Angular adapters, and with a Claude Code plugin that writes, checks and looks at the
-figures for you.
+brings it to life with a 4.3 KB runtime, takes it apart piece by piece and zooms the camera onto the part you pick,
+without you writing a single function. It is not only for software: the same JSON draws a car or a skeleton. It ships
+with Astro and Angular adapters, and with a Claude Code plugin that writes, checks and looks at the figures for you.
 
-[Español](README.es.md) · [Gallery](#gallery) · [Quick start](#quick-start) · [Claude Code plugin](#claude-code-plugin) ·
-[Docs](#documentation) · [Credits](NOTICE.md)
+[Español](README.es.md) · [Beyond software](#beyond-software) · [Gallery](#gallery) · [Quick start](#quick-start) ·
+[Claude Code plugin](#claude-code-plugin) · [Docs](#documentation) · [Credits](NOTICE.md)
 
 <p align="center">
   <img src="docs/assets/motor-v8-luxe-dark.png" width="32%" alt="A racing V8 engine, assembled, on a workshop stand">
@@ -32,7 +32,7 @@ a landing page.
 | | |
 |---|---|
 | **No renders, no WebGL** | The figure is SVG generated at build time from 3D geometry. There is nothing to render, record or host. |
-| **Light** | Runtime 3.6 KB gzip. A complete figure weighs 7–31 KB gzip. Turning the figure (8.6 KB) and the enlarge dialog (0.8 KB) download only when someone uses them. |
+| **Light** | Runtime 4.3 KB gzip. A complete figure weighs 7–35 KB gzip. The 360° turn (10 KB) and the enlarge dialog (0.8 KB) download only when someone uses them. |
 | **Works without JavaScript** | The page already contains the drawing. With JS it animates; without it, it is still a figure. |
 | **Readable by search engines and screen readers** | Titles, labels and descriptions are real text in the HTML, not pixels in a video. |
 | **Accessible by default** | Pause button, native controls, `prefers-reduced-motion` (followed live), a polite live region, a focus-trapped enlarge dialog, contrast measured on every color. |
@@ -45,12 +45,13 @@ Measured, not guessed: the weights are the minified, gzipped JavaScript each opt
 
 | | isofig | Three.js / WebGL | Video or GIF render | Mermaid | Lottie |
 |---|---|---|---|---|---|
-| JS sent to the browser | **3.6 KB** runtime | 167 KB (core only) | none, but megabytes of video | 726 KB | 74 KB |
+| JS sent to the browser | **4.3 KB** runtime | 167 KB (core only) | none, but megabytes of video | 726 KB | 74 KB |
 | Shows something without JS | **Yes** | No | Yes | No | No |
 | Text indexable and read aloud | **Yes** | No | No | Yes | No |
 | The reader can play with it | **Yes**: sliders, toggles, presets, teardown | Yes, if you code it | No | No | No |
+| Zoom onto one part of the model | **Yes**: pick a name and the camera goes there | Yes, if you code it | Only what you rendered | No | No |
 | Source you can diff and review | **JSON** | Code | Binary | Text | Exported JSON |
-| Free camera, real lighting | Turning by drag or in steps, flat shading | **Yes** | Whatever you rendered | No | No |
+| Free camera, real lighting | A full 360° turn by drag or arrow keys, with inertia; flat shading | **Yes** | Whatever you rendered | No | No |
 
 isofig is not a 3D engine: for a free camera, physics or photorealism, use Three.js. isofig is for **explaining**:
 a figure that loads instantly, reads like an illustration and lets the reader break the system on purpose.
@@ -63,19 +64,68 @@ a figure that loads instantly, reads like an illustration and lets the reader br
    queue is a conveyor. A class is a filing cabinet with drawers. isofig is built for real, recognisable objects,
    not floating boxes.
 2. **Nested JSON gives you the teardown for free.** Write the engine as a tree (block → banks → heads → valves) and
-   add `explode` to the nodes. isofig adds a stepped "Take apart" slider, a parts list that fades the rest and a
-   readout per step. [Guide](docs/en/nesting.md).
-3. **Maps made of objects.** Topologies, flow maps and UML class diagrams, with phones, racks, databases as stacks
+   add `explode` to the nodes. isofig adds a stepped "Take apart" slider, a parts list and a readout per step. Every
+   node also has its three axes, like a Unity Transform: `at` for position and `rotate: [x, y, z]` to tilt a door, an
+   arm or a connecting rod with everything inside it, and the figure turns a full 360° by drag or arrow keys.
+   [Guide](docs/en/nesting.md).
+3. **Pick a part and the camera goes to it.** In a figure that comes apart, every named node becomes an entry in the "Part" list. Choose one and
+   the view travels to it with an animation, the part is painted in front of everything (even when it sits inside
+   another), the rest stays at 35 % so you keep your bearings, and its note appears in the readout. "All" returns to
+   the full frame, and the zoom follows the part when you take the figure apart or turn it. You write no camera code:
+   it comes from the `name` of your nodes. [Guide](docs/en/nesting.md#the-teardown).
+4. **Maps made of objects.** Topologies, flow maps and UML class diagrams, with phones, racks, databases as stacks
    of disks, queues as conveyors and packets that travel along the routes. Import them from Mermaid or from
    `docker compose`. [Guide](docs/en/maps.md).
-4. **Color with guarantees.** Seven roles for maps and nine materials for machines (steel, copper, lacquer,
+5. **Color with guarantees.** Seven roles for maps and nine materials for machines (steel, copper, lacquer,
    carbon…), in OKLCH, with measured guarantees in light and dark: engraved text ≥ 4.5:1, edges ≥ 3:1, and every
    pair of colors distinguishable, including with protanopia, deuteranopia and tritanopia. Derive them from your
    brand color with one command. [Guide](docs/en/color.md).
-5. **"Try to break it".** Presets set several controls at once (and can press buttons), so the reader sees the
+6. **"Try to break it".** Presets set several controls at once (and can press buttons), so the reader sees the
    failure the lesson is about: the circuit breaker trips, the queue overflows, the replica falls behind.
-6. **An AI that draws and then looks.** The Claude Code plugin invents the machine, writes the spec, runs
+7. **An AI that draws and then looks.** The Claude Code plugin invents the machine, writes the spec, runs
    `isofig check`, takes screenshots at phone and desktop width in both themes, looks at them and iterates.
+
+---
+
+## Beyond software
+
+The teardown is not about code. Anything made of parts that fit together can be an isofig figure, with the same
+slider, the same parts list and the same zoom. The repository ships two demos from outside software, both in plain
+JSON with names and notes in English and Spanish.
+
+<p align="center">
+  <img src="docs/assets/muscle-car-luxe-dark.png" width="32%" alt="A Camaro-style muscle car, assembled: long hood, low cabin, red body with silver stripes">
+  <img src="docs/assets/muscle-car-luxe-dark-pick.png" width="32%" alt="The same car with the V8 engine picked: the camera zooms in on the engine and the body turns see-through around it">
+  <img src="docs/assets/muscle-car-luxe-dark-exploded.png" width="32%" alt="The car fully taken apart: hood, doors, glass and body lifted, then seats, engine, driveline and wheels, leaving the bare chassis">
+</p>
+
+<p align="center"><sub><code>examples/muscle-car/spec.json</code>: a Camaro-style muscle car, a schematic of our own with no logos.
+13 named parts and 9 steps, <b>27.4 KB gzip</b>. Hood, doors and glass come off first, then the interior, the wheels and
+the drivetrain, and the V8 leaves out the front last, leaving the bare chassis. Pick "V8 engine" and the camera goes in.</sub></p>
+
+<p align="center">
+  <img src="docs/assets/sistema-oseo-luxe-dark.png" width="32%" alt="A human skeleton in anatomical position on a display stand">
+  <img src="docs/assets/sistema-oseo-luxe-dark-pick.png" width="32%" alt="The same skeleton with the pelvis picked: the camera zooms in on the two hip bones and the sacrum, and the rest turns see-through">
+  <img src="docs/assets/sistema-oseo-luxe-dark-exploded.png" width="32%" alt="The skeleton taken apart in seven steps: skull, arms, rib cage, pelvis and legs separate around the spine">
+</p>
+
+<p align="center"><sub><code>examples/sistema-oseo/spec.json</code>: the human skeleton, with a real anatomical note on every part
+(an adult has 206 bones, and 106 of them are in the hands and feet). 12 named parts and 7 steps, <b>33.9 KB gzip</b>.
+A teaching schematic, not a medical atlas. Pick "Pelvis" or "Hand" and read what the readout says.</sub></p>
+
+Where it fits:
+
+| Field | What you would draw | What the reader gets |
+|---|---|---|
+| **Workshops and manufacturing** | An engine, a gearbox, a pump, a machine tool, an assembly sequence | A manual or a parts catalog they operate: take it apart in the order the real thing comes apart, and zoom into the part they must replace |
+| **Medicine and anatomy** | A skeleton, a joint, an organ system | A study aid where each name carries its note, and picking "Pelvis" takes the student to it |
+| **Chemistry** | Atoms and molecules | `sphere` for atoms and `capsule` for bonds, the two solids added in 0.10. No molecule ships as an example yet |
+| **Education** | A cell, a flower, a camera, a lock: whatever a class takes apart | One JSON, one slider and one list of parts to zoom into, with no video to record or host |
+
+The recipe is the same as for the V8: a tree of named parts, an `explode` on each, one `note` per entry. Spheres and
+capsules ([solids reference](docs/en/spec.md#solid-parts)) give you the round parts that bones and joints need. A good
+entry is one worth zooming into: name a rod or a lid, not a screw. Or ask the plugin to draw it for you
+([plugin](#claude-code-plugin)).
 
 ---
 
@@ -90,7 +140,8 @@ a figure that loads instantly, reads like an illustration and lets the reader br
 | ![A token bucket rate limiter as a coin tube, a dispenser and carts at a gate](docs/assets/token-bucket-light.png) | ![A five-service docker compose stack drawn as a map](docs/assets/compose-light.png) |
 | **Machine with a model** · `examples/token-bucket` · 40 parts, 7.3 KB gzip | **Imported** · `examples/compose` · from `docker compose config --format json` |
 
-`npm run gallery` puts every example in a single offline HTML file, in both styles and both themes.
+More in [Beyond software](#beyond-software): a muscle car and a human skeleton. `npm run gallery` puts every example in
+a single offline HTML file, in both styles and both themes.
 
 ---
 
@@ -163,7 +214,7 @@ npx isofig build figures/box.json --format module -o src/app/figures/box.figure.
 |---|---|---|
 | A mechanism that runs over time (a limiter, a cache, a retry with backoff) | `parts` and a small pure **model** | [spec.md](docs/en/spec.md) |
 | Something that moves with a control, with no logic | `parts` and `bind` or `tracks` | [spec.md](docs/en/spec.md) |
-| How a thing is built (an engine, a server, a phone) | a nested **`root`** with `explode` | [nesting.md](docs/en/nesting.md) |
+| How a thing is built (an engine, a car, a skeleton, a server) | a nested **`root`** with `explode` | [nesting.md](docs/en/nesting.md) |
 | How things connect (a network, a flow, a domain model) | a **`map`** | [maps.md](docs/en/maps.md) |
 
 ### A map in a dozen lines
@@ -251,11 +302,13 @@ Then ask, in any language:
 /isofig:isofig explain how a circuit breaker works, interactive, for our Astro docs
 /isofig:isofig draw our checkout as a topology map with the purchase flow
 /isofig:isofig a rocket engine I can take apart piece by piece
+/isofig:isofig a human skeleton I can take apart, with a note on every part
 ```
 
 The skill picks the right kind of figure (or tells you when isofig is the wrong tool), invents the object, writes the
 spec and the model, runs `isofig check --model --presets --strict`, takes screenshots at 390 and 1280 px in light and
-dark, looks at them and iterates. [Plugin guide](docs/en/plugin.md).
+dark, looks at them and iterates. For an assembly it also gives each entry of the "Part" list something worth zooming
+into, and it knows the car and the skeleton as reference figures. [Plugin guide](docs/en/plugin.md).
 
 ---
 
@@ -277,12 +330,12 @@ Minified and gzipped, checked on every push by `npm run size` against `size-budg
 
 | Piece | When it loads | Size |
 |---|---|---|
-| `isofig/runtime` | when the reader gets close to a figure | 3.6 KB |
+| `isofig/runtime` | when the reader gets close to a figure | 4.3 KB |
 | `isofig/zoom` (enlarge dialog) | when the chip is pressed | 0.8 KB |
-| `isofig/orbit` (turning) | when a turn control is used | 8.6 KB |
-| `isofig/theme.css` | inline, once per page with a figure | 3.1 KB |
+| `isofig/orbit` (360° turn) | when the figure is touched or turned | 10 KB |
+| `isofig/theme.css` | inline, once per page with a figure | 3.0 KB |
 | `isofig/themes/luxe.css` | if you import it | 1.7 KB |
-| A figure (SVG and data) | in the HTML | 7–31 KB |
+| A figure (SVG and data) | in the HTML | 7–34 KB |
 
 The core (`isofig`), the kit and the map compiler run at build time and are not sent to the browser.
 
@@ -291,7 +344,9 @@ The core (`isofig`), the kit and the map compiler run at build time and are not 
 - Every figure is a `<figure>` with an SVG `role="img"`, a title and a description; maps also describe their objects
   and links in words.
 - Native controls: `input[type=range]` with `aria-valuetext`, switches, radio groups and buttons.
-- Motion: a pause button (WCAG 2.2.2), `prefers-reduced-motion` followed live, animation that stops offscreen.
+- Motion: a pause button (WCAG 2.2.2), `prefers-reduced-motion` followed live, animation that stops offscreen. With
+  reduced motion the camera jumps to the part you pick instead of traveling.
+- The parts list is a radio group with its legend, and the readout says which part is picked.
 - Announcements through a polite live region, at most two per interaction, never over a preset note.
 - "Enlarge" opens a focus-trapped dialog where labels read at 11 px or more on a phone.
 - Colors: text ≥ 4.5:1, edges ≥ 3:1, roles distinguishable with color blindness, and color is never the only carrier
@@ -305,8 +360,8 @@ Node 22.18+ · Astro 5 and 7 (built in CI) · Angular 19+ · evergreen browsers 
 
 | English | Español |
 |---|---|
-| [Spec reference](docs/en/spec.md) | [Referencia de la spec](docs/es/spec.md) |
-| [Nested specs and teardown](docs/en/nesting.md) | [Anidar y desarmar](docs/es/anidar.md) |
+| [Spec reference](docs/en/spec.md) (solids from box to sphere and capsule) | [Referencia de la spec](docs/es/spec.md) (sólidos, de la caja a la esfera y la cápsula) |
+| [Nested specs, teardown and zoom to a part](docs/en/nesting.md) | [Anidar, desarmar y acercarse a una pieza](docs/es/anidar.md) |
 | [Maps: topologies, flows and UML](docs/en/maps.md) | [Mapas](docs/es/mapas.md) |
 | [Color](docs/en/color.md) · [Theme](docs/en/theme.md) · [Luxe](docs/en/luxe.md) | [Color](docs/es/color.md) · [Tema](docs/es/tema.md) · [Lujo](docs/es/lujo.md) |
 | [Kit of common parts](docs/en/kit.md) | [Kit de piezas](docs/es/kit.md) |
@@ -320,9 +375,16 @@ data), [ADR 0002](docs/adr/0002-especificacion-anidada-y-despiece.md) (nested sp
 
 ## FAQ
 
-**Is it real 3D?** The geometry is 3D (boxes, cylinders, cones and prisms along any axis) and is projected, shaded and
-depth-sorted at build time. Turning the figure redraws it in the browser from another angle. It is not a free 3D
+**Is it real 3D?** The geometry is 3D (boxes, cylinders, cones, prisms, spheres and capsules, along any axis) and is
+projected, shaded and depth-sorted at build time. Turning the figure redraws it in the browser from another angle. It is not a free 3D
 camera, and that is on purpose: it keeps the figure light and readable.
+
+**Is it only for software?** No. The same JSON draws a car or a skeleton: see [Beyond software](#beyond-software).
+Anything made of parts that fit together, from an engine to a bone, works the same way.
+
+**Do I have to code the zoom onto a part?** No. It comes from the `name` of the nodes of a figure that comes apart:
+the "Part" list is built from them, and picking one moves the camera to it. Give each entry a `note` and the readout
+shows it.
 
 **Do I need a framework?** No. Astro and Angular get components; any site can use the `<figure>` markup from
 `isofig build` and the runtime.

@@ -1,4 +1,4 @@
-import { solidBox, type Solid } from "../items.ts";
+import { isSolid, solidBox } from "../items.ts";
 import type { BoxPart, CylinderPart, DotsPart, LabelPart, LinePart, Part, PrismPart, Text, TicksPart, Vec2, Vec3 } from "../spec.ts";
 
 /** En un objeto del catálogo, el cuerpo se pinta con el rol que le toque: este marcador se cambia al compilar. */
@@ -30,6 +30,8 @@ export function shiftPart(p: Part, d: Vec3): Part {
     case "box":
     case "cylinder":
     case "cone":
+    case "sphere":
+    case "capsule":
     case "label":
       return { ...p, at: moveVec(p.at, d) } as Part;
     case "prism":
@@ -45,8 +47,6 @@ export function shiftPart(p: Part, d: Vec3): Part {
 export function withRole(parts: Part[], role: string): Part[] {
   return parts.map((p) => (p.paint === ROLE ? { ...p, paint: role } : p));
 }
-
-const isSolid = (p: Part): p is Solid => p.kind === "box" || p.kind === "cylinder" || p.kind === "cone" || p.kind === "prism";
 
 /**
  * Las piezas que se cruzan por naturaleza (dos cintas que se cruzan, una punta sobre su cinta, dos paquetes que parten

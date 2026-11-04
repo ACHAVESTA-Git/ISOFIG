@@ -68,9 +68,37 @@ test("turn redibuja la escena desde otro ángulo y el runtime sigue animando las
   orbit.stop();
 });
 
-test("el giro tiene tope a cada lado: el botón de ese lado se marca aria-disabled y reset vuelve a la vista inicial", () => {
+test("turn redibuja una esfera y una cápsula desde otra cámara, con su orden de pintado y sin perder el grupo", () => {
+  const round = demoSpec({
+    parts: [
+      { id: "base", kind: "box", at: [0, 0, 0], size: [120, 70, 6], tone: "lo" },
+      { id: "bar", kind: "box", at: [10, 10, 6], size: [20, 20, 10], tone: "hi", group: "bar" },
+      { id: "bola", kind: "sphere", at: [60, 20, 14], r: 8, tone: "lit" },
+      { id: "hueso", kind: "capsule", at: [50, 50, 12], r: 5, h: 40, axis: [1, 0, 1], tone: "hi" },
+    ],
+  });
+  motion.reduced = true;
+  const f = build(round, { orbit: true });
+  mount(f.el, slide);
+  clock.frame();
+  const orbit = enableOrbit(f.el, round, { lang: "en" });
+  const scene = () => f.q(".isofig-scene").innerHTML;
+  const before = scene();
+  const layers = () => f.all(".isofig-scene g.lit path").map((p) => p.getAttribute("class")).join(" ");
+  assert.equal(layers(), "s0 s1 s2 s3 b t e", "la esfera lleva sus seis capas de tono y su canto");
+  orbit.turn(25);
+  clock.run(2);
+  assert.notEqual(scene(), before);
+  assert.equal(layers(), "s0 s1 s2 s3 b t e", "redibujada desde otro azimut, igual de completa");
+  assert.equal(f.all(".isofig-scene g.hi:not([data-g]) path").length > 0, true, "la cápsula sigue ahí");
+  assert.equal(f.all('[data-g="bar"]').length, 1);
+  assert.equal(bar(f).getAttribute("transform"), f.translate(10, drawScene(round, "en", { azimuth: 70, elevation: 30, scale: drawScene(round, "en").cam.scale }).basis));
+  orbit.stop();
+});
+
+test("con `range`, el giro tiene tope a cada lado: el botón de ese lado se marca aria-disabled y reset vuelve a la vista inicial", () => {
   const f = orbiting();
-  const orbit = enableOrbit(f.el, spec, { lang: "en" });
+  const orbit = enableOrbit(f.el, spec, { lang: "en", range: 40 });
   const left = f.q('[data-orbit="-20"]');
   const right = f.q('[data-orbit="20"]');
   orbit.turn(100);

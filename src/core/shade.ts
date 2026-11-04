@@ -1,6 +1,7 @@
 import { depthOf, facesViewer, project, type Camera } from "./camera.ts";
 import { dot, mul, add, unit, type Vec2, type Vec3 } from "./math.ts";
-import type { Mesh } from "./mesh.ts";
+import { circle, segmentsFor, type Mesh } from "./mesh.ts";
+import { hullOf } from "./order.ts";
 
 export type Shade = "t" | "b" | "s0" | "s1" | "s2" | "s3";
 export const SHADES: Shade[] = ["s0", "s1", "s2", "s3", "b", "t"];
@@ -37,11 +38,13 @@ export function drawMesh(c: Camera, mesh: Mesh): Drawn {
     faces.get(s)!.push(f.idx.map((k) => screen[k]));
   }
 
-  const owners = new Map<string, number[]>();
+  // Cada arista, con el par de vértices como un solo número, y las caras que la comparten.
+  const n = mesh.v.length;
+  const owners = new Map<number, number[]>();
   mesh.faces.forEach((f, fi) => {
     f.idx.forEach((a, k) => {
       const b = f.idx[(k + 1) % f.idx.length];
-      const key = a < b ? `${a}:${b}` : `${b}:${a}`;
+      const key = a < b ? a * n + b : b * n + a;
       if (!owners.has(key)) owners.set(key, []);
       owners.get(key)!.push(fi);
     });
@@ -49,7 +52,7 @@ export function drawMesh(c: Camera, mesh: Mesh): Drawn {
 
   const segments: [number, number][] = [];
   for (const [key, fs] of owners) {
-    const [a, b] = key.split(":").map(Number);
+    const [a, b] = [Math.floor(key / n), key % n];
     const [f0, f1] = fs;
     if (f1 === undefined) {
       if (visible[f0]) segments.push([a, b]);
@@ -63,6 +66,34 @@ export function drawMesh(c: Camera, mesh: Mesh): Drawn {
     if (silhouette || crease) segments.push([a, b]);
   }
   return { faces, edges: chain(segments).map((run) => run.map((k) => screen[k])) };
+}
+
+/** La envolvente de dos círculos de radio `rho`, uno en cada centro (solo cuentan x e y): la silueta de una cápsula. */
+export function stadium(a: readonly number[], b: readonly number[], rho: number, draft?: boolean): Vec2[] {
+  const ring = circle(rho, segmentsFor(rho, draft));
+  return hullOf([a, b].flatMap(([x, y]) => ring.map(([u, v]): Vec2 => [x + u, y + v])));
+}
+
+/** Hacia dónde cae la luz en pantalla (arriba y a la izquierda, como en las caras de una caja). */
+const LIGHT: Vec2 = [-0.6, -0.8];
+/** Tono, radio y desplazamiento hacia la luz de cada capa, en fracciones del radio: la sombra queda en el borde opuesto. */
+const LAYERS: [Shade, number, number][] = [["s0", 1, 0], ["s1", 0.9, 0.1], ["s2", 0.76, 0.24], ["s3", 0.58, 0.4], ["b", 0.38, 0.54], ["t", 0.18, 0.62]];
+
+/**
+ * Una esfera o una cápsula, de radio `r` y con los centros `ends`. En proyección ortográfica una esfera es un círculo y una
+ * cápsula un estadio: lo que las hace volumen son las capas de tono, cada una más chica y más cerca de la luz que la anterior.
+ */
+export function drawRound(c: Camera, ends: [Vec3, Vec3], r: number): Drawn {
+  const [a, b] = ends.map((p) => project(c, p));
+  const rho = r * c.scale;
+  const faces = new Map<Shade, Vec2[][]>();
+  // En borrador, solo las capas del borde, la media sombra y la base.
+  for (const [shade, k, s] of c.draft ? [LAYERS[0], LAYERS[2], LAYERS[4]] : LAYERS) {
+    const m = (p: Vec2): Vec2 => [p[0] + rho * s * LIGHT[0], p[1] + rho * s * LIGHT[1]];
+    faces.set(shade, [stadium(m(a), m(b), rho * k, c.draft)]);
+  }
+  const rim = faces.get("s0")![0];
+  return { faces, edges: [[...rim, ...rim.slice(0, 1)]] };
 }
 
 function centroid(v: Vec3[], idx: number[]): Vec3 {

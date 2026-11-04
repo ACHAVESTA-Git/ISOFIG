@@ -72,12 +72,12 @@ type Label = "play" | "pause" | "fig" | "presets" | "orbit" | "left" | "right" |
 const LABELS: Record<string, Record<Label, string>> = {
   es: {
     play: "Reproducir", pause: "Pausar", fig: "Fig.", presets: "Prueba a romperlo", orbit: "Girar la figura",
-    left: "Girar a la izquierda", right: "Girar a la derecha", reset: "Vista inicial", drag: "arrastra para girar",
+    left: "Girar a la izquierda", right: "Girar a la derecha", reset: "Vista inicial", drag: "arrastra o usa las flechas para girar",
     zoom: "Ampliar", close: "Cerrar",
   },
   en: {
     play: "Play", pause: "Pause", fig: "Fig.", presets: "Try to break it", orbit: "Turn the figure",
-    left: "Turn left", right: "Turn right", reset: "Initial view", drag: "drag to turn",
+    left: "Turn left", right: "Turn right", reset: "Initial view", drag: "drag or use the arrow keys to turn",
     zoom: "Enlarge", close: "Close",
   },
 };
@@ -156,8 +156,10 @@ function draw(spec: FlatSpec, options: RenderOptions, lang: string, issues: Issu
   const caption = textOf(spec.caption, lang);
   const alt = textOf(spec.alt, lang);
   const desc = alt && alt !== caption ? `<desc id="${esc(dom)}-d">${esc(alt)}</desc>` : "";
+  // Con giro, el dibujo se enfoca y gira con las flechas; la pista (`-h`) que lo dice se lee tras su descripción.
+  const described = [desc && `${dom}-d`, options.orbit && `${dom}-h`].filter(Boolean).map((v) => esc(String(v))).join(" ");
   const svg =
-    `<svg class="isofig-art${options.orbit ? " isofig-orbitable" : ""}" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${esc(dom)}-t"${desc ? ` aria-describedby="${esc(dom)}-d"` : ""}>` +
+    `<svg class="isofig-art${options.orbit ? " isofig-orbitable" : ""}" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${esc(dom)}-t"${described ? ` aria-describedby="${described}"` : ""}${options.orbit ? ` tabindex="0" aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown"` : ""}>` +
     `<title id="${esc(dom)}-t">${esc(title)}</title>${desc}` +
     `<g class="isofig-scene">${markup}</g></svg>`;
 
@@ -256,7 +258,7 @@ function draw(spec: FlatSpec, options: RenderOptions, lang: string, issues: Issu
     `<figure class="isofig" data-isofig="${esc(id)}"${paletteVars ? ` style="${esc(paletteVars)}"` : ""}><div class="isofig-card">` +
     `<div class="isofig-top">${n}<span class="isofig-title" aria-hidden="true">${esc(title)}</span>${zoom}</div>` +
     svg +
-    `<div class="isofig-bottom"><span class="isofig-hint">${esc(hint)}</span>` +
+    `<div class="isofig-bottom"><span class="isofig-hint"${options.orbit ? ` id="${esc(dom)}-h"` : ""}>${esc(hint)}</span>` +
     `<span class="isofig-readout"${readout || spec.model ? " data-live" : ""}>${esc(readout)}</span></div></div>` +
     (play || controls || presetChips || orbit ? `<div class="isofig-controls" hidden>${play}${controls}${orbit}${presetChips}</div>` : "") +
     (presetChips ? `<p class="isofig-note" aria-live="polite"></p>` : "") +

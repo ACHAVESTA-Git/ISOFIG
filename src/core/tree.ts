@@ -1,5 +1,6 @@
 import { add, boxOf, centerOf, dot, length, mul, unit, type Vec3 } from "./math.ts";
 import { expandIndexed, isSolid, shift, solidBox } from "./items.ts";
+import { apply, compose, place, rotation, type Mat3 } from "./rotate.ts";
 import type { ResolvedMap, Note } from "./map/index.ts";
 import type { BindSpec, FigureSpec, FlatSpec, GroupSpec, Node, NodeDef, ParamSpec, Part, Text, Tone } from "./spec.ts";
 
@@ -38,6 +39,8 @@ interface Placed {
   /** Grupo propio: lo tiene si se desarma o si se puede elegir. */
   group?: string;
   stage: number;
+  /** Su `explode` ya en el mundo: el del nodo está en el espacio de su padre, que puede estar girado. */
+  push?: Vec3;
   parts: { part: Part; src: string; scopes: string[] }[];
 }
 
@@ -202,9 +205,12 @@ function assembleResolved(spec: FigureSpec, options: AssembleOptions): Omit<Asse
   };
 
   const placed: Placed[] = [];
-  const walk = (raw: Node, src: string, parent: Placed | undefined, at: Vec3, tone: Tone | undefined, paint: string | undefined, mount: string[]) => {
+  const walk = (raw: Node, src: string, parent: Placed | undefined, at: Vec3, turn: Mat3 | undefined, tone: Tone | undefined, paint: string | undefined, mount: string[]) => {
     const node = resolve(raw, src);
-    const here = add(at, node.at ?? [0, 0, 0]);
+    const local = node.at ?? [0, 0, 0];
+    const here = add(at, turn ? apply(turn, local) : local);
+    // `turn` es el giro del padre en el mundo; el del nodo se le suma. Sin `rotate` en todo el árbol nada de esto se calcula.
+    const mine = compose(turn, rotation(node.rotate));
     const path = parent ? (parent.path ? `${parent.path}.${node.id}` : node.id) : "";
     const t = node.tone ?? tone;
     const pa = node.paint ?? paint;
@@ -212,10 +218,10 @@ function assembleResolved(spec: FigureSpec, options: AssembleOptions): Omit<Asse
     const mo = Array.isArray(node.mount) ? [...mount, ...node.mount] : mount;
     const scopes: string[] = [path];
     for (let p: Placed | undefined = parent; p; p = p.parent) scopes.push(p.path);
-    const self: Placed = { node, path, parent, stage: 0, parts: [] };
+    const self: Placed = { node, path, parent, stage: 0, push: turn && Array.isArray(node.explode) ? apply(turn, node.explode) : node.explode, parts: [] };
     const own = Array.isArray(node.parts) ? node.parts : [];
     for (const { part, source } of expandIndexed(own)) {
-      const moved = shift(part, here);
+      const moved = mine ? place(part, here, mine) : shift(part, here);
       const out = { ...moved, id: path ? `${path}.${part.id}` : part.id } as Part;
       if (isSolid(out) && out.tone === undefined && t) out.tone = t;
       if (out.paint === undefined && pa) out.paint = pa;
@@ -226,11 +232,11 @@ function assembleResolved(spec: FigureSpec, options: AssembleOptions): Omit<Asse
     (Array.isArray(node.children) ? node.children : []).forEach((child, k) => {
       if (!child || typeof child !== "object") return;
       const from = origin.get(child) ?? `${src}.children[${k}]`;
-      for (const c of copies(resolve(child, from))) walk(c, from, self, here, t, pa, mo);
+      for (const c of copies(resolve(child, from))) walk(c, from, self, here, mine, t, pa, mo);
     });
   };
   if (root.repeat) errors.push({ code: "root-repeat", path: "root.repeat", vars: { id: String(root.id) } });
-  walk({ ...root, repeat: undefined }, "root", undefined, [0, 0, 0], undefined, undefined, []);
+  walk({ ...root, repeat: undefined }, "root", undefined, [0, 0, 0], undefined, undefined, undefined, []);
 
   const ids = new Set<string>([...scenery.map((p) => p.id), ...placed.flatMap((n) => n.parts.map((p) => p.part.id))]);
   // Una referencia se busca primero en el propio nodo y luego hacia arriba, hasta las piezas sueltas de la figura.
@@ -267,7 +273,7 @@ function assembleResolved(spec: FigureSpec, options: AssembleOptions): Omit<Asse
   } else {
     const middle = centerOfNodes(placed);
     for (const n of moving) {
-      const out = dot(add(centerOfNodes(subtree(n)), mul(middle, -1)), unit(n.node.explode!));
+      const out = dot(add(centerOfNodes(subtree(n)), mul(middle, -1)), unit(n.push!));
       keys.set(n, Math.round(out * 2) / 2);
     }
     // Lo que va montado encima sale antes que su base: un hijo nunca después de su padre (la tapa antes que la culata).
@@ -342,11 +348,11 @@ function assembleResolved(spec: FigureSpec, options: AssembleOptions): Omit<Asse
     const chain: Placed[] = [];
     for (let p = owner; p; p = p.parent) if (p.stage) chain.unshift(p);
     // Cada nodo se desplaza por la suma de su `explode` y los de sus ancestros, cada uno en la ventana de su etapa.
-    for (const a of chain) bind.push({ group: g, param: "explode", move: a.node.explode, win: [a.stage - 1, a.stage] });
+    for (const a of chain) bind.push({ group: g, param: "explode", move: a.push, win: [a.stage - 1, a.stage] });
     // Desplazamiento al final de cada etapa: la cámara encuadra la figura en todas las poses.
     const extent: Vec3[] = [];
     for (let s = 1; s <= stages; s++) {
-      const d = chain.filter((a) => a.stage <= s).reduce((acc, a) => add(acc, a.node.explode!), [0, 0, 0] as Vec3);
+      const d = chain.filter((a) => a.stage <= s).reduce((acc, a) => add(acc, a.push!), [0, 0, 0] as Vec3);
       if (!isZero(d) && !extent.some((e) => length(add(e, mul(d, -1))) < DIM)) extent.push(d);
     }
     if (extent.length) groups[g] = { ...groups[g], extent: [...(groups[g]?.extent ?? []), ...extent] };

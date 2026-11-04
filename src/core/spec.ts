@@ -1,4 +1,4 @@
-import type { Axis } from "./mesh.ts";
+import type { Axis, Frame } from "./mesh.ts";
 import type { Vec2, Vec3 } from "./math.ts";
 import type { MapSpec } from "./map/types.ts";
 
@@ -47,6 +47,8 @@ export interface BoxPart extends PartBase {
   size: Vec3;
   radius?: number;
   bevel?: number;
+  /** Lo pone el ensamblado en una caja de un nodo con `rotate`: su base (u, v, w) en el mundo, con `o` en `at`. No se escribe a mano. */
+  frame?: Frame;
 }
 
 export interface CylinderPart extends PartBase {
@@ -71,6 +73,26 @@ export interface ConePart extends PartBase {
   axis?: Axis | Vec3;
 }
 
+/** Esfera: `at` es el centro. En proyección ortográfica es siempre un círculo, vista desde donde se la vea. */
+export interface SpherePart extends PartBase {
+  kind: "sphere";
+  at: Vec3;
+  r: number;
+}
+
+/**
+ * Cápsula: un cilindro de radio `r` con media esfera en cada punta, así que mide `h + 2r` de punta a punta. `at` y `h`
+ * son los del tramo recto, como en `cylinder`; con `h` 0 es una esfera. Huesos largos, bielas redondeadas, tubos.
+ */
+export interface CapsulePart extends PartBase {
+  kind: "capsule";
+  /** Centro de la cara inicial del tramo recto. */
+  at: Vec3;
+  r: number;
+  h: number;
+  axis?: Axis | Vec3;
+}
+
 export interface PrismPart extends PartBase {
   kind: "prism";
   /** Planta convexa. Con `axis` `z` (por defecto) son puntos [x, y]; con `y`, [x, z]; con `x`, [y, z]. */
@@ -81,6 +103,8 @@ export interface PrismPart extends PartBase {
   /** Eje de la extrusión: `y` o `x` para el perfil de un bloque en V o de una viga. */
   axis?: Axis;
   bevel?: number;
+  /** Lo pone el ensamblado en un prisma de un nodo con `rotate`: la base de su extrusión en el mundo. No se escribe a mano. */
+  frame?: Frame;
 }
 
 /** Detalles que se dibujan sobre otra pieza (`on`) y comparten su lugar en el orden de pintado. */
@@ -118,9 +142,11 @@ export interface LabelPart extends Omit<PartBase, "group"> {
   face?: "top" | "x" | "y";
   /** Dónde cae `at` en el texto: al inicio (por defecto), al centro o al final. */
   align?: "start" | "middle" | "end";
+  /** Lo pone el ensamblado en un rótulo de un nodo con `rotate`: hacia dónde se lee y hacia dónde cae «abajo», en el mundo. */
+  axes?: [Vec3, Vec3];
 }
 
-export type Part = BoxPart | CylinderPart | ConePart | PrismPart | TicksPart | DotsPart | LinePart | LabelPart;
+export type Part = BoxPart | CylinderPart | ConePart | PrismPart | SpherePart | CapsulePart | TicksPart | DotsPart | LinePart | LabelPart;
 
 export interface GroupSpec {
   /** Desplazamientos extremos (mundo) para que la figura quepa en cualquier pose. */
@@ -196,7 +222,12 @@ export interface Node {
   /** Texto del paso en que sale al desarmar («culatas fuera»); por defecto, su nombre. */
   step?: Text;
   at?: Vec3;
-  /** Desplazamiento al desarmar, relativo a su padre. */
+  /**
+   * Giro en grados `[x, y, z]` alrededor de su propio `at`, sobre los ejes de su padre y en ese orden (primero x, luego y y
+   * al final z: R = Rz·Ry·Rx). `z` es la vertical. Las piezas y los hijos son locales al nodo ya girado.
+   */
+  rotate?: Vec3;
+  /** Desplazamiento al desarmar, en el espacio de su padre (como `at`). */
   explode?: Vec3;
   /** Orden del despiece: los nodos con el mismo número salen juntos. Por defecto, de fuera hacia dentro. */
   stage?: number;

@@ -26,7 +26,7 @@ function checkOptional(rep: Reporter, v: unknown, path: string, field: string, i
   if (v < 0) rep.add("number-negative", path, { id, field, got: v });
 }
 
-/** `x`, `y` o `z`; un cilindro o un cono admiten además una dirección cualquiera (`[1, 0, 1]`), que no sea cero. */
+/** `x`, `y` o `z`; un cilindro, un cono o una cápsula admiten además una dirección cualquiera (`[1, 0, 1]`), que no sea cero. */
 function checkAxis(rep: Reporter, axis: unknown, path: string, vector: boolean): void {
   if (vector && Array.isArray(axis)) {
     if (checkVector(rep, axis, path, "axis") && axis.every((v) => v === 0)) rep.add("axis-zero", path);
@@ -101,9 +101,10 @@ export function checkPart(rep: Reporter, p: Record<string, unknown>, path: strin
     }
     checkOptional(rep, p["radius"], `${path}.radius`, "radius", id);
     checkOptional(rep, p["bevel"], `${path}.bevel`, "bevel", id);
-  } else if (kind === "cylinder" || kind === "cone") {
+  } else if (kind === "cylinder" || kind === "cone" || kind === "sphere" || kind === "capsule") {
     if (has("at")) checkVector(rep, p["at"], `${path}.at`, "at");
-    for (const f of ["r", "h"]) if (has(f)) checkSize(rep, p[f], `${path}.${f}`, f, id);
+    // El tramo recto de una cápsula puede medir 0: es una esfera.
+    for (const f of ["r", "h"]) if (has(f) && !(kind === "capsule" && f === "h" && p[f] === 0)) checkSize(rep, p[f], `${path}.${f}`, f, id);
     // El otro extremo de un cono puede ser una punta (0).
     if (kind === "cone") checkOptional(rep, p["r2"], `${path}.r2`, "r2", id);
     if (has("axis")) checkAxis(rep, p["axis"], `${path}.axis`, true);

@@ -32,7 +32,7 @@ const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 const inline = (s) => s.replace(/<\/(script|style)/gi, "<\\/$1");
 
 /* ── El orden de la galería (los ejemplos que no están aquí van después, por nombre) y qué enseña cada uno. ──────── */
-const ORDER = ["token-bucket", "motor-v8", "motor-cohete", "compose", "mapa-tienda", "mapa-pedido", "mapa-uml"];
+const ORDER = ["token-bucket", "motor-v8", "motor-cohete", "muscle-car", "sistema-oseo", "compose", "mapa-tienda", "mapa-pedido", "mapa-uml"];
 const rank = (name) => (ORDER.includes(name) ? ORDER.indexOf(name) : ORDER.length);
 
 /* Los que no están en NOTES usan el título de su spec y la primera frase de su `caption`. */
@@ -44,14 +44,26 @@ const NOTES = {
   "motor-v8": {
     es: "Cómo se arma un V8 de competición y en qué orden se desarma: dos bancadas de cuatro cilindros comparten un cigüeñal plano. Sale primero lo de fuera; el cárter y el tren alternativo, al final.",
     en: "How a racing V8 goes together and in what order it comes apart: two banks of four cylinders share a flat-plane crankshaft. The outside comes off first; the oil pan and the rotating assembly, last.",
-    touchEs: "Desármalo paso a paso con «Desarmar», elige una pieza en «Pieza» para ver qué hace, gira el dibujo arrastrándolo y usa «Ampliar» para leer los rótulos.",
-    touchEn: "Take it apart step by step with “Take apart”, pick a part under “Part” to see what it does, drag the drawing to turn it and use “Enlarge” to read the labels.",
+    touchEs: "Desármalo paso a paso con «Desarmar», elige una pieza en «Pieza» y la cámara se acerca a ella, gira el dibujo arrastrándolo y usa «Ampliar» para leer los rótulos.",
+    touchEn: "Take it apart step by step with “Take apart”, pick a part under “Part” and the camera zooms in on it, drag the drawing to turn it and use “Enlarge” to read the labels.",
   },
   "motor-cohete": {
     es: "Cómo un motor cohete convierte propelentes en empuje: la turbobomba los lleva a la cámara, los gases se aceleran en la garganta y la tobera los expande. El cardán orienta todo el motor.",
     en: "How a rocket engine turns propellant into thrust: the turbopump feeds the chamber, the gas speeds up through the throat and the nozzle expands it. The gimbal steers the whole engine.",
-    touchEs: "Desármalo de arriba abajo con «Desarmar», elige una pieza en «Pieza» para leer qué hace, gira el dibujo arrastrándolo y usa «Ampliar» para leer los rótulos.",
-    touchEn: "Take it apart from the top with “Take apart”, pick a part under “Part” to read what it does, drag the drawing to turn it and use “Enlarge” to read the labels.",
+    touchEs: "Desármalo de arriba abajo con «Desarmar», elige una pieza en «Pieza» y la cámara se acerca a ella, gira el dibujo arrastrándolo y usa «Ampliar» para leer los rótulos.",
+    touchEn: "Take it apart from the top with “Take apart”, pick a part under “Part” and the camera zooms in on it, drag the drawing to turn it and use “Enlarge” to read the labels.",
+  },
+  "muscle-car": {
+    es: "Cómo se arma un muscle car de capó largo: la carrocería cubre un V8 delantero que mueve las ruedas traseras por la caja, el cardán y el diferencial. Se desarma de fuera hacia dentro, hasta dejar el chasis solo.",
+    en: "How a long-hood muscle car goes together: the body covers a front V8 that drives the rear wheels through the gearbox, the driveshaft and the differential. It comes apart from the outside in, down to the bare chassis.",
+    touchEs: "Desármalo con «Desarmar», elige «Motor V8», «Diferencial» o «Frenos» en «Pieza» y mira cómo la cámara se acerca y deja el resto tenue, gira el dibujo arrastrándolo y usa «Ampliar» para leer los rótulos.",
+    touchEn: "Take it apart with “Take apart”, pick “V8 engine”, “Differential” or “Brakes” under “Part” and watch the camera zoom in and leave the rest faint, drag the drawing to turn it and use “Enlarge” to read the labels.",
+  },
+  "sistema-oseo": {
+    es: "Cómo se sostiene un cuerpo humano: un adulto tiene 206 huesos, y más de la mitad están en las manos y los pies. Al abrirlo sale primero lo de fuera, el cráneo y los brazos; después la caja torácica, la pelvis y las piernas, hasta dejar la columna sola.",
+    en: "How a human body holds itself up: an adult has 206 bones, and more than half are in the hands and feet. Opening it removes the outside first, the skull and arms, then the rib cage, the pelvis and the legs, until the spine stands alone.",
+    touchEs: "Ábrelo con «Desarmar», elige «Pelvis», «Mano» o «Rótula» en «Pieza» para acercarte y leer su nota anatómica, gira el dibujo arrastrándolo y usa «Ampliar» para leer los rótulos.",
+    touchEn: "Open it with “Take apart”, pick “Pelvis”, “Hand” or “Kneecap” under “Part” to zoom in and read its anatomical note, drag the drawing to turn it and use “Enlarge” to read the labels.",
   },
   compose: {
     title: { es: "Docker Compose", en: "Docker Compose" },
@@ -75,26 +87,26 @@ const NOTES = {
 const TEXT = {
   es: {
     title: "isofig · galería",
-    eyebrow: "isofig 0.9 · galería",
+    eyebrow: "isofig 0.10 · galería",
     h1: "Máquinas isométricas que explican ideas técnicas",
     lead: "Cada figura es un SVG que se dibuja al compilar; un runtime de {rt} lo anima. Aquí están todas con el estilo estándar y con el de lujo, en claro y en oscuro. Tócalas.",
     style: "Estilo", std: "Estándar", luxe: "Lujo",
     theme: "Tema", light: "Claro", dark: "Oscuro",
     index: "Figuras", teaches: "Enseña", touch: "Toca",
     footer: "Todo va en este archivo: figuras, runtime, zoom y giro. No pide nada a la red. Se regenera con",
-    move: "mueve", toggle: "activa", choice: "elige", action: "pulsa", preset: "prueba", pause: "pausa y reanuda con", apart: "desármala paso a paso con", pick: "elige una pieza en", turn: "gira el dibujo arrastrándolo", zoom: "usa «{zoom}» para leer los rótulos",
+    move: "mueve", toggle: "activa", choice: "elige", action: "pulsa", preset: "prueba", pause: "pausa y reanuda con", apart: "desármala paso a paso con", pick: "elige una pieza en", pickEnd: " para acercarte a ella", turn: "gira el dibujo arrastrándolo", zoom: "usa «{zoom}» para leer los rótulos",
     or: "o", and: "y", open: "«", close: "»", zoomLabel: "Ampliar", pauseLabel: "Pausar",
   },
   en: {
     title: "isofig · gallery",
-    eyebrow: "isofig 0.9 · gallery",
+    eyebrow: "isofig 0.10 · gallery",
     h1: "Isometric machines that explain technical ideas",
     lead: "Every figure is an SVG drawn at build time, animated by a {rt} runtime. Here they all are in the standard style and in the luxe one, light and dark. Touch them.",
     style: "Style", std: "Standard", luxe: "Luxe",
     theme: "Theme", light: "Light", dark: "Dark",
     index: "Figures", teaches: "Teaches", touch: "Touch",
     footer: "Everything is in this file: figures, runtime, zoom and turn. It asks the network for nothing. Regenerate it with",
-    move: "drag", toggle: "switch", choice: "pick", action: "press", preset: "try", pause: "pause and resume with", apart: "take it apart step by step with", pick: "pick a part under", turn: "drag the drawing to turn it", zoom: "use “{zoom}” to read the labels",
+    move: "drag", toggle: "switch", choice: "pick", action: "press", preset: "try", pause: "pause and resume with", apart: "take it apart step by step with", pick: "pick a part under", pickEnd: " to zoom in on it", turn: "drag the drawing to turn it", zoom: "use “{zoom}” to read the labels",
     or: "or", and: "and", open: "“", close: "”", zoomLabel: "Enlarge", pauseLabel: "Pause",
   },
 }[lang];
@@ -132,7 +144,7 @@ function touchOf(spec, autoplay) {
     const label = textOf(p.label, lang);
     // Los controles que añade el despiece tienen su propia frase.
     if (p.id === "explode") parts.push(`${TEXT.apart} ${list([label])}`);
-    else if (p.id === "pick") parts.push(`${TEXT.pick} ${list([label])}`);
+    else if (p.id === "pick") parts.push(`${TEXT.pick} ${list([label])}${TEXT.pickEnd}`);
     else by[p.kind ?? "range"]?.push(label);
   }
   for (const [kind, verb] of [["range", TEXT.move], ["toggle", TEXT.toggle], ["choice", TEXT.choice], ["action", TEXT.action]]) {

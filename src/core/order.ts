@@ -55,10 +55,14 @@ export function compare(c: Camera, a: Box3, b: Box3): number {
   return best;
 }
 
-/** Un sólido orientado (inclinado o extruido en x o y): sus vértices, las normales de sus caras planas y su silueta. */
+/**
+ * Un sólido orientado (inclinado o extruido en x o y): sus vértices, las normales de sus caras planas y su silueta. En
+ * una esfera o una cápsula, `pts` son los centros de sus dos puntas y `r` su radio: ocupa todo lo que está a `r` de ellos.
+ */
 export interface Shape {
   pts: Vec3[];
   axes: Vec3[];
+  r?: number;
   /** Envolvente convexa de la pieza en pantalla. */
   hull: Vec2[];
 }
@@ -106,7 +110,7 @@ export function hullsOverlap(a: Vec2[], b: Vec2[]): boolean {
   return true;
 }
 
-function range(pts: Vec3[], n: Vec3): [number, number] {
+function range({ pts, r = 0 }: Shape, n: Vec3): [number, number] {
   let lo = Infinity;
   let hi = -Infinity;
   for (const p of pts) {
@@ -114,17 +118,19 @@ function range(pts: Vec3[], n: Vec3): [number, number] {
     if (v < lo) lo = v;
     if (v > hi) hi = v;
   }
-  return [lo, hi];
+  return [lo - r, hi + r];
 }
 
 /**
- * Los ejes donde buscar un plano que separe dos sólidos: las normales de sus caras planas y la recta entre sus centros
- * (la que separa dos piezas redondas, como un tubo junto a una cámara).
+ * Los ejes donde buscar un plano que separe dos sólidos: las normales de sus caras planas, la recta entre sus centros
+ * (la que separa dos piezas redondas, como un tubo junto a una cámara) y lo que queda de esa recta al quitarle cada eje
+ * (la que separa dos tubos paralelos, aunque estén corridos a lo largo).
  */
 function candidates(a: Shape, b: Shape): Vec3[] {
   const mid = (s: Shape) => mul(s.pts.reduce((acc, p) => add(acc, p), [0, 0, 0] as Vec3), 1 / Math.max(1, s.pts.length));
   const between = unit(sub(mid(b), mid(a)));
-  return between.some((v) => v !== 0) ? [...a.axes, ...b.axes, between] : [...a.axes, ...b.axes];
+  const axes = [...a.axes, ...b.axes];
+  return [...axes, between, ...axes.map((w) => unit(sub(between, mul(w, dot(between, w)))))].filter((n) => n.some((v) => v !== 0));
 }
 
 /**
@@ -138,8 +144,8 @@ export function compareShapes(c: Camera, a: Shape, b: Shape): number {
     const toward = dot(n, c.view);
     const w = Math.abs(toward);
     if (w <= weight) continue;
-    const [a0, a1] = range(a.pts, n);
-    const [b0, b1] = range(b.pts, n);
+    const [a0, a1] = range(a, n);
+    const [b0, b1] = range(b, n);
     if (a1 <= b0 + TOUCH) best = toward > 0 ? -1 : 1;
     else if (b1 <= a0 + TOUCH) best = toward > 0 ? 1 : -1;
     else continue;
@@ -151,8 +157,8 @@ export function compareShapes(c: Camera, a: Shape, b: Shape): number {
 /** Si un plano de las caras separa dos sólidos orientados (con la misma tolerancia de contacto). */
 export function shapesApart(a: Shape, b: Shape): boolean {
   for (const n of candidates(a, b)) {
-    const [a0, a1] = range(a.pts, n);
-    const [b0, b1] = range(b.pts, n);
+    const [a0, a1] = range(a, n);
+    const [b0, b1] = range(b, n);
     if (a1 <= b0 + TOUCH || b1 <= a0 + TOUCH) return true;
   }
   return false;
@@ -163,6 +169,14 @@ const inside = (a: Box3, b: Box3) => [0, 1, 2].every((i) => a.min[i] >= b.min[i]
 export interface Ordered {
   order: number[];
   cycles: string[];
+  /** Lo que se decidió de cada par `i < j` (en `i * n + j`): 0 no se pisan, -1 `i` va detrás, 1 `j` va detrás. */
+  pairs: Int8Array;
+}
+
+/** Lo ya decidido en otra pose: los pares que se movieron juntos (`same`) conservan su orden. */
+export interface Prior {
+  pairs: Int8Array;
+  same(i: number, j: number): boolean;
 }
 
 /**
@@ -170,24 +184,30 @@ export interface Ordered {
  * cajas se cruzan, decide un plano de las caras de los sólidos orientados (`shapes`) y, si no lo hay, la pieza
  * metida dentro de la otra va antes: queda tapada, como un pistón en su cilindro.
  */
-export function paintOrder(c: Camera, boxes: Box3[], names: string[], shapes?: (() => Shape | undefined)[]): Ordered {
+export function paintOrder(c: Camera, boxes: Box3[], names: string[], shapes?: (() => Shape | undefined)[], prior?: Prior): Ordered {
   const n = boxes.length;
   const rects = boxes.map((b) => screenRect(c, b));
   const depth = boxes.map((b) => depthOf(c, centerOf(b)));
   const after: number[][] = boxes.map(() => []);
   const indeg = new Array(n).fill(0);
+  const pairs = new Int8Array(n * n);
+  const decide = (i: number, j: number): number => {
+    if (!overlaps(rects[i], rects[j])) return 0;
+    // Con sólidos a mano, las cajas en pantalla exageran: si las siluetas no se pisan, el orden da igual.
+    const a = shapes?.[i]();
+    const b = shapes?.[j]();
+    if (a && b && !hullsOverlap(a.hull, b.hull)) return 0;
+    let r = compare(c, boxes[i], boxes[j]);
+    if (r === 0 && a && b) r = compareShapes(c, a, b);
+    if (r === 0 && inside(boxes[i], boxes[j])) r = -1;
+    else if (r === 0 && inside(boxes[j], boxes[i])) r = 1;
+    return r || (depth[i] <= depth[j] ? -1 : 1);
+  };
   for (let i = 0; i < n; i++) {
     for (let j = i + 1; j < n; j++) {
-      if (!overlaps(rects[i], rects[j])) continue;
-      // Con sólidos a mano, las cajas en pantalla exageran: si las siluetas no se pisan, el orden da igual.
-      const a = shapes?.[i]();
-      const b = shapes?.[j]();
-      if (a && b && !hullsOverlap(a.hull, b.hull)) continue;
-      let r = compare(c, boxes[i], boxes[j]);
-      if (r === 0 && a && b) r = compareShapes(c, a, b);
-      if (r === 0 && inside(boxes[i], boxes[j])) r = -1;
-      else if (r === 0 && inside(boxes[j], boxes[i])) r = 1;
-      if (r === 0) r = depth[i] <= depth[j] ? -1 : 1;
+      // Dos piezas que se movieron igual siguen en el mismo orden: en proyección paralela, trasladar no cambia nada.
+      const r = (pairs[i * n + j] = prior?.same(i, j) ? prior.pairs[i * n + j] : decide(i, j));
+      if (!r) continue;
       const [back, front] = r < 0 ? [i, j] : [j, i];
       after[back].push(front);
       indeg[front]++;
@@ -196,11 +216,13 @@ export function paintOrder(c: Camera, boxes: Box3[], names: string[], shapes?: (
   const order: number[] = [];
   const cycles: string[] = [];
   const done = new Array(n).fill(false);
-  const ready = () => [...Array(n).keys()].filter((k) => !done[k] && indeg[k] === 0);
+  // Las listas para pintar; entre las de igual profundidad sale la de menor índice, como al recorrerlas en orden.
+  let ready = [...Array(n).keys()].filter((k) => indeg[k] === 0);
+  const nearest = (pool: number[]) => pool.reduce((m, x) => (depth[x] < depth[m] || (depth[x] === depth[m] && x < m) ? x : m), pool[0]);
   // Una pieza metida en la caja de otra (un pistón en su bancada) queda tapada: si hay un ciclo, sale primero y no avisa.
   let hidden: boolean[] | undefined;
   while (order.length < n) {
-    let pool = ready();
+    let pool = ready;
     if (pool.length === 0) {
       hidden ??= boxes.map((b, i) => boxes.some((o, j) => j !== i && inside(b, o)));
       const left = [...Array(n).keys()].filter((k) => !done[k]);
@@ -211,10 +233,11 @@ export function paintOrder(c: Camera, boxes: Box3[], names: string[], shapes?: (
       if (!hidden[k]) cycles.push(peers.length ? `${names[k]} ↔ ${peers.slice(0, 3).join(", ")}` : names[k]);
       pool = [k];
     }
-    const k = pool.reduce((m, x) => (depth[x] < depth[m] ? x : m), pool[0]);
+    const k = nearest(pool);
     done[k] = true;
     order.push(k);
-    for (const f of after[k]) indeg[f]--;
+    ready = ready.filter((x) => x !== k);
+    for (const f of after[k]) if (--indeg[f] === 0 && !done[f]) ready.push(f);
   }
-  return { order, cycles };
+  return { order, cycles, pairs };
 }

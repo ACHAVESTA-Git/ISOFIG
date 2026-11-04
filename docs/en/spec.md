@@ -47,8 +47,20 @@ passes over it, and never takes part in paint-order doubts; maps use it).
 | `cylinder` | `at` (center of the starting face), `r`, `h`, `axis` (`x`/`y`/`z` or a vector such as `[1, 0, 1]`), `bevel` | Wheels, knobs, tokens, posts; with a vector, a leaning rod or piston. |
 | `cone` | `at`, `r` (starting face), `r2` (the other one; 0 is a point), `h`, `axis` | A truncated cone: nozzles, funnels, trumpets. The first solid of revolution. |
 | `prism` | `plan` (convex), `z`, `h`, `axis` (`z` by default; `y` or `x`), `bevel` | Any convex plan. With `axis: "y"` the plan is `[x, z]` and is extruded along y from `z`: the profile of a V block or a beam. Concave ones are built from several parts. |
+| `sphere` | `at` (the **center**), `r` | Balls, joints, skulls, atoms, beads. |
+| `capsule` | `at` (center of the starting face of the straight section), `r`, `h` (length of the straight section), `axis` (`x`/`y`/`z` or a vector such as `[1, 0, 1]`) | A cylinder with a half sphere of radius `r` at each end, so it measures `h + 2r` end to end. Long bones, rounded rods, tubes, the bonds of a molecule. With `h: 0` it is a sphere. |
 
 - `bevel` cuts the edge of the top: between 0.4 and 1.6 it looks like a manufactured part.
+- **Spheres and capsules** always look like a circle and a "stadium" (the hull of two circles), from wherever you look;
+  six layers of tone give them volume, with the same light and the same face tones as the other parts, and the outline
+  has the same stroke. `tone`, `paint`, `shadow` (a round halo) and the `ok`/`warn`/`fail` states work the same, and
+  turning and exploding move them unchanged. There is no z-buffer, so two parts that cut through each other are painted
+  one over the other: rest a capsule against a sphere, or declare the fit with `mount`.
+
+  ```json
+  { "id": "head", "kind": "sphere", "at": [20, 20, 12], "r": 10, "tone": "hi" }
+  { "id": "femur", "kind": "capsule", "at": [40, 20, 8], "r": 5, "h": 50, "axis": [1, 0, 1], "tone": "hi" }
+  ```
 - `repeat: { count, step, from }` creates offset copies. `{i}` in `id` or `group` is replaced by the index; if `id`
   doesn't include it, `-i` is appended. `from` is the first value of `{i}` (0 by default): copy number k moves
   `step × k` and is named `from + k`, so two rows can share out the numbers of one group (`row-0…13` and
@@ -161,20 +173,51 @@ The audit works on boxes: it is fast and coarse. Always review the figure at 4×
 
 ## Turning the figure (orbit)
 
-`renderFigure(spec, { orbit: true })` adds turn buttons and the "drag to turn" hint. In the page, the orbit loads
-only when needed:
+`renderFigure(spec, { orbit: true })` adds turn buttons and the "drag or use the arrow keys to turn" hint. In the page,
+the orbit loads only when needed:
 
 ```ts
 import { orbitOnDemand } from "isofig/runtime";
 
 orbitOnDemand(el, async () => {
   const { enableOrbit } = await import("isofig/orbit");
-  return enableOrbit(el, spec, { lang: "en", range: 40 });
+  return enableOrbit(el, spec, { lang: "en" });
 });
 ```
 
-Hovering or focusing the figure prefetches it; pressing the drawing or a button enables it. The module is ~8.5 KB
-gzip plus the spec, downloaded only by readers who turn the figure.
+Hovering or focusing the figure prefetches it; pressing the drawing, a button or an arrow key enables it. The module is
+~10 KB gzip plus the spec, downloaded only by readers who turn the figure.
+
+`enableOrbit` options:
+
+| Option | Default | What it does |
+|---|---|---|
+| `lang` | `"en"` | Language of the labels when it redraws. |
+| `range` | no limit | Degrees the azimuth may turn to each side of the spec's own. Without it the figure turns a **full circle** (mod 360°) and no button is disabled; with it, the button at the limit gets `aria-disabled`. |
+| `minElevation`, `maxElevation` | `12`, `60` | Elevation limits, in degrees. |
+| `instance` | the SVG's | Name of the copy in the DOM (see `RenderOptions.instance`). |
+
+**How it moves**
+
+- **Dragging** turns 0.35° per pixel (with a mouse, 0.25° of elevation per pixel too; a finger only turns sideways).
+  **On release it keeps turning with inertia and brakes smoothly** (the speed drops to 37 % every 0.18 s). Grabbing the
+  figure stops it. With `prefers-reduced-motion` there is no inertia and no gliding: the camera jumps to the requested
+  angle.
+- **Keyboard.** The drawing is focusable (`tabindex="0"`, `aria-keyshortcuts`) and its hint is read after its
+  description. With focus on it, ←/→ turn 15° (like ↺/↻) and ↑/↓ change the elevation by 5°; with Ctrl, Alt or Meta they
+  do nothing, and the controls keep their arrow keys. "Initial view" takes the short way back.
+- **It fits from any angle.** The scale of the initial view is the **cap**: from another azimuth or elevation the camera
+  shrinks just enough for the whole figure to fit the frame, in every pose of the teardown (`groups.*.extent`). The change
+  is continuous, with no jumps, and it never zooms in. The `viewBox` does not change: part focus moves it.
+- **Nothing shows through or mirrored.** Dots, lines, `ticks` and labels engraved on a face that does not look at the
+  reader are not drawn. A label on a lid (`face: "top"`) seen from the other side turns half a turn around its anchor so
+  it reads the right way up; one on a side face (`x`, `y`) that looks away is hidden. This also holds in the initial
+  view: what was engraved on a back face no longer shows through.
+- **Fluidity.** While the camera moves (drag, inertia, arrow keys) the scene is drawn as a **draft**: no `<use>` sharing
+  of identical pieces, fewer layers on spheres and capsules, and only the paint order of the teardown pose that is shown
+  (the value of the `reorder` control). As soon as it stops, it is drawn in full, the same as `drawScene` from that angle.
+  If the reader moves the teardown control, all poses are computed for 1.2 s. You can ask for the same by hand with
+  `drawScene(spec, lang, { draft: true, pose: value })`.
 
 The orbit draws the **assembled** spec. A nested spec (`root`, see [nesting.md](nesting.md)) is flattened at build time
 with `assemble(spec)` from `isofig`, and the flat one is what travels to the page (`<Figure orbit>` and
