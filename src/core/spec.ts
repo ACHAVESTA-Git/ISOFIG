@@ -26,6 +26,11 @@ export interface PartBase {
   mount?: string[];
   /** Halo suave en el piso bajo la pieza. */
   shadow?: boolean;
+  /**
+   * Rol o material que la pinta (`"data"`, `"steel"`…): toma su color de `--isofig-paint-<nombre>` y su sombreado de
+   * siempre. Un estado del modelo y el tono `lit` ganan sobre la pintura.
+   */
+  paint?: string;
 }
 
 export interface BoxPart extends PartBase {
@@ -142,6 +147,14 @@ export interface BindSpec {
   fade?: boolean;
 }
 
+/** Los roles que usa la figura y, opcional, el color de marca del que se derivan. */
+export interface PaletteSpec {
+  /** `#rrggbb` u `oklch(L C h)`: los roles se generan alrededor de este color, con las mismas garantías. */
+  base?: string;
+  /** Roles que la figura usa, en el orden de su leyenda. */
+  use?: string[];
+}
+
 export interface FigureSpec {
   id: string;
   title: Text;
@@ -169,6 +182,7 @@ export interface FigureSpec {
   motion?: { tau?: number; settle?: number };
   /** Presupuesto en KB gzip para `isofig check`. */
   budget?: number;
+  palette?: PaletteSpec;
 }
 
 export function textOf(t: Text | undefined, lang: string): string {

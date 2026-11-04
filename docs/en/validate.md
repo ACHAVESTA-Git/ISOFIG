@@ -66,6 +66,7 @@ returns its errors.
 | `bind` | `bind-unknown-param` ↑, `bind-unknown-group` ↑, `bind-spin-no-pivot` ↑, `bind-no-effect`, `bind-with-model` |
 | Presets and readout | `preset-unknown-param` ↑, `preset-value-invalid` ↑, `preset-value-out-of-range` ↑, `preset-value-off-step` ↑, `preset-press-invalid` ↑, `preset-no-effect`, `preset-label-missing`, `preset-note-missing`, `readout-unknown-param`, `readout-long` |
 | Audit | `part-floats`, `parts-overlap`, `paint-order-ambiguous`, `label-unreadable`, and `weight-over-budget`, which needs Node: `isofig check` and `budgetIssues(spec, measure(html), lang)` from `isofig/node` give it |
+| Color ([color.md](color.md)) | `paint-unknown` ↑, `paint-is-state`, `palette-base-invalid`, `palette-use-invalid`, and on the drawing `palette-roles-unmet`, `palette-too-many-colors`, `paint-indistinct`, `paint-text-contrast` |
 | `check` | `model-group-unknown` ↑, `group-never-driven`, `model-param-unknown` ↑, `preset-same-view`, `set-unknown-param` |
 
 **Info** (never fail `--strict`): `alt-missing`, `label-small-mobile`, `group-static`, `param-never-read`, `readout-longest`.

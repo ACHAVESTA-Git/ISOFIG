@@ -3,6 +3,7 @@ import { add, dot, type Vec3 } from "./math.ts";
 import { buildItems, linesOf, meshOf, type Item } from "./items.ts";
 import { paintOrder } from "./order.ts";
 import { drawMesh, SHADES } from "./shade.ts";
+import { customPaints, paintAttr } from "./palette/paint.ts";
 import { dotsOf, escapeHtml as esc, pathOf } from "./serialize.ts";
 import { textOf, type FigureSpec, type LabelPart } from "./spec.ts";
 
@@ -64,7 +65,7 @@ const r2 = (v: number) => Math.round(v * 2) / 2;
  * Las piezas idénticas (un depósito de fichas, una fila de carritos) se dibujan una vez en <defs> y se repiten con
  * <use>: cada una se calcula relativa a su propia esquina, así dos piezas iguales dan el mismo texto.
  */
-function artOf(id: string, c: Camera, items: Item[], order: number[], lang: string): { defs: string; art: string } {
+function artOf(id: string, c: Camera, items: Item[], order: number[], lang: string, custom: Set<string>): { defs: string; art: string } {
   const placed = order.map((k) => {
     const item = items[k];
     const [ax, ay] = project(c, item.box.min);
@@ -80,8 +81,9 @@ function artOf(id: string, c: Camera, items: Item[], order: number[], lang: stri
   for (const p of placed) {
     const g = p.item.group ? ` data-g="${esc(p.item.group)}"` : "";
     const hidden = p.item.hidden ? ` opacity="0"` : "";
+    const paint = paintAttr(p.item, custom);
     if ((count.get(p.key) ?? 0) < 2 || p.key.length < 200) {
-      art += `<g class="${p.tone}"${g}${hidden}>${itemBody(c, p.item, lang)}</g>`;
+      art += `<g class="${p.tone}"${paint}${g}${hidden}>${itemBody(c, p.item, lang)}</g>`;
       continue;
     }
     let ref = ids.get(p.key);
@@ -90,7 +92,7 @@ function artOf(id: string, c: Camera, items: Item[], order: number[], lang: stri
       ids.set(p.key, ref);
       defs += `<g id="${ref}">${p.key}</g>`;
     }
-    art += `<use href="#${ref}" x="${p.ax}" y="${p.ay}" class="${p.tone}"${g}${hidden}/>`;
+    art += `<use href="#${ref}" x="${p.ax}" y="${p.ay}" class="${p.tone}"${paint}${g}${hidden}/>`;
   }
   return { defs: defs ? `<defs>${defs}</defs>` : "", art };
 }
@@ -148,7 +150,7 @@ export function drawScene(spec: FigureSpec, lang: string, view: View = {}): Scen
   const options = { ...spec.camera, ...(view.azimuth !== undefined ? { azimuth: view.azimuth } : {}), ...(view.elevation !== undefined ? { elevation: view.elevation } : {}) };
   const cam = fitCamera(options, fitPoints(spec, items), W, H, spec.pad ?? 24, view.scale);
   const { order, cycles } = paintOrder(cam, items.map((i) => i.box), items.map((i) => i.id));
-  const { defs, art } = artOf(spec.id, cam, items, order, lang);
+  const { defs, art } = artOf(spec.id, cam, items, order, lang, customPaints(spec));
   const spins: Record<string, number[]> = {};
   for (const [g, def] of Object.entries(spec.groups ?? {})) {
     if (!def.spin) continue;

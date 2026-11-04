@@ -1,3 +1,5 @@
+import { PALETTE_MESSAGES } from "./palette/messages.ts";
+
 /** Lo que `validateSpec`, la auditoría y `isofig check` devuelven: un código estable, dónde y qué pasa. */
 export type Severity = "error" | "warning" | "info";
 
@@ -15,12 +17,12 @@ type VarName =
   | "field" | "expected" | "got" | "key" | "where" | "suggest" | "known" | "id" | "kinds" | "kind" | "first" | "more" | "on"
   | "mount" | "a" | "b" | "group" | "min" | "max" | "value" | "shown" | "step" | "implicit" | "last" | "param" | "length"
   | "count" | "total" | "text" | "zoomed" | "mobile" | "need" | "near" | "kb" | "budget" | "reason" | "when" | "list"
-  | "hidden" | "runs" | "at" | "seconds";
+  | "hidden" | "runs" | "at" | "seconds" | "paint" | "vision" | "theme" | "base";
 export type V = Partial<Record<VarName, string | number>>;
 type Q = (s: string | number | undefined) => string;
 /** Traduce lo que se esperaba (`array`, `positive`…): los códigos de `EXPECTED` no cambian, el texto sí. */
 type X = (key: string) => string;
-interface Entry {
+export interface Entry {
   /** Gravedad en 0.9. En 1.0 los avisos que dejan la figura rota pasarán a error (ver docs/en/validate.md). */
   severity: Severity;
   en: (v: V, q: Q, x: X) => string;
@@ -458,6 +460,9 @@ const CATALOG = {
     en: (v) => `--set ${v.id}: the spec has no such parameter.`,
     es: (v) => `--set ${v.id}: la spec no tiene ese parámetro.`,
   },
+
+  // Color (los mensajes viven junto a la paleta)
+  ...PALETTE_MESSAGES,
 } as const satisfies Record<string, Entry>;
 
 export type IssueCode = keyof typeof CATALOG;

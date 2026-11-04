@@ -1,5 +1,6 @@
 import { audit, auditLabels } from "./audit.ts";
 import { formatIssue, makeIssue, type Issue } from "./issues.ts";
+import { paletteIssues, paletteStyle } from "./palette/figure.ts";
 import { drawScene } from "./scene.ts";
 import { escapeHtml as esc } from "./serialize.ts";
 import { textOf, type FigureSpec } from "./spec.ts";
@@ -189,8 +190,9 @@ function draw(spec: FigureSpec, options: RenderOptions, lang: string, issues: Is
   const zoom = options.zoom === false
     ? ""
     : `<button type="button" class="isofig-chip isofig-zoom" data-zoom data-close="${labels.close}" hidden>${ZOOM_ICON}${labels.zoom}</button>`;
+  const paletteVars = paletteStyle(spec);
   const html =
-    `<figure class="isofig" data-isofig="${esc(id)}"><div class="isofig-card">` +
+    `<figure class="isofig" data-isofig="${esc(id)}"${paletteVars ? ` style="${esc(paletteVars)}"` : ""}><div class="isofig-card">` +
     `<div class="isofig-top">${n}<span class="isofig-title" aria-hidden="true">${esc(title)}</span>${zoom}</div>` +
     svg +
     `<div class="isofig-bottom"><span class="isofig-hint">${esc(hint)}</span>` +
@@ -206,6 +208,7 @@ function draw(spec: FigureSpec, options: RenderOptions, lang: string, issues: Is
     ...cycles.map((near) => makeIssue(lang, "paint-order-ambiguous", "", { near })),
     ...audit(items, lang),
     ...auditLabels(items, cam, W, lang),
+    ...paletteIssues(spec, items, cam, lang),
   );
   return { html, svg, data, bytes, warnings: only(issues, "warning"), errors: only(issues, "error"), issues };
 }
