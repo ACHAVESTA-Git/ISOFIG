@@ -16,7 +16,9 @@ A `FigureSpec` is a plain object: it can be written in TypeScript (with autocomp
 |---|---|---|
 | `id` | `string` | Unique on the page. |
 | `title`, `hint`, `caption`, `alt` | `Text` | Title (top right), hint (bottom left), caption below the card, description for screen readers (the caption by default). |
-| `parts` | `Part[]` | The parts. |
+| `parts` | `Part[]` | The parts (with `root`, the fixed scenery). |
+| `root`, `defs` | `Node`, `Record<string, Node>` | A tree of nested nodes, flattened at build time; if any node has `explode`, it can be taken apart. See [nesting.md](nesting.md). |
+| `reorder` | `{ param, at }` | Recomputes the paint order with the groups moved by `bind` at each value `at` of the parameter (the teardown sets it for you). |
 | `groups` | `Record<string, GroupSpec>` | What moves and how far, so it fits in any pose. |
 | `params` | `ParamSpec[]` | Sliders. |
 | `bind` | `BindSpec[]` | Parameter → group links without writing a model. |
@@ -38,8 +40,9 @@ All accept: `id`, `tone` (`lo` base, `mid` structure, `hi` subject, `lit` the si
 | `kind` | Fields | Notes |
 |---|---|---|
 | `box` | `at` (minimum corner), `size: [w, d, h]`, `radius`, `bevel` | Rounded rectangle in plan, extruded upward. |
-| `cylinder` | `at` (center of the starting face), `r`, `h`, `axis` (`x`/`y`/`z`), `bevel` | Wheels, knobs, tokens, posts. |
-| `prism` | `plan: [x, y][]` (convex, counterclockwise), `z`, `h`, `bevel` | Any convex plan. Concave ones are built from several parts. |
+| `cylinder` | `at` (center of the starting face), `r`, `h`, `axis` (`x`/`y`/`z` or a vector such as `[1, 0, 1]`), `bevel` | Wheels, knobs, tokens, posts; with a vector, a leaning rod or piston. |
+| `cone` | `at`, `r` (starting face), `r2` (the other one; 0 is a point), `h`, `axis` | A truncated cone: nozzles, funnels, trumpets. The first solid of revolution. |
+| `prism` | `plan` (convex), `z`, `h`, `axis` (`z` by default; `y` or `x`), `bevel` | Any convex plan. With `axis: "y"` the plan is `[x, z]` and is extruded along y from `z`: the profile of a V block or a beam. Concave ones are built from several parts. |
 
 - `bevel` cuts the edge of the top: between 0.4 and 1.6 it looks like a manufactured part.
 - `repeat: { count, step, from }` creates offset copies. `{i}` in `id` or `group` is replaced by the index; if `id`
@@ -129,7 +132,14 @@ bind: [
 ```
 
 `move` is multiplied by the parameter's value; `spin` gives degrees per unit; `fade` uses the value (0–1) as
-opacity.
+opacity. Several binds on the same group add up (and, if the figure has a model, they add to what the model sets).
+
+- `win: [a, b]` uses `(value − a) / (b − a)`, clamped to 0…1: the group only moves while the parameter crosses that
+  window (that is how each stage of a teardown comes off).
+- `keep: [1, 3]` with a choice: when it is anything other than 0 and not in the list, the group fades back.
+
+A parameter with `texts` (one text per integer value) shows them in the readout (`{id}`) and announces them to screen
+readers; a text can in turn name another parameter (`"{explode}"`).
 
 ## Audit
 

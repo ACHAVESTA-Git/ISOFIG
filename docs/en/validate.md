@@ -53,6 +53,7 @@ returns its errors.
 | `prism-plan-short` | A prism plan with fewer than 3 points |
 | `id-duplicate` | Two solid parts with the same id after `repeat` |
 | `on-unknown`, `on-not-solid` | A detail on a part that does not exist, or that is itself a detail |
+| `node-id-missing`, `node-id-duplicate`, `use-unknown`, `use-cycle`, `use-failed`, `stage-invalid`, `axis-zero` | In a tree ([nesting.md](nesting.md)): a node without an id or with a sibling's, a `use` that is neither in `defs` nor in the catalog, that uses itself or whose options the kit rejects, a `stage` that is not a number, an axis `[0, 0, 0]` |
 | `dimension-invalid`, `camera-invalid`, `spin-plane-invalid` | `width`, `height`, `pad`, the camera angles or a spin plane that cannot be used |
 | `draw-failed`, `model-invalid`, `model-throws`, `presets-need-model` | The drawing or the model failed; `--presets` without `--model` |
 | `override-unknown-param`, `override-action-value` | `applyOverrides` (and the `overrides` prop of `<Figure>`) names an id that is not a parameter, or gives an initial value to an action. What it changes is also checked with the `param-value-*`, `toggle-value-invalid`, `choice-value-invalid` and `preset-*` codes, so the messages are the same |
@@ -64,13 +65,14 @@ returns its errors.
 | Spec | `unknown-key` (with the known keys and a «typo for…?» hint), `parts-empty`, `title-missing`, `model-name-invalid`, `autoplay-without-model`, `motion-invalid`, `budget-invalid`, `option-invalid` |
 | Parts | `mount-unknown` ↑, `size-zero`, `number-negative`, `count-invalid` ↑, `repeat-from-invalid` ↑, `prism-clockwise` ↑, `prism-concave` ↑, `prism-degenerate`, `group-ignored`, `label-text-missing`, `label-size-invalid`, `group-unused` ↑ |
 | Controls | `param-id-missing` ↑, `param-id-duplicate` ↑, `param-number-invalid` ↑, `param-range-invalid` ↑, `param-step-invalid`, `param-value-out-of-range` ↑, `param-value-off-step` ↑, `param-label-missing`, `choice-options-missing` ↑, `choice-value-invalid` ↑, `toggle-value-invalid` |
-| `bind` | `bind-unknown-param` ↑, `bind-unknown-group` ↑, `bind-spin-no-pivot` ↑, `bind-no-effect`, `bind-with-model` |
+| `bind` | `bind-unknown-param` ↑, `bind-unknown-group` ↑, `bind-spin-no-pivot` ↑, `bind-no-effect`, `bind-window-invalid` |
+| Tree | `stage-without-explode`, `explode-on-root`, `root-repeat` |
 | Presets and readout | `preset-unknown-param` ↑, `preset-value-invalid` ↑, `preset-value-out-of-range` ↑, `preset-value-off-step` ↑, `preset-press-invalid` ↑, `preset-no-effect`, `preset-label-missing`, `preset-note-missing`, `readout-unknown-param`, `readout-long` |
 | Audit | `part-floats`, `parts-overlap`, `paint-order-ambiguous`, `label-unreadable`, and `weight-over-budget`, which needs Node: `isofig check` and `budgetIssues(spec, measure(html), lang)` from `isofig/node` give it |
 | Color ([color.md](color.md)) | `paint-unknown` ↑, `paint-is-state`, `palette-base-invalid`, `palette-use-invalid`, and on the drawing `palette-roles-unmet`, `palette-too-many-colors`, `paint-indistinct`, `paint-text-contrast` |
 | `check` | `model-group-unknown` ↑, `group-never-driven`, `model-param-unknown` ↑, `preset-same-view`, `set-unknown-param` |
 
-**Info** (never fail `--strict`): `alt-missing`, `label-small-mobile`, `group-static`, `param-never-read`, `readout-longest`.
+**Info** (never fail `--strict`): `alt-missing`, `label-small-mobile`, `group-static`, `param-never-read`, `readout-longest`, `bind-with-model` (since 0.9 binds add to what the model moves).
 
 Two details worth knowing:
 
