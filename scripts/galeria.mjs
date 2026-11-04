@@ -167,7 +167,6 @@ if (query.get("theme") === "dark" || query.get("theme") === "light") setTheme(qu
 `;
 
 function bundle(examples) {
-  const withMaps = Boolean(resolveMap) && examples.some((e) => e.spec.map);
   const imports = examples.filter((e) => e.model).map((e, i) => `import * as M${i} from ${JSON.stringify(e.model)};`);
   const registers = examples.filter((e) => e.model).map((e, i) => `register(${JSON.stringify(e.spec.model ?? e.spec.id)}, M${i}.default ?? M${i}.model);`);
   const entry = `
@@ -184,7 +183,7 @@ zoomOnDemand(() => import(${JSON.stringify(join(root, "src/zoom/index.ts"))}));
 mountAll();
 document.querySelectorAll("[data-isofig]").forEach((el) => {
   const spec = specs[el.dataset.isofig];
-  if (spec) orbitOnDemand(el, async () => (await import(${JSON.stringify(join(root, "src/orbit/index.ts"))})).enableOrbit(el, spec, { lang: ${JSON.stringify(lang)}${withMaps ? `, resolveMap: spec.map ? (await import(${JSON.stringify(mapFile)})).resolveMap : undefined` : ""} }));
+  if (spec) orbitOnDemand(el, async () => (await import(${JSON.stringify(join(root, "src/orbit/index.ts"))})).enableOrbit(el, spec, { lang: ${JSON.stringify(lang)} }));
 });
 ${toolbar}`;
   return esbuild(["--bundle", "--minify", "--format=esm", "--target=es2022", "--platform=browser", "--legal-comments=none", "--loader=ts",], entry);
@@ -252,7 +251,7 @@ const examples = await loadExamples();
 if (!examples.length) throw new Error("no hay ejemplos en examples/*/spec.*");
 
 const figures = examples.map(({ name, spec }, i) => {
-  const r = renderFigure(spec, { lang, n: i + 1, orbit: true });
+  const r = renderFigure(spec, { lang, n: i + 1, orbit: true, resolveMap });
   // El giro recibe la spec ya armada: así no carga el árbol, el catálogo ni los mapas en el navegador.
   const flat = spec.root || spec.map ? assemble(spec, { catalog, resolveMap }) : spec;
   const orbitSpec = flat;
