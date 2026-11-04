@@ -100,7 +100,7 @@ not reach the rest.
 
 A label's size on screen is `size × camera scale × (width on screen / viewBox width)`, times the foreshortening of its
 face (a label lying on the floor looks lower than one standing up; about 0.79 and 0.87 with the default camera). It
-matches what a browser measures: over the 114 academy figures with labels it differs by 0.005 px.
+matches what a browser measures: over the 114 figures with labels of Software Academy (a real course) it differs by 0.005 px.
 
 The audit measures at two widths: a phone of 390 px (the figure is then 326 px wide) and the enlarged view that the
 «Enlarge» chip opens (about 1150 px).
@@ -109,7 +109,7 @@ The audit measures at two widths: a phone of 390 px (the figure is then 326 px w
   and the `size` that would reach 9 px.
 - **Info** (`label-small-mobile`): a label under 9 px on a phone but readable enlarged. One summary per figure.
 
-Why 9 and not 11. Measured on the 114 figures of the academy with labels (807 labels), at 390 px the median is 3.3 px and
+Why 9 and not 11. Measured on the 114 figures with labels of Software Academy (807 labels), at 390 px the median is 3.3 px and
 **all 114 figures** have some label under 9 px: that can only be a note. Enlarged, the median becomes 11.7 px and the
 smallest 10 % stays under 8.2 px. With a threshold of 9 px, 34 figures warn (149 labels); with 11 px, 65 would (341
 labels), too many for a warning in an existing project. The constants are `LABEL_MIN_PX` and
