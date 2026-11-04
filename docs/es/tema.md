@@ -77,8 +77,8 @@ línea a cuatro. Si la tarjeta cambia de alto con ella, todo lo que hay debajo s
 
 1. **La altura se reserva.** La lectura ocupa siempre `--isofig-readout-lines` líneas como mínimo. Sin valor tuyo, son 2
    y en una tarjeta estrecha 3 (hasta 28 rem) o 4 (hasta 20 rem), porque caben menos caracteres por línea. Con eso, una
-   lectura de hasta 110 caracteres no cambia el alto de la tarjeta a ningún ancho; nueve de cada diez figuras de la
-   academia caben ahí.
+   lectura de hasta 110 caracteres no cambia el alto de la tarjeta a ningún ancho; nueve de cada diez figuras de
+   Software Academy caben ahí.
 2. **El ancho no depende del texto.** La pista (`isofig-hint`) ocupa lo que mide su texto, como mucho el 34 %, y la
    lectura el resto. Ninguna de las dos columnas cambia con el valor mostrado, así que el texto no se reacomoda.
 3. **Los números miden igual.** La lectura va en la tipografía `--isofig-mono` con `tabular-nums`: `9` y `10` no

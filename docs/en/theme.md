@@ -77,7 +77,7 @@ line to four. If the card changes height with it, everything below jumps. The ca
 
 1. **The height is reserved.** The readout always takes at least `--isofig-readout-lines` lines. Unset, that is 2, and in a
    narrow card 3 (up to 28 rem) or 4 (up to 20 rem), because fewer characters fit per line. With that, a readout of up to
-   110 characters never changes the card height at any width; nine out of ten academy figures fit there.
+   110 characters never changes the card height at any width; nine out of ten Software Academy figures fit there.
 2. **The width does not depend on the text.** The hint (`isofig-hint`) takes what its text measures, 34 % at most, and the
    readout the rest. Neither column changes with the value shown, so the text does not reflow.
 3. **Numbers measure the same.** The readout uses the `--isofig-mono` typeface with `tabular-nums`: `9` and `10` do not

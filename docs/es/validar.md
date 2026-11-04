@@ -101,7 +101,7 @@ fila de 14 con `from: 14` responde a `fila-14…27` y queda justo encima de la p
 
 El tamaño de un rótulo en pantalla es `size × escala de la cámara × (ancho en pantalla / ancho del viewBox)`, por el
 acortamiento de su cara (un rótulo tumbado en el piso se ve más bajo que uno de pie: cerca de 0,79 y 0,87 con la cámara
-por defecto). Coincide con lo que mide un navegador: en las 114 figuras de la academia con rótulos difiere en 0,005 px.
+por defecto). Coincide con lo que mide un navegador: en las 114 figuras con rótulos de Software Academy (un curso real) difiere en 0,005 px.
 
 La auditoría mide a dos anchos: un celular de 390 px (la figura mide entonces 326 px) y la vista ampliada que abre el
 chip «Ampliar» (unos 1150 px).
@@ -110,7 +110,7 @@ chip «Ampliar» (unos 1150 px).
   `size` que llegaría a 9 px.
 - **Nota** (`label-small-mobile`): un rótulo bajo 9 px en el celular pero legible ampliado. Un resumen por figura.
 
-Por qué 9 y no 11. Medido en las 114 figuras con rótulos de un curso real (807 rótulos), a 390 px la mediana es 3,3 px y
+Por qué 9 y no 11. Medido en las 114 figuras con rótulos de Software Academy (807 rótulos), a 390 px la mediana es 3,3 px y
 **las 114 figuras** tienen algún rótulo bajo 9 px: eso solo puede ser una nota. Ampliada, la mediana pasa a 11,7 px y el
 10 % menor queda bajo 8,2 px. Con 9 px avisan 34 figuras (149 rótulos); con 11 px avisarían 65 (341 rótulos), demasiadas
 para un aviso en un proyecto que ya existe. Las constantes son `LABEL_MIN_PX` y `LABEL_WIDTHS` (exportadas);
