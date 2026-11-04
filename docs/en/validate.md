@@ -56,6 +56,7 @@ returns its errors.
 | `node-id-missing`, `node-id-duplicate`, `use-unknown`, `use-cycle`, `use-failed`, `stage-invalid`, `axis-zero` | In a tree ([nesting.md](nesting.md)): a node without an id or with a sibling's, a `use` that is neither in `defs` nor in the catalog, that uses itself or whose options the kit rejects, a `stage` that is not a number, an axis `[0, 0, 0]` |
 | `dimension-invalid`, `camera-invalid`, `spin-plane-invalid` | `width`, `height`, `pad`, the camera angles or a spin plane that cannot be used |
 | `draw-failed`, `model-invalid`, `model-throws`, `presets-need-model` | The drawing or the model failed; `--presets` without `--model` |
+| `cli-unknown-command`, `cli-unknown-format`, `cli-missing-argument`, `set-value-invalid` | Wrong use of the command line: an unknown command or `--format`, a missing argument, a `--set` that is not `param=number`. They are reported before the spec is read, with the help and exit code 1 |
 | `override-unknown-param`, `override-action-value` | `applyOverrides` (and the `overrides` prop of `<Figure>`) names an id that is not a parameter, or gives an initial value to an action. What it changes is also checked with the `param-value-*`, `toggle-value-invalid`, `choice-value-invalid` and `preset-*` codes, so the messages are the same |
 
 **Warnings** (the ones marked ↑ become errors in 1.0)
@@ -120,7 +121,10 @@ isofig check figure.ts --model model.ts --presets [--seconds 12]
 
 - Without `--model`: `validateSpec` and the audit, plus weight. `--strict` also fails on warnings (never on `info`).
 - `--lang en|es` sets the language of the messages **and of their prefixes**: `error:` / `warning:` / `info:` in
-  English, `error:` / `aviso:` / `nota:` in Spanish. Each line ends with its `[code]`.
+  English, `error:` / `aviso:` / `nota:` in Spanish. Each line ends with its `[code]`. The help (`isofig --help`) follows
+  `--lang` too.
+- The command line is strict: an unknown command or `--format`, a missing argument or a `--set` that is not
+  `param=number` stop with the help and exit code 1 before the spec is read. `isofig --version` prints the version.
 - With `--model`, it runs the model in Node, like the runtime would, for `--seconds` simulated seconds (12 by default)
   with the initial values. With `--presets` it also runs every preset: the model runs half of `--seconds` first, the
   preset is pressed as the runtime does (its `values`, then `reset` if it asks, then its `press` once each) and the figure

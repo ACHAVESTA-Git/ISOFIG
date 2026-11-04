@@ -56,6 +56,7 @@ no lanza: devuelve sus errores.
 | `node-id-missing`, `node-id-duplicate`, `use-unknown`, `use-cycle`, `use-failed`, `stage-invalid`, `axis-zero` | En un árbol ([anidar.md](anidar.md)): un nodo sin id o con el de un hermano, un `use` que no está en `defs` ni en el catálogo, que se usa a sí mismo o cuyas opciones rechaza el kit, un `stage` que no es un número, un eje `[0, 0, 0]` |
 | `dimension-invalid`, `camera-invalid`, `spin-plane-invalid` | `width`, `height`, `pad`, los ángulos de la cámara o el plano de un giro que no sirven |
 | `draw-failed`, `model-invalid`, `model-throws`, `presets-need-model` | Falló el dibujo o el modelo; `--presets` sin `--model` |
+| `cli-unknown-command`, `cli-unknown-format`, `cli-missing-argument`, `set-value-invalid` | Mal uso de la línea de comandos: un comando o `--format` desconocido, un argumento que falta, un `--set` que no es `param=número`. Se avisan antes de leer la spec, con la ayuda y código de salida 1 |
 | `override-unknown-param`, `override-action-value` | `applyOverrides` (y la prop `overrides` de `<Figure>`) nombra un id que no es un parámetro, o da un valor inicial a una acción. Lo que cambia se revisa además con los códigos `param-value-*`, `toggle-value-invalid`, `choice-value-invalid` y `preset-*`, así que los mensajes son los mismos |
 
 **Avisos** (los marcados ↑ pasan a error en 1.0)
@@ -121,7 +122,10 @@ isofig check figura.ts --model modelo.ts --presets [--seconds 12]
 
 - Sin `--model`: `validateSpec` y la auditoría, más el peso. `--strict` también falla con avisos (nunca con `info`).
 - `--lang en|es` fija el idioma de los mensajes **y de sus prefijos**: `error:` / `warning:` / `info:` en inglés,
-  `error:` / `aviso:` / `nota:` en español. Cada línea termina con su `[código]`.
+  `error:` / `aviso:` / `nota:` en español. Cada línea termina con su `[código]`. La ayuda (`isofig --help`) también sigue
+  a `--lang`.
+- La línea de comandos es estricta: un comando o `--format` desconocido, un argumento que falta o un `--set` que no es
+  `param=número` paran con la ayuda y código de salida 1 antes de leer la spec. `isofig --version` imprime la versión.
 - Con `--model`, ejecuta el modelo en Node, como lo haría el runtime, durante `--seconds` segundos simulados (12 por
   defecto) con los valores iniciales. Con `--presets` ejecuta además cada desvío: el modelo corre la mitad de `--seconds`,
   se pulsa el desvío como lo hace el runtime (sus `values`, luego `reset` si lo pide, luego cada `press` una vez) y la
