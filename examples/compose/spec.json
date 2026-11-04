@@ -1,0 +1,90 @@
+{
+  "id": "compose",
+  "title": "tienda",
+  "hint": {
+    "es": "De la entrada a lo que cada servicio necesita",
+    "en": "From the entrance to what each service needs"
+  },
+  "caption": {
+    "es": "web, api, worker, db, cache. Cada cinta va de un servicio a lo que necesita; las punteadas, a sus volúmenes. Redes: frente, datos.",
+    "en": "web, api, worker, db, cache. Each ribbon goes from a service to what it needs; the dotted ones, to its volumes. Networks: frente, datos."
+  },
+  "map": {
+    "layout": "flow",
+    "nodes": [
+      {
+        "id": "internet",
+        "is": "cdn",
+        "name": "Internet"
+      },
+      {
+        "id": "web",
+        "is": "balancer",
+        "name": "web"
+      },
+      {
+        "id": "api",
+        "is": "service",
+        "name": "api ×3"
+      },
+      {
+        "id": "worker",
+        "is": "function",
+        "name": "worker ×2"
+      },
+      {
+        "id": "db",
+        "is": "database",
+        "name": "db"
+      },
+      {
+        "id": "cache",
+        "is": "cache",
+        "name": "cache"
+      },
+      {
+        "id": "vol-0",
+        "is": "storage",
+        "name": "pgdata"
+      }
+    ],
+    "links": [
+      {
+        "from": "web",
+        "to": "api"
+      },
+      {
+        "from": "api",
+        "to": "db"
+      },
+      {
+        "from": "api",
+        "to": "cache"
+      },
+      {
+        "from": "worker",
+        "to": "db"
+      },
+      {
+        "from": "worker",
+        "to": "cache"
+      },
+      {
+        "from": "db",
+        "to": "vol-0",
+        "dashed": true,
+        "arrow": "none"
+      },
+      {
+        "from": "internet",
+        "to": "web",
+        "label": "8080→80"
+      },
+      {
+        "from": "internet",
+        "to": "api",
+        "label": "3000→3000"
+      }
+    ]
+  }
+}

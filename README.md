@@ -1,0 +1,361 @@
+# isofig
+
+**Interactive 3D machines, maps and diagrams as pure SVG. No WebGL. No renders. No images.**
+
+Describe a machine, a network or a UML model as (nested) JSON. isofig draws it in isometric 3D at build time,
+brings it to life with a 3.6 KB runtime, and takes it apart piece by piece without you writing a single function.
+It ships with Astro and Angular adapters, and with a Claude Code plugin that writes, checks and looks at the
+figures for you.
+
+[Español](README.es.md) · [Gallery](#gallery) · [Quick start](#quick-start) · [Claude Code plugin](#claude-code-plugin) ·
+[Docs](#documentation) · [Credits](NOTICE.md)
+
+<p align="center">
+  <img src="docs/assets/motor-v8-luxe-dark.png" width="32%" alt="A racing V8 engine, assembled, on a workshop stand">
+  <img src="docs/assets/motor-v8-luxe-dark-half.png" width="32%" alt="The same V8 halfway through the teardown: airbox, covers and camshafts lifted">
+  <img src="docs/assets/motor-v8-luxe-dark-exploded.png" width="32%" alt="The V8 fully exploded: heads, block, crankshaft, eight pistons and rods">
+</p>
+
+<p align="center"><sub><code>examples/motor-v8/spec.json</code>: 215 parts in plain JSON, <b>16.6 KB gzip</b> for the whole
+figure. The "Take apart" slider, the parts list and the step readout come from the nesting of the JSON: there is no
+model and no code. Shown in the optional <a href="docs/en/luxe.md">luxe style</a>.</sub></p>
+
+---
+
+## Why isofig
+
+A diagram with boxes and arrows says *what* a system has. A machine shows *how it works*: you watch a cache miss go
+down to the database, you push the traffic slider and the gate starts rejecting, you take the engine apart and see
+what sits under the heads. isofig makes those machines cheap enough to put on every page of a course, a docs site or
+a landing page.
+
+| | |
+|---|---|
+| **No renders, no WebGL** | The figure is SVG generated at build time from 3D geometry. There is nothing to render, record or host. |
+| **Light** | Runtime 3.6 KB gzip. A complete figure weighs 7–31 KB gzip. Turning the figure (8.6 KB) and the enlarge dialog (0.8 KB) download only when someone uses them. |
+| **Works without JavaScript** | The page already contains the drawing. With JS it animates; without it, it is still a figure. |
+| **Readable by search engines and screen readers** | Titles, labels and descriptions are real text in the HTML, not pixels in a video. |
+| **Accessible by default** | Pause button, native controls, `prefers-reduced-motion` (followed live), a polite live region, a focus-trapped enlarge dialog, contrast measured on every color. |
+| **Figures are data** | A typed spec or plain JSON. It diffs well in git, reviews well in a pull request and can be written by people or by an AI. |
+| **Validated** | `isofig check` finds broken references, values off their step, controls that do nothing, labels too small to read and colors that can't be told apart, each with a JSON path and a stable code. |
+
+### How it compares
+
+Measured, not guessed: the weights are the minified, gzipped JavaScript each option sends to the browser.
+
+| | isofig | Three.js / WebGL | Video or GIF render | Mermaid | Lottie |
+|---|---|---|---|---|---|
+| JS sent to the browser | **3.6 KB** runtime | 167 KB (core only) | none, but megabytes of video | 726 KB | 74 KB |
+| Shows something without JS | **Yes** | No | Yes | No | No |
+| Text indexable and read aloud | **Yes** | No | No | Yes | No |
+| The reader can play with it | **Yes**: sliders, toggles, presets, teardown | Yes, if you code it | No | No | No |
+| Source you can diff and review | **JSON** | Code | Binary | Text | Exported JSON |
+| Free camera, real lighting | Turning by drag or in steps, flat shading | **Yes** | Whatever you rendered | No | No |
+
+isofig is not a 3D engine: for a free camera, physics or photorealism, use Three.js. isofig is for **explaining**:
+a figure that loads instantly, reads like an illustration and lets the reader break the system on purpose.
+
+---
+
+## What makes it different
+
+1. **The object is the explanation.** A rate limiter is a coin tube and a gate. A cache is a pin-tumbler lock. A
+   queue is a conveyor. A class is a filing cabinet with drawers. isofig is built for real, recognisable objects,
+   not floating boxes.
+2. **Nested JSON gives you the teardown for free.** Write the engine as a tree (block → banks → heads → valves) and
+   add `explode` to the nodes. isofig adds a stepped "Take apart" slider, a parts list that fades the rest and a
+   readout per step. [Guide](docs/en/nesting.md).
+3. **Maps made of objects.** Topologies, flow maps and UML class diagrams, with phones, racks, databases as stacks
+   of disks, queues as conveyors and packets that travel along the routes. Import them from Mermaid or from
+   `docker compose`. [Guide](docs/en/maps.md).
+4. **Color with guarantees.** Seven roles for maps and nine materials for machines (steel, copper, lacquer,
+   carbon…), in OKLCH, with measured guarantees in light and dark: engraved text ≥ 4.5:1, edges ≥ 3:1, and every
+   pair of colors distinguishable, including with protanopia, deuteranopia and tritanopia. Derive them from your
+   brand color with one command. [Guide](docs/en/color.md).
+5. **"Try to break it".** Presets set several controls at once (and can press buttons), so the reader sees the
+   failure the lesson is about: the circuit breaker trips, the queue overflows, the replica falls behind.
+6. **An AI that draws and then looks.** The Claude Code plugin invents the machine, writes the spec, runs
+   `isofig check`, takes screenshots at phone and desktop width in both themes, looks at them and iterates.
+
+---
+
+## Gallery
+
+| | |
+|---|---|
+| ![An online shop: phone and laptop, CDN, load balancer, three servers inside a VPC, Redis, Postgres with a replica, a queue and a worker that sends emails](docs/assets/mapa-tienda-light.png) | ![A shop's domain as UML: each class is a filing cabinet with its attributes and methods engraved on the drawers](docs/assets/mapa-uml-dark.png) |
+| **Topology** · `examples/mapa-tienda` · two animated flows: a purchase and a cache hit | **UML** · `examples/mapa-uml` · inheritance, composition, multiplicities; the drawers open with "Take apart" |
+| ![A liquid-fuel rocket engine with turbopump, injector plate, combustion chamber and nozzle](docs/assets/motor-cohete-luxe-light.png) | ![An order flow map from the cart to the shipment, with the rejected-payment branch](docs/assets/mapa-pedido-light.png) |
+| **Assembly** · `examples/motor-cohete` · turbopump, injector, chamber, nozzle and gimbal | **Flow map** · `examples/mapa-pedido` · cart, payment, stock, queue, email, shipment |
+| ![A token bucket rate limiter as a coin tube, a dispenser and carts at a gate](docs/assets/token-bucket-light.png) | ![A five-service docker compose stack drawn as a map](docs/assets/compose-light.png) |
+| **Machine with a model** · `examples/token-bucket` · 40 parts, 7.3 KB gzip | **Imported** · `examples/compose` · from `docker compose config --format json` |
+
+`npm run gallery` puts every example in a single offline HTML file, in both styles and both themes.
+
+---
+
+## Quick start
+
+### 1. Install
+
+```sh
+npm i github:ACHAVESTA-Git/ISOFIG
+```
+
+Node 22.18 or later. The package builds itself on install. (`npm i isofig` once it is on the npm registry.)
+
+### 2. Write a figure as JSON
+
+```json
+{
+  "id": "lidded-box",
+  "title": { "en": "A box with a lid", "es": "Una caja con tapa" },
+  "root": {
+    "id": "box",
+    "parts": [{ "id": "base", "kind": "box", "at": [0, 0, 0], "size": [60, 60, 20], "radius": 4, "paint": "steel", "shadow": true }],
+    "children": [{
+      "id": "lid", "name": { "en": "Lid", "es": "Tapa" }, "at": [0, 0, 20], "explode": [0, 0, 30],
+      "parts": [{ "id": "slab", "kind": "box", "at": [0, 0, 0], "size": [60, 60, 6], "radius": 4, "paint": "lacquer" }]
+    }]
+  }
+}
+```
+
+### 3. Check it and preview it
+
+```sh
+npx isofig check box.json --strict
+npx isofig build box.json --format page -o box.html   # open box.html: the "Take apart" slider is already there
+```
+
+### 4. Put it on a page
+
+**Astro**
+
+```astro
+---
+import Figure from "isofig/astro";
+import box from "../figures/box.json";
+---
+<Figure spec={box} lang="en" orbit />
+```
+
+The theme CSS is inlined once, only on pages that draw a figure. The runtime, the model, the orbit and the enlarge
+dialog download when the reader gets close or uses them. [Astro guide](docs/en/astro.md).
+
+**Angular 19+** (standalone, signals, zoneless)
+
+```sh
+npx isofig add angular src/app/isofig
+npx isofig build figures/box.json --format module -o src/app/figures/box.figure.ts
+```
+
+[Angular guide](docs/en/angular.md).
+
+**Any other site**: `isofig build --format html` gives you the `<figure>` markup. Load `isofig/theme.css` and call
+`mountAll()` from `isofig/runtime`.
+
+---
+
+## The four kinds of figure
+
+| You want to show… | Write | Guide |
+|---|---|---|
+| A mechanism that runs over time (a limiter, a cache, a retry with backoff) | `parts` and a small pure **model** | [spec.md](docs/en/spec.md) |
+| Something that moves with a control, with no logic | `parts` and `bind` or `tracks` | [spec.md](docs/en/spec.md) |
+| How a thing is built (an engine, a server, a phone) | a nested **`root`** with `explode` | [nesting.md](docs/en/nesting.md) |
+| How things connect (a network, a flow, a domain model) | a **`map`** | [maps.md](docs/en/maps.md) |
+
+### A map in a dozen lines
+
+```json
+{
+  "id": "minimal-map",
+  "title": { "en": "An order", "es": "Un pedido" },
+  "map": {
+    "nodes": [
+      { "id": "web", "is": "browser", "name": "Shop" },
+      { "id": "api", "is": "service", "name": "API" },
+      { "id": "db", "is": "database", "name": "Postgres" }
+    ],
+    "links": [{ "from": "web", "to": "api", "label": "order" }, { "from": "api", "to": "db" }],
+    "flows": [{ "path": ["web", "api", "db"], "label": "one order" }]
+  }
+}
+```
+
+Already have Mermaid? `npx isofig import mermaid diagram.mmd -o map.json`.
+
+### A model in a few lines
+
+```ts
+import type { Model } from "isofig/runtime";
+
+const bucket: Model<{ coins: number }, { refill: number }> = {
+  init: () => ({ coins: 8 }),
+  step: (s, dt, p) => ({ coins: Math.min(8, s.coins + p.refill * dt) }),
+  view: (s, _p, ctx) => {
+    if (s.coins < 1) ctx.say("The bucket is empty: requests are rejected");
+    return { readout: `${Math.floor(s.coins)}/8 coins`, groups: { gate: { s: s.coins < 1 ? "fail" : "ok" } } };
+  },
+};
+export default bucket;
+```
+
+Models are pure functions. The runtime takes care of the clock, pausing offscreen, reduced motion (`motion.settle`),
+announcements without repetition (`ctx.say`) and buttons (`ctx.pressed`).
+
+---
+
+## Color
+
+```jsonc
+{ "id": "pipe", "kind": "cylinder", "paint": "copper" }  // a material, on a part or a node
+{ "id": "db", "is": "database", "paint": "data" }        // a role, on a map node
+```
+
+```sh
+npx isofig palette --base "#e2231a" --report   # roles derived from your brand color, with the contrast table
+```
+
+The `lit` tone stays the one strong accent of a figure. `check` warns when a figure uses more than six colors, when
+two of them can't be told apart, or when engraved text lacks contrast. [Color guide](docs/en/color.md) ·
+[Theme guide](docs/en/theme.md).
+
+### Luxe style (optional)
+
+```js
+import "isofig/theme.css";
+import "isofig/themes/luxe.css";
+```
+
+```html
+<div class="isofig-luxe">… your figures …</div>
+```
+
+*Atelier* (warm ivory, espresso ink, brass) in light mode and *Nocturne* (black lacquer, champagne hairlines, gold)
+in dark mode. 1.7 KB gzip, no web fonts, the same contrast and color-blindness guarantees. [Guide](docs/en/luxe.md).
+
+---
+
+## Claude Code plugin
+
+```sh
+claude plugin marketplace add ACHAVESTA-Git/ISOFIG
+claude plugin install isofig@isofig
+```
+
+Then ask, in any language:
+
+```text
+/isofig:isofig explain how a circuit breaker works, interactive, for our Astro docs
+/isofig:isofig draw our checkout as a topology map with the purchase flow
+/isofig:isofig a rocket engine I can take apart piece by piece
+```
+
+The skill picks the right kind of figure (or tells you when isofig is the wrong tool), invents the object, writes the
+spec and the model, runs `isofig check --model --presets --strict`, takes screenshots at 390 and 1280 px in light and
+dark, looks at them and iterates. [Plugin guide](docs/en/plugin.md).
+
+---
+
+## CLI
+
+```text
+isofig build <spec> [-o file] [--format html|module|json|page] [--lang en] [--model file] [--orbit]
+isofig check <spec> [--lang en|es] [--strict] [--model file [--presets] [--seconds 12]]
+isofig import compose <file.json|->      a map from `docker compose config --format json`
+isofig import mermaid <file.mmd|->       a map from a Mermaid flowchart or classDiagram
+isofig palette [--base "#2fb58b"] [--format css|json] [--report]
+isofig add angular <dir>
+isofig --version
+```
+
+## Performance
+
+Minified and gzipped, checked on every push by `npm run size` against `size-budget.json`:
+
+| Piece | When it loads | Size |
+|---|---|---|
+| `isofig/runtime` | when the reader gets close to a figure | 3.6 KB |
+| `isofig/zoom` (enlarge dialog) | when the chip is pressed | 0.8 KB |
+| `isofig/orbit` (turning) | when a turn control is used | 8.6 KB |
+| `isofig/theme.css` | inline, once per page with a figure | 3.1 KB |
+| `isofig/themes/luxe.css` | if you import it | 1.7 KB |
+| A figure (SVG and data) | in the HTML | 7–31 KB |
+
+The core (`isofig`), the kit and the map compiler run at build time and are not sent to the browser.
+
+## Accessibility
+
+- Every figure is a `<figure>` with an SVG `role="img"`, a title and a description; maps also describe their objects
+  and links in words.
+- Native controls: `input[type=range]` with `aria-valuetext`, switches, radio groups and buttons.
+- Motion: a pause button (WCAG 2.2.2), `prefers-reduced-motion` followed live, animation that stops offscreen.
+- Announcements through a polite live region, at most two per interaction, never over a preset note.
+- "Enlarge" opens a focus-trapped dialog where labels read at 11 px or more on a phone.
+- Colors: text ≥ 4.5:1, edges ≥ 3:1, roles distinguishable with color blindness, and color is never the only carrier
+  of meaning (maps get a legend).
+
+## Compatibility
+
+Node 22.18+ · Astro 5 and 7 (built in CI) · Angular 19+ · evergreen browsers (checked in Chromium and WebKit).
+
+## Documentation
+
+| English | Español |
+|---|---|
+| [Spec reference](docs/en/spec.md) | [Referencia de la spec](docs/es/spec.md) |
+| [Nested specs and teardown](docs/en/nesting.md) | [Anidar y desarmar](docs/es/anidar.md) |
+| [Maps: topologies, flows and UML](docs/en/maps.md) | [Mapas](docs/es/mapas.md) |
+| [Color](docs/en/color.md) · [Theme](docs/en/theme.md) · [Luxe](docs/en/luxe.md) | [Color](docs/es/color.md) · [Tema](docs/es/tema.md) · [Lujo](docs/es/lujo.md) |
+| [Kit of common parts](docs/en/kit.md) | [Kit de piezas](docs/es/kit.md) |
+| [Validation](docs/en/validate.md) | [Validar](docs/es/validar.md) |
+| [Astro](docs/en/astro.md) · [Angular](docs/en/angular.md) | [Astro](docs/es/astro.md) · [Angular](docs/es/angular.md) |
+| [Importers](docs/en/import.md) · [Claude Code plugin](docs/en/plugin.md) | [Importar](docs/es/importar.md) · [Plugin](docs/es/plugin.md) |
+
+Design decisions: [ADR 0001](docs/adr/0001-nucleo-ligero-y-especificacion-declarativa.md) (a light core, figures as
+data), [ADR 0002](docs/adr/0002-especificacion-anidada-y-despiece.md) (nested spec and teardown),
+[ADR 0003](docs/adr/0003-mapas-con-objetos-reales.md) (maps made of real objects).
+
+## FAQ
+
+**Is it real 3D?** The geometry is 3D (boxes, cylinders, cones and prisms along any axis) and is projected, shaded and
+depth-sorted at build time. Turning the figure redraws it in the browser from another angle. It is not a free 3D
+camera, and that is on purpose: it keeps the figure light and readable.
+
+**Do I need a framework?** No. Astro and Angular get components; any site can use the `<figure>` markup from
+`isofig build` and the runtime.
+
+**Can I use my brand colors?** Yes: override the `--isofig-*` CSS variables with one `.isofig { … }` rule, or derive
+the map roles from your color with `isofig palette --base`.
+
+**How big can a map get?** About twenty nodes per figure read well; beyond that, `check` suggests splitting it.
+
+**Can an AI write the figures?** That is what the plugin is for. A figure is data with stable validation codes, so the
+AI can check its own work and fix it.
+
+## Roadmap
+
+- 1.0: the warnings marked ↑ in the [validation guide](docs/en/validate.md) become errors, and the package goes to npm.
+- More map objects and importers (OpenAPI, Kubernetes manifests).
+- Adapters for other frameworks.
+
+## Contributing
+
+```sh
+npm ci
+npm run check && npm test && npm run build && npm run size
+```
+
+Snapshots of every example live in `test/snapshots/`. Update them with `UPDATE_SNAPSHOTS=1 npm test` when a change to
+the drawing is intended.
+
+## Credits
+
+Inspired by [anatomy](https://github.com/wheresryan22/anatomy) by @wheresryan22 (MIT). No code was copied: the ideas
+were rewritten. See [NOTICE.md](NOTICE.md).
+
+## License
+
+[MIT](LICENSE)

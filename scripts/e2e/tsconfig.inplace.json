@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [],
+  "files": ["node_modules/isofig/examples/token-bucket/spec.ts", "node_modules/isofig/examples/token-bucket/model.ts"]
+}

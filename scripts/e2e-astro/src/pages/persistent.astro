@@ -1,0 +1,8 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Bucket from "../components/Bucket.astro";
+---
+<Layout title="Persistent">
+  <h1>A figure that survives navigation</h1>
+  <Bucket load="eager" transition:persist="bucket" />
+</Layout>

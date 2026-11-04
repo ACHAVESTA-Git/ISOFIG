@@ -1,0 +1,15 @@
+{
+  "name": "isofig",
+  "owner": {
+    "name": "ACHAVESTA-Git",
+    "url": "https://github.com/ACHAVESTA-Git"
+  },
+  "description": "isofig: interactive isometric figures, teardowns and maps in pure SVG, written and checked by Claude.",
+  "plugins": [
+    {
+      "name": "isofig",
+      "source": "./",
+      "description": "Writes isofig figures for you: machines, nested assemblies you can take apart, and topology, flow and UML maps, then checks them and looks at screenshots."
+    }
+  ]
+}

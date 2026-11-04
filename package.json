@@ -1,0 +1,123 @@
+{
+  "name": "isofig",
+  "version": "0.9.0",
+  "description": "Explain technical ideas as small, crafted isometric machines: build-time SVG, a tiny animation runtime, Astro and Angular adapters, and a Claude Code skill.",
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "isometric",
+    "svg",
+    "diagram",
+    "illustration",
+    "figure",
+    "animation",
+    "technical-diagrams",
+    "documentation",
+    "astro",
+    "angular",
+    "claude-code",
+    "skill"
+  ],
+  "homepage": "https://github.com/ACHAVESTA-Git/ISOFIG#readme",
+  "bugs": {
+    "url": "https://github.com/ACHAVESTA-Git/ISOFIG/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ACHAVESTA-Git/ISOFIG.git"
+  },
+  "bin": {
+    "isofig": "./dist/cli/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/core/index.d.ts",
+      "default": "./dist/core/index.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime/index.d.ts",
+      "default": "./dist/runtime/index.js"
+    },
+    "./orbit": {
+      "types": "./dist/orbit/index.d.ts",
+      "default": "./dist/orbit/index.js"
+    },
+    "./kit": {
+      "types": "./dist/kit/index.d.ts",
+      "default": "./dist/kit/index.js"
+    },
+    "./map": {
+      "types": "./dist/core/map/index.d.ts",
+      "default": "./dist/core/map/index.js"
+    },
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "default": "./dist/node/index.js"
+    },
+    "./zoom": {
+      "types": "./dist/zoom/index.d.ts",
+      "default": "./dist/zoom/index.js"
+    },
+    "./astro": "./src/astro/Figure.astro",
+    "./astro/client": {
+      "types": "./dist/astro/client.d.ts",
+      "default": "./dist/astro/client.js"
+    },
+    "./theme.css": "./src/theme/theme.css",
+    "./themes/luxe.css": "./src/theme/luxe.css",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": [
+    "./src/theme/theme.css",
+    "./src/theme/luxe.css",
+    "./src/astro/Figure.astro",
+    "./src/angular/isofig-figure.ts"
+  ],
+  "files": [
+    "dist",
+    ".claude-plugin",
+    "src/astro",
+    "src/angular",
+    "src/theme",
+    "skills",
+    "docs/es",
+    "docs/en",
+    "examples/token-bucket/spec.ts",
+    "examples/token-bucket/model.ts",
+    "examples/motor-v8/spec.json",
+    "examples/motor-cohete/spec.json",
+    "examples/mapa-tienda/spec.json",
+    "examples/mapa-pedido/spec.json",
+    "examples/mapa-uml/spec.json",
+    "NOTICE.md",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.check.json && tsc -p tsconfig.browser.json",
+    "size": "npm run build --silent && node scripts/size.ts",
+    "test": "node --no-warnings --test \"test/**/*.test.ts\"",
+    "prepack": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\" && npm run build",
+    "prepublishOnly": "npm run check && npm test",
+    "example": "node src/cli/index.ts build examples/token-bucket/spec.ts --format page -o examples/token-bucket/preview.html --model examples/token-bucket/model.ts",
+    "gallery": "node scripts/galeria.mjs",
+    "screenshots": "node scripts/capturas.mjs"
+  },
+  "peerDependencies": {
+    "astro": ">=5"
+  },
+  "peerDependenciesMeta": {
+    "astro": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "esbuild": "^0.28.2",
+    "happy-dom": "^21.0.4",
+    "typescript": "^7.0.2"
+  }
+}

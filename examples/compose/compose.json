@@ -1,0 +1,10 @@
+{
+  "name": "tienda",
+  "services": {
+    "web": { "image": "nginx:1.27", "ports": [{ "target": 80, "published": "8080" }], "depends_on": { "api": {} }, "networks": { "frente": null } },
+    "api": { "image": "tienda/api", "ports": [{ "target": 3000, "published": "3000" }], "depends_on": { "db": {}, "cache": {} }, "networks": { "frente": null, "datos": null }, "deploy": { "replicas": 3 } },
+    "worker": { "image": "tienda/worker", "depends_on": { "db": {}, "cache": {} }, "networks": { "datos": null }, "deploy": { "replicas": 2 } },
+    "db": { "image": "postgres:17", "volumes": [{ "type": "volume", "source": "pgdata", "target": "/var/lib/postgresql/data" }], "networks": { "datos": null } },
+    "cache": { "image": "redis:8", "networks": { "datos": null } }
+  }
+}
