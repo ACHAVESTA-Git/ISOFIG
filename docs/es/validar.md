@@ -53,6 +53,7 @@ no lanza: devuelve sus errores.
 | `prism-plan-short` | Una planta de prisma con menos de 3 puntos |
 | `id-duplicate` | Dos piezas sólidas con el mismo id después del `repeat` |
 | `on-unknown`, `on-not-solid` | Un detalle sobre una pieza que no existe, o que es otro detalle |
+| `node-id-missing`, `node-id-duplicate`, `use-unknown`, `use-cycle`, `use-failed`, `stage-invalid`, `axis-zero` | En un árbol ([anidar.md](anidar.md)): un nodo sin id o con el de un hermano, un `use` que no está en `defs` ni en el catálogo, que se usa a sí mismo o cuyas opciones rechaza el kit, un `stage` que no es un número, un eje `[0, 0, 0]` |
 | `dimension-invalid`, `camera-invalid`, `spin-plane-invalid` | `width`, `height`, `pad`, los ángulos de la cámara o el plano de un giro que no sirven |
 | `draw-failed`, `model-invalid`, `model-throws`, `presets-need-model` | Falló el dibujo o el modelo; `--presets` sin `--model` |
 | `override-unknown-param`, `override-action-value` | `applyOverrides` (y la prop `overrides` de `<Figure>`) nombra un id que no es un parámetro, o da un valor inicial a una acción. Lo que cambia se revisa además con los códigos `param-value-*`, `toggle-value-invalid`, `choice-value-invalid` y `preset-*`, así que los mensajes son los mismos |
@@ -64,14 +65,15 @@ no lanza: devuelve sus errores.
 | Spec | `unknown-key` (con las claves conocidas y un «¿errata de…?»), `parts-empty`, `title-missing`, `model-name-invalid`, `autoplay-without-model`, `motion-invalid`, `budget-invalid`, `option-invalid` |
 | Piezas | `mount-unknown` ↑, `size-zero`, `number-negative`, `count-invalid` ↑, `repeat-from-invalid` ↑, `prism-clockwise` ↑, `prism-concave` ↑, `prism-degenerate`, `group-ignored`, `label-text-missing`, `label-size-invalid`, `group-unused` ↑ |
 | Controles | `param-id-missing` ↑, `param-id-duplicate` ↑, `param-number-invalid` ↑, `param-range-invalid` ↑, `param-step-invalid`, `param-value-out-of-range` ↑, `param-value-off-step` ↑, `param-label-missing`, `choice-options-missing` ↑, `choice-value-invalid` ↑, `toggle-value-invalid` |
-| `bind` | `bind-unknown-param` ↑, `bind-unknown-group` ↑, `bind-spin-no-pivot` ↑, `bind-no-effect`, `bind-with-model` |
+| `bind` | `bind-unknown-param` ↑, `bind-unknown-group` ↑, `bind-spin-no-pivot` ↑, `bind-no-effect`, `bind-window-invalid` |
+| Árbol | `stage-without-explode`, `explode-on-root`, `root-repeat` |
 | Desvíos y lectura | `preset-unknown-param` ↑, `preset-value-invalid` ↑, `preset-value-out-of-range` ↑, `preset-value-off-step` ↑, `preset-press-invalid` ↑, `preset-no-effect`, `preset-label-missing`, `preset-note-missing`, `readout-unknown-param`, `readout-long` |
 | Auditoría | `part-floats`, `parts-overlap`, `paint-order-ambiguous`, `label-unreadable`, y `weight-over-budget`, que necesita Node: lo dan `isofig check` y `budgetIssues(spec, measure(html), lang)` de `isofig/node` |
 | Color ([color.md](color.md)) | `paint-unknown` ↑, `paint-is-state`, `palette-base-invalid`, `palette-use-invalid`, y sobre el dibujo `palette-roles-unmet`, `palette-too-many-colors`, `paint-indistinct`, `paint-text-contrast` |
 | `check` | `model-group-unknown` ↑, `group-never-driven`, `model-param-unknown` ↑, `preset-same-view`, `set-unknown-param` |
 
 **Notas** (`info`, nunca hacen fallar `--strict`): `alt-missing`, `label-small-mobile`, `group-static`, `param-never-read`,
-`readout-longest`.
+`readout-longest`, `bind-with-model` (desde 0.9 los `bind` se suman a lo que mueve el modelo).
 
 Dos detalles que conviene saber:
 

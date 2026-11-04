@@ -16,7 +16,9 @@ Una `FigureSpec` es un objeto plano: se puede escribir en TypeScript (con autoco
 |---|---|---|
 | `id` | `string` | Único en la página. |
 | `title`, `hint`, `caption`, `alt` | `Text` | Título (arriba a la derecha), pista (abajo a la izquierda), pie bajo la tarjeta, descripción para lectores de pantalla (por defecto el pie). |
-| `parts` | `Part[]` | Las piezas. |
+| `parts` | `Part[]` | Las piezas (con `root`, el escenario fijo). |
+| `root`, `defs` | `Node`, `Record<string, Node>` | Un árbol de nodos anidados que se aplana al compilar y, si algún nodo trae `explode`, se puede desarmar. Ver [anidar.md](anidar.md). |
+| `reorder` | `{ param, at }` | Recalcula el orden de pintado con los grupos movidos por `bind` en cada valor `at` del parámetro (el despiece lo pone solo). |
 | `groups` | `Record<string, GroupSpec>` | Qué se mueve y cuánto, para que quepa en cualquier pose. |
 | `params` | `ParamSpec[]` | Controles deslizantes. |
 | `bind` | `BindSpec[]` | Enlaces parámetro → grupo sin escribir modelo. |
@@ -38,8 +40,9 @@ Todas aceptan: `id`, `tone` (`lo` base, `mid` estructura, `hi` sujeto, `lit` el 
 | `kind` | Campos | Notas |
 |---|---|---|
 | `box` | `at` (esquina mínima), `size: [w, d, h]`, `radius`, `bevel` | Rectángulo redondeado en planta, extruido hacia arriba. |
-| `cylinder` | `at` (centro de la cara inicial), `r`, `h`, `axis` (`x`/`y`/`z`), `bevel` | Ruedas, perillas, fichas, postes. |
-| `prism` | `plan: [x, y][]` (convexa, antihoraria), `z`, `h`, `bevel` | Cualquier planta convexa. Las cóncavas se arman con varias piezas. |
+| `cylinder` | `at` (centro de la cara inicial), `r`, `h`, `axis` (`x`/`y`/`z` o un vector como `[1, 0, 1]`), `bevel` | Ruedas, perillas, fichas, postes; con un vector, una biela o un pistón inclinados. |
+| `cone` | `at`, `r` (cara inicial), `r2` (la otra; 0 es una punta), `h`, `axis` | Tronco de cono: toberas, embudos, trompetas. La primera pieza de revolución. |
+| `prism` | `plan` (convexa), `z`, `h`, `axis` (`z` por defecto; `y` o `x`), `bevel` | Cualquier planta convexa. Con `axis: "y"` la planta es `[x, z]` y se extruye a lo largo de y desde `z`: el perfil de un bloque en V o de una viga. Las cóncavas se arman con varias piezas. |
 
 - `bevel` corta el canto de la tapa: entre 0,4 y 1,6 se ve como una pieza fabricada.
 - `repeat: { count, step, from }` crea copias desplazadas. `{i}` en `id` o `group` se reemplaza por el índice; si `id`
@@ -129,7 +132,14 @@ bind: [
 ```
 
 `move` se multiplica por el valor del parámetro; `spin` da grados por unidad; `fade` usa el valor (0–1) como
-opacidad.
+opacidad. Varios enlaces al mismo grupo se suman (y, si la figura tiene modelo, se suman a lo que el modelo fije).
+
+- `win: [a, b]` usa `(valor − a) / (b − a)`, recortado entre 0 y 1: el grupo solo se mueve mientras el parámetro
+  cruza esa ventana (así sale cada etapa de un despiece).
+- `keep: [1, 3]` con una elección: si vale algo distinto de 0 que no está en la lista, el grupo se atenúa.
+
+Un parámetro con `texts` (un texto por valor entero) los usa en la lectura (`{id}`) y en lo que anuncia el lector de
+pantalla; un texto puede nombrar a su vez otro parámetro (`"{explode}"`).
 
 ## Auditoría
 

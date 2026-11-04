@@ -31,6 +31,8 @@ export interface PartBase {
    * siempre. Un estado del modelo y el tono `lit` ganan sobre la pintura.
    */
   paint?: string;
+  /** Grupo que la lleva además del suyo: lo pone el ensamblado cuando una pieza animada por un modelo se despieza. */
+  outer?: string;
 }
 
 export interface BoxPart extends PartBase {
@@ -47,16 +49,31 @@ export interface CylinderPart extends PartBase {
   at: Vec3;
   r: number;
   h: number;
-  axis?: Axis;
+  /** `x`, `y`, `z` o cualquier dirección (`[1, 0, 1]`): una biela inclinada. */
+  axis?: Axis | Vec3;
   bevel?: number;
+}
+
+/** Tronco de cono: radio `r` en la cara inicial y `r2` en la otra. Toberas, embudos, conos de nariz. */
+export interface ConePart extends PartBase {
+  kind: "cone";
+  /** Centro de la cara inicial. */
+  at: Vec3;
+  r: number;
+  r2: number;
+  h: number;
+  axis?: Axis | Vec3;
 }
 
 export interface PrismPart extends PartBase {
   kind: "prism";
-  /** Planta convexa en sentido antihorario. */
+  /** Planta convexa. Con `axis` `z` (por defecto) son puntos [x, y]; con `y`, [x, z]; con `x`, [y, z]. */
   plan: Vec2[];
+  /** Dónde empieza la extrusión a lo largo del eje (una z, o una y o una x con `axis`). */
   z: number;
   h: number;
+  /** Eje de la extrusión: `y` o `x` para el perfil de un bloque en V o de una viga. */
+  axis?: Axis;
   bevel?: number;
 }
 
@@ -97,7 +114,7 @@ export interface LabelPart extends Omit<PartBase, "group"> {
   align?: "start" | "middle" | "end";
 }
 
-export type Part = BoxPart | CylinderPart | PrismPart | TicksPart | DotsPart | LinePart | LabelPart;
+export type Part = BoxPart | CylinderPart | ConePart | PrismPart | TicksPart | DotsPart | LinePart | LabelPart;
 
 export interface GroupSpec {
   /** Desplazamientos extremos (mundo) para que la figura quepa en cualquier pose. */
@@ -124,6 +141,8 @@ export interface ParamSpec {
   /** El modelo lo recibe con su valor, pero no se muestra el control. */
   hidden?: boolean;
   options?: Text[];
+  /** Texto de cada valor entero (0, 1, 2…): la lectura lo muestra en `{id}` y el lector de pantalla lo anuncia. */
+  texts?: Text[];
 }
 
 /** Un botón que fija varios parámetros de golpe: la forma de romper la figura a propósito. */
@@ -145,6 +164,10 @@ export interface BindSpec {
   move?: Vec3;
   spin?: number;
   fade?: boolean;
+  /** Ventana del parámetro: el enlace usa (valor − a) / (b − a), recortado entre 0 y 1. */
+  win?: [number, number];
+  /** Con una elección distinta de 0 que no está en la lista, el grupo se atenúa. */
+  keep?: number[];
 }
 
 /** Los roles que usa la figura y, opcional, el color de marca del que se derivan. */
@@ -154,6 +177,40 @@ export interface PaletteSpec {
   /** Roles que la figura usa, en el orden de su leyenda. */
   use?: string[];
 }
+
+/**
+ * Un nodo de la especificación anidada: un conjunto con sus piezas y sus subconjuntos. Las coordenadas de `parts` y
+ * de los hijos son locales al `at` del nodo. Se aplana al compilar (ver `assemble`).
+ */
+export interface Node {
+  id: string;
+  name?: Text;
+  /** Qué hace la pieza, en una línea: la lectura lo muestra al elegirla. */
+  note?: Text;
+  /** Texto del paso en que sale al desarmar («culatas fuera»); por defecto, su nombre. */
+  step?: Text;
+  at?: Vec3;
+  /** Desplazamiento al desarmar, relativo a su padre. */
+  explode?: Vec3;
+  /** Orden del despiece: los nodos con el mismo número salen juntos. Por defecto, de fuera hacia dentro. */
+  stage?: number;
+  parts?: Part[];
+  children?: Node[];
+  /** Copias del subárbol entero; `{i}` en los textos del nodo se reemplaza por el índice. */
+  repeat?: { count: number; step: Vec3; from?: number };
+  /** Toma el subárbol de `defs` o, si no está, del catálogo que se le pase a `assemble`. */
+  use?: string;
+  /** Opciones para `use`: en `defs`, reemplazan `{clave}` en los textos y valores del subárbol. */
+  with?: Record<string, unknown>;
+  tone?: Tone;
+  /** Lo heredan las piezas y los nodos de dentro que no traen uno propio. */
+  paint?: string;
+  /** Piezas en las que va encajado todo el nodo (un pistón en su bancada): se suma al `mount` de cada pieza. */
+  mount?: string[];
+}
+
+/** Un subárbol reutilizable de `defs`: el `id` lo pone quien lo usa. */
+export type NodeDef = Omit<Node, "id"> & { id?: string };
 
 export interface FigureSpec {
   id: string;
@@ -166,7 +223,13 @@ export interface FigureSpec {
   height?: number;
   pad?: number;
   camera?: { azimuth?: number; elevation?: number };
-  parts: Part[];
+  /** Las piezas sueltas (un escenario fijo si además hay `root`). */
+  parts?: Part[];
+  /** Árbol de nodos anidados: se aplana a `parts` al compilar y, si algún nodo trae `explode`, se puede desarmar. */
+  root?: Node;
+  defs?: Record<string, NodeDef>;
+  /** Recalcula el orden de pintado con los grupos movidos por `bind` en cada valor `at` del parámetro. */
+  reorder?: { param: string; at: number[] };
   groups?: Record<string, GroupSpec>;
   params?: ParamSpec[];
   bind?: BindSpec[];
@@ -184,6 +247,9 @@ export interface FigureSpec {
   budget?: number;
   palette?: PaletteSpec;
 }
+
+/** Una spec ya aplanada: siempre trae sus piezas. */
+export type FlatSpec = FigureSpec & { parts: Part[] };
 
 export function textOf(t: Text | undefined, lang: string): string {
   if (t === undefined) return "";

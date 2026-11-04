@@ -2,6 +2,8 @@ import type { Issue } from "./issues.ts";
 import { validatePalette } from "./palette/validate.ts";
 import { validateBind, validateParams, validatePresets, validateReadout } from "./validate-controls.ts";
 import { validateParts } from "./validate-parts.ts";
+import { validateTree } from "./validate-tree.ts";
+import type { Catalog } from "./tree.ts";
 import {
   CAMERA_KEYS, FIGURE_KEYS, GROUP_KEYS, MOTION_KEYS, PLANES, SPIN_KEYS,
   checkKeys, checkVector, hasText, isNum, isObj, listOf, reporter, show, type Reporter,
@@ -10,6 +12,8 @@ import {
 export interface ValidateOptions {
   /** Idioma de los mensajes: `en` (por defecto) o `es`. El `code` no cambia con él. */
   lang?: string;
+  /** El catálogo para `use` (por defecto, el de `isofig/kit`). */
+  catalog?: Catalog;
 }
 
 function checkFigure(rep: Reporter, spec: Record<string, unknown>): void {
@@ -120,7 +124,10 @@ export function validateSpec(spec: unknown, options: ValidateOptions = {}): Issu
     groups = validateParts(rep, parts).groups;
   }
   const spins = checkGroups(rep, spec["groups"], generated ? undefined : groups);
+  // El árbol: su forma, sus `use` y sus referencias. Los controles que añade el despiece también se pueden nombrar.
+  const added = validateTree(rep, spec, options.catalog);
   const byId = validateParams(rep, spec["params"]);
+  for (const id of added) if (!byId.has(id)) byId.set(id, { id, kind: id === "pick" ? "choice" : "range" });
   validateBind(rep, spec["bind"], byId, generated ? undefined : groups, spins, Boolean(spec["model"]));
   validatePresets(rep, spec["presets"], byId);
   validateReadout(rep, spec["readout"], spec["params"], byId);

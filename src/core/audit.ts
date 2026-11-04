@@ -16,7 +16,7 @@ const depthInside = (a: Item, b: Item, i: number) =>
  * Revisión barata sobre cajas: piezas que flotan sin tocar nada y piezas hundidas unas en otras.
  * Los grupos ocultos al inicio (piezas de un depósito, por ejemplo) no cuentan.
  */
-export function audit(items: Item[], lang = "en"): Issue[] {
+export function audit(items: Item[], lang = "en", apart?: (a: Item, b: Item) => boolean): Issue[] {
   const live = items.filter((i) => !i.hidden);
   const out: Issue[] = [];
   for (const a of live) {
@@ -29,7 +29,8 @@ export function audit(items: Item[], lang = "en"): Issue[] {
       const a = live[x];
       const b = live[y];
       if (a.mount.includes(b.id) || b.mount.includes(a.id)) continue;
-      if ([0, 1, 2].every((i) => depthInside(a, b, i) > SUNK)) {
+      // Las cajas de una pieza inclinada exageran: `apart` mira sus caras antes de decir que se atraviesan.
+      if ([0, 1, 2].every((i) => depthInside(a, b, i) > SUNK) && !apart?.(a, b)) {
         out.push(makeIssue(lang, "parts-overlap", `parts[${a.source}]`, { a: a.id, b: b.id }));
       }
     }

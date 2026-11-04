@@ -1,6 +1,7 @@
 ---
 import type { HTMLAttributes } from "astro/types";
-import { applyOverrides, renderFigure, type FigureOverrides, type FigureSpec } from "isofig";
+import { applyOverrides, assemble, renderFigure, usesCatalog, type Catalog, type FigureOverrides, type FigureSpec } from "isofig";
+import { catalog } from "isofig/kit";
 import { checkBudget, measure } from "isofig/node";
 import themeCss from "isofig/theme.css?inline";
 import { claimInstance, firstOnPage } from "./page.ts";
@@ -38,8 +39,10 @@ for (const w of [...figure.warnings, ...checkBudget(spec, measure(figure.html), 
 // importe este componente aunque no lo dibuje, y un <link> en el cuerpo se descarga tras el cambio de página de
 // `<ClientRouter />` (la figura se vería sin estilo mientras llega). Con el HTML ya está aplicado.
 const style = theme && firstOnPage(Astro.request, "theme") ? `<style data-isofig-theme>${themeCss}</style>` : "";
-// El giro vuelve a dibujar la escena en el navegador y necesita la spec; el SVG ya trae todo lo demás.
-const specJson = orbit ? `<script type="application/json" class="isofig-spec">${JSON.stringify(spec).replace(/</g, "\\u003c")}</script>` : "";
+// El giro vuelve a dibujar la escena en el navegador y necesita la spec; el SVG ya trae todo lo demás. Un árbol que
+// usa piezas del kit viaja ya armado: así el giro no descarga el catálogo.
+const orbitSpec = spec.root && usesCatalog(spec) ? assemble(spec, { catalog: catalog as Catalog }) : spec;
+const specJson = orbit ? `<script type="application/json" class="isofig-spec">${JSON.stringify(orbitSpec).replace(/</g, "\\u003c")}</script>` : "";
 ---
 
 <div class:list={["isofig-host", className]} data-isofig-load={load} {...rest} set:html={style + figure.html + specJson} />

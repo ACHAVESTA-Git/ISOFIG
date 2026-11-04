@@ -4,6 +4,8 @@ import { paletteIssues, paletteStyle } from "./palette/figure.ts";
 import { drawScene } from "./scene.ts";
 import { escapeHtml as esc } from "./serialize.ts";
 import { textOf, type FigureSpec } from "./spec.ts";
+import { assembleTree, type Catalog } from "./tree.ts";
+import { catalog as kit } from "../kit/index.ts";
 import { validateSpec } from "./validate.ts";
 
 export interface RenderOptions {
@@ -20,6 +22,10 @@ export interface RenderOptions {
    * `data-isofig` ni el JSON del runtime. Por defecto, `spec.id`: el marcado sale igual que sin esta opción.
    */
   instance?: string;
+  /** Piezas para `use` que no están en `defs`; por defecto, las de `isofig/kit`. */
+  catalog?: Catalog;
+  /** Valor de arranque de los controles, por id (también los que añade el despiece): una vista previa de cada estado. */
+  values?: Record<string, number>;
 }
 
 export interface RuntimeData {
@@ -29,12 +35,14 @@ export interface RuntimeData {
   tau: number;
   basis: number[];
   spins: Record<string, number[]>;
-  params: { id: string; value: number; unit: string; spoken: string; options?: string[] }[];
+  params: { id: string; value: number; unit: string; spoken: string; options?: string[]; texts?: string[] }[];
   presets?: { values: Record<string, number>; note: string; reset?: boolean; press?: string[] }[];
   bind: FigureSpec["bind"];
   readout: string;
   lang: string;
   settle?: number;
+  /** Orden de pintado por pose: `[valor, mover, antes de, …]` sobre el orden en reposo (ver `FigureSpec.reorder`). */
+  reorder?: { param: string; poses: number[][] };
 }
 
 export interface Rendered {
@@ -83,15 +91,42 @@ function failed(lang: string, issues: Issue[]): Rendered {
 
 const only = (issues: Issue[], severity: Issue["severity"]) => issues.filter((i) => i.severity === severity).map(formatIssue);
 
+/** La lectura con los valores: `{id}` toma el texto del valor si lo hay, que a su vez puede nombrar otro parámetro. */
+export function fillReadout(template: string, params: { id: string; value: number; texts?: string[] }[]): string {
+  const once = (text: string) =>
+    text.replace(/\{([^}]+)\}/g, (m, id: string) => {
+      const p = params.find((q) => q.id === id);
+      return p ? (p.texts?.[p.value] ?? String(p.value)) : m;
+    });
+  return once(once(template));
+}
+
 export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Rendered {
   const lang = options.lang ?? "en";
-  const issues = validateSpec(spec, { lang });
+  const catalog = options.catalog ?? (kit as Catalog);
+  const issues = validateSpec(spec, { lang, catalog });
   if (options.instance !== undefined && !/^[a-z0-9][a-z0-9-]*$/i.test(options.instance)) issues.push(makeIssue(lang, "instance-invalid", "instance", { id: options.instance }));
   // Con la estructura rota, o con una cuenta que no termina, no hay nada que dibujar: solo los errores.
   if (issues.some((i) => i.code === "spec-not-object" || i.code === "type-invalid" || i.code === "count-too-large")) return failed(lang, issues);
   // Una spec rota no lanza: da sus errores. Si el dibujo falla por algo que la validación no explica, se dice aquí.
   try {
-    return draw(spec, options, lang, issues);
+    // Una spec anidada se aplana aquí; los problemas del árbol ya los dijo la validación.
+    const tree = assembleTree(spec, { catalog });
+    const flat = tree.spec;
+    const start = options.values ?? {};
+    if (flat.params) flat.params = flat.params.map((p) => (p.id in start ? { ...p, value: start[p.id] } : p));
+    const r = draw(flat, options, lang, issues);
+    // La auditoría habla de la spec aplanada: sus `parts[k]` se traducen al lugar del árbol de donde sale cada pieza.
+    if (spec.root) {
+      for (const i of r.issues) {
+        const m = /^parts\[(\d+)\]/.exec(i.path);
+        const src = m ? tree.sources.get(flat.parts[Number(m[1])]) : undefined;
+        if (src) i.path = src + i.path.slice(m![0].length);
+      }
+      r.warnings = only(r.issues, "warning");
+      r.errors = only(r.issues, "error");
+    }
+    return r;
   } catch (e) {
     if (!issues.some((i) => i.severity === "error")) issues.push(makeIssue(lang, "draw-failed", "", { reason: e instanceof Error ? e.message : String(e) }));
     return failed(lang, issues);
@@ -102,7 +137,7 @@ function draw(spec: FigureSpec, options: RenderOptions, lang: string, issues: Is
   const labels = LABELS[lang] ?? LABELS["en"];
   const W = spec.width ?? 640;
   const H = spec.height ?? 400;
-  const { markup, basis, spins, items, cycles, cam } = drawScene(spec, lang, { instance: options.instance });
+  const { markup, basis, spins, items, cycles, cam, reorder, apart } = drawScene(spec, lang, { instance: options.instance });
 
   const id = spec.id;
   const dom = options.instance ?? id;
@@ -122,6 +157,7 @@ function draw(spec: FigureSpec, options: RenderOptions, lang: string, issues: Is
     unit: textOf(p.unit, lang),
     spoken: textOf(p.spoken, lang) || textOf(p.unit, lang),
     ...(p.kind === "choice" ? { options: (p.options ?? []).map((o) => textOf(o, lang)) } : {}),
+    ...(p.texts ? { texts: p.texts.map((t) => textOf(t, lang)) } : {}),
   }));
   const presets = (spec.presets ?? []).map((p) => ({
     values: p.values,
@@ -130,7 +166,7 @@ function draw(spec: FigureSpec, options: RenderOptions, lang: string, issues: Is
     ...(p.press?.length ? { press: p.press } : {}),
   }));
   const template = textOf(spec.readout, lang);
-  const readout = params.reduce((s, p) => s.replaceAll(`{${p.id}}`, String(p.value)), template);
+  const readout = fillReadout(template, params);
   const data: RuntimeData = {
     id,
     model: spec.model,
@@ -144,6 +180,7 @@ function draw(spec: FigureSpec, options: RenderOptions, lang: string, issues: Is
     lang,
     ...(presets.length ? { presets } : {}),
     ...(spec.motion?.settle ? { settle: num(spec.motion.settle) } : {}),
+    ...(reorder ? { reorder } : {}),
   };
 
   const play = data.autoplay || spec.model
@@ -172,11 +209,11 @@ function draw(spec: FigureSpec, options: RenderOptions, lang: string, issues: Is
           `</fieldset>`
         );
       }
-      const { unit, spoken } = params[i];
+      const { unit, spoken, texts } = params[i];
       const value = fmt.format(num(p.value));
       return (
         `<label class="isofig-param"><span>${label}</span>` +
-        `<input type="range" data-param="${esc(p.id)}" min="${num(p.min)}" max="${num(p.max)}" step="${num(p.step ?? 1)}" value="${num(p.value)}" aria-valuetext="${esc(`${value} ${spoken}`.trim())}">` +
+        `<input type="range" data-param="${esc(p.id)}" min="${num(p.min)}" max="${num(p.max)}" step="${num(p.step ?? 1)}" value="${num(p.value)}" aria-valuetext="${esc(texts?.[num(p.value)] ?? `${value} ${spoken}`.trim())}">` +
         `<span class="isofig-value" aria-hidden="true">${esc(`${value} ${unit}`.trim())}</span></label>`
       );
     })
@@ -213,8 +250,8 @@ function draw(spec: FigureSpec, options: RenderOptions, lang: string, issues: Is
 
   const bytes = new TextEncoder().encode(html).length;
   issues.push(
-    ...cycles.map((near) => makeIssue(lang, "paint-order-ambiguous", "", { near })),
-    ...audit(items, lang),
+    ...[...new Set(cycles)].map((near) => makeIssue(lang, "paint-order-ambiguous", "", { near })),
+    ...audit(items, lang, apart),
     ...auditLabels(items, cam, W, lang),
     ...paletteIssues(spec, items, cam, lang),
   );

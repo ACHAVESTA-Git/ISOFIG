@@ -22,11 +22,18 @@ export interface Frame {
 
 export type Axis = "x" | "y" | "z";
 
-export function frameOf(o: Vec3, axis: Axis = "z"): Frame {
+export function frameOf(o: Vec3, axis: Axis | Vec3 = "z"): Frame {
   if (axis === "x") return { o, u: [0, 1, 0], v: [0, 0, 1], w: [1, 0, 0] };
   if (axis === "y") return { o, u: [0, 0, 1], v: [1, 0, 0], w: [0, 1, 0] };
-  return { o, u: [1, 0, 0], v: [0, 1, 0], w: [0, 0, 1] };
+  if (axis === "z") return { o, u: [1, 0, 0], v: [0, 1, 0], w: [0, 0, 1] };
+  // Un eje cualquiera: u queda horizontal (o sobre x si el eje es casi vertical) y la base sigue siendo directa.
+  const w = unit(axis);
+  const u = unit(Math.abs(w[2]) > 0.99 ? cross([0, 1, 0], w) : cross([0, 0, 1], w));
+  return { o, u, v: cross(w, u), w };
 }
+
+/** Dirección unitaria de un eje con nombre o vector. */
+export const axisOf = (axis: Axis | Vec3 = "z"): Vec3 => frameOf([0, 0, 0], axis).w;
 
 const at = (f: Frame, s: number, t: number, h: number): Vec3 =>
   add(add(add(f.o, mul(f.u, s)), mul(f.v, t)), mul(f.w, h));
@@ -76,27 +83,42 @@ export function inset(ring: Vec2[], b: number): Vec2[] {
   });
 }
 
-/** Extruye un anillo CCW del plano (u, v) a lo largo de w, con bisel opcional en la tapa. */
-export function prism(ring: Vec2[], frame: Frame, h: number, bevel = 0): Mesh {
+/** Área con signo de un anillo: positiva si va en sentido antihorario. */
+export function areaOf(ring: Vec2[]): number {
+  let a = 0;
+  for (let i = 0; i < ring.length; i++) {
+    const [x0, y0] = ring[i];
+    const [x1, y1] = ring[(i + 1) % ring.length];
+    a += x0 * y1 - x1 * y0;
+  }
+  return a / 2;
+}
+
+/**
+ * Extruye un anillo CCW del plano (u, v) a lo largo de w, con bisel opcional en la tapa. Con `top`, la tapa es ese
+ * otro anillo (mismo número de puntos): un tronco de cono.
+ */
+export function prism(ring: Vec2[], frame: Frame, h: number, bevel = 0, top?: Vec2[]): Mesh {
   const n = ring.length;
-  const b = Math.max(0, Math.min(bevel, h / 2));
+  const b = top ? 0 : Math.max(0, Math.min(bevel, h / 2));
   const v: Vec3[] = [];
   const faces: Face[] = [];
-  const top = b > 0 ? inset(ring, b) : ring;
+  const crownRing = top ?? (b > 0 ? inset(ring, b) : ring);
   for (const [s, t] of ring) v.push(at(frame, s, t, 0));
-  for (const [s, t] of ring) v.push(at(frame, s, t, h - b));
-  if (b > 0) for (const [s, t] of top) v.push(at(frame, s, t, h));
+  for (const [s, t] of top ?? ring) v.push(at(frame, s, t, h - b));
+  if (b > 0) for (const [s, t] of crownRing) v.push(at(frame, s, t, h));
   const crown = b > 0 ? 2 * n : n;
 
-  faces.push({ idx: [...Array(n).keys()].reverse(), n: mul(frame.w, -1), kind: "bottom" });
+  if (areaOf(ring) > 1e-9) faces.push({ idx: [...Array(n).keys()].reverse(), n: mul(frame.w, -1), kind: "bottom" });
   for (let i = 0; i < n; i++) {
     const j = (i + 1) % n;
     const tangent = unit(sub(v[j], v[i]));
-    const side = unit(cross(tangent, frame.w));
+    // En un tronco, la normal sale de las diagonales: no se anula si un extremo es una punta.
+    const side = top ? unit(cross(sub(v[n + j], v[i]), sub(v[n + i], v[j]))) : unit(cross(tangent, frame.w));
     faces.push({ idx: [i, j, n + j, n + i], n: side, kind: "side" });
     if (b > 0) faces.push({ idx: [n + i, n + j, crown + j, crown + i], n: unit(add(side, frame.w)), kind: "bevel" });
   }
-  faces.push({ idx: [...Array(n).keys()].map((i) => crown + i), n: frame.w, kind: "top" });
+  if (!top || areaOf(top) > 1e-9) faces.push({ idx: [...Array(n).keys()].map((i) => crown + i), n: frame.w, kind: "top" });
   return { v, faces };
 }
 

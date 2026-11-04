@@ -26,7 +26,8 @@ adaptador web. Queremos lo mismo para Astro (destino principal) y Angular, dentr
    arranca en pausa y sin interpolación, el bucle se detiene fuera de pantalla.
 7. **Adaptadores:** componente `.astro` que renderiza en build; para Angular 19+, un componente standalone que se
    copia al proyecto y consume un módulo generado por la CLI (`--format module`), así el núcleo no entra al bundle.
-8. **Fuera de la v1:** WebGL, modo 3D, tubos, sólidos de revolución y la auditoría completa de anatomy. La auditoría
+8. **Fuera de la v1:** WebGL, modo 3D, tubos, sólidos de revolución (salvo el tronco de cono de 0.9, ver
+   [ADR 0002](0002-especificacion-anidada-y-despiece.md)) y la auditoría completa de anatomy. La auditoría
    propia es reducida: orden de pintado con ciclos, piezas flotando, piezas hundidas y peso.
 
 ## Consecuencias
@@ -35,3 +36,4 @@ adaptador web. Queremos lo mismo para Astro (destino principal) y Angular, dentr
 - Las figuras que necesiten formas curvas complejas tendrán que esperar a módulos opcionales.
 - El orden de pintado se calcula en reposo: las piezas que se mueven deben recorrer zonas sin cruces ambiguos (la
   auditoría lo advierte).
+  Desde 0.9 también se calcula en cada pose de `reorder` (el despiece), ver [ADR 0002](0002-especificacion-anidada-y-despiece.md).

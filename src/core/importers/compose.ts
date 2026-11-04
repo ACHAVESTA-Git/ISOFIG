@@ -1,4 +1,4 @@
-import type { FigureSpec, Part } from "../spec.ts";
+import type { FlatSpec, Part } from "../spec.ts";
 
 /** Lo que importa de `docker compose config --format json`. */
 interface ComposeService {
@@ -46,7 +46,7 @@ const fit = (text: string, width: number, max: number) => Math.min(max, width / 
  * tambores al lado y cada red como un riel al fondo con el cable de cada servicio que la usa. Lo que depende de
  * otros queda más cerca del lector.
  */
-export function fromCompose(compose: ComposeFile, id = "compose"): FigureSpec {
+export function fromCompose(compose: ComposeFile, id = "compose"): FlatSpec {
   const services = compose.services ?? {};
   const level = levels(services);
   const depth = Math.max(0, ...level.values());
