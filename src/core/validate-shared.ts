@@ -84,9 +84,8 @@ export function checkVector(rep: Reporter, v: unknown, path: string, field: stri
   return ok;
 }
 
-// Las claves que cada objeto de la spec acepta. Incluyen los campos de las ramas de 0.9 (paint, palette, root, defs,
-// tracks, map, repeat.from, presets[].press, motion.settle): una spec que ya los use no debe dar «clave desconocida».
-// Los nombres de campos van como palabras sueltas: `"from", "x"` en una lista confunde a quien busca imports con una expresión regular.
+// Las claves que cada objeto de la spec acepta: si falta una, la spec sale con «clave desconocida». Los nombres van en
+// `words(...)` y no como `"from", "x"`, que una búsqueda de imports por expresión regular confundiría con un `from`.
 export const words = (list: string): string[] => list.split(" ");
 
 const BASE = ["id", "kind", "tone", "group", "hidden", "repeat", "float", "mount", "shadow", "paint", "outer", "ground"];

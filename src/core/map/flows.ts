@@ -16,7 +16,7 @@ export interface FlowOut {
 }
 
 const SPEED = 80;
-/** Lo que el paquete se queda corto de cada objeto: ahí se apaga o reaparece, sin atravesar el zócalo. */
+/** Distancia que el paquete se queda antes de cada objeto: ahí se apaga o reaparece, para no atravesar el zócalo. */
 const STAND_OFF = 8;
 const PACKET = [7, 7, 6] as const;
 const MAX_PACKETS = 8;

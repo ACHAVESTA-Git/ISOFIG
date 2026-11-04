@@ -46,7 +46,7 @@ function paintOf(rep: Reporter, v: unknown, path: string): void {
   if (v !== undefined && !(typeof v === "string" && PAINTS.includes(v))) rep.add("map-paint-unknown", path, { field: path, got: show(v).replace(/^"|"$/g, ""), known: PAINTS.join(", ") });
 }
 
-/** Los nodos de un nivel y, hacia adentro, los de sus hijos; devuelve los ids que ya se usaron. */
+/** Revisa los nodos de un nivel y, hacia adentro, los de sus hijos. `seen` guarda los ids ya vistos para detectar repetidos. */
 function nodesOf(rep: Reporter, list: unknown, path: string, seen: Map<string, string>, layout: string | undefined): void {
   if (!Array.isArray(list)) return void rep.add("type-invalid", path, { field: path, expected: "list", got: show(list) });
   const cells = new Map<string, string>();

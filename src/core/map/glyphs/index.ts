@@ -9,7 +9,7 @@ import { classCabinet, interfaceCabinet } from "./uml.ts";
 export type { Glyph, GlyphArgs, GlyphFn } from "./kit.ts";
 export { PULL_OUT, type Cabinet, type Drawer } from "./uml.ts";
 
-/** El rol de color de cada objeto: lo que significa en un mapa, para la leyenda. */
+/** Los roles de color posibles: lo que significa cada color en un mapa; la leyenda los muestra. */
 export const ROLES = ["client", "edge", "compute", "data", "messaging", "storage", "external"] as const;
 export type Role = (typeof ROLES)[number];
 

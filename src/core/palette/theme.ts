@@ -45,7 +45,7 @@ export const EDGE_MIX = 0.5;
 
 export type Face = keyof typeof LIGHTEN | keyof typeof DARKEN;
 
-/** Con `t`, los colores de otro tema (el de lujo, el tuyo); sin él, los del tema estándar. */
+/** Mezcla `c` con la luz o la sombra según la cara. El tema `t` es opcional: sin él, usa el estándar del modo; con uno propio (el de lujo, por ejemplo), usa sus colores. */
 export function faceOf(c: Linear, face: Face, mode: Mode, t: ThemeColors = THEME[mode]): Linear {
   if (face === "t" || face === "b") return mix(c, parseColor(t.light), LIGHTEN[face]);
   return mix(c, parseColor(t.shade), DARKEN[face]);

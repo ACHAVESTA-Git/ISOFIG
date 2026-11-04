@@ -7,16 +7,16 @@ export interface Placed {
   id: string;
   parent?: Placed;
   kids: Placed[];
-  /** Un contenedor (bandeja) o una hoja (un objeto del catálogo). */
+  /** Solo las hojas (objetos del catálogo) lo llevan; las bandejas (contenedores) no. */
   leaf?: Leaf;
   fx: number;
   fy: number;
-  /** Esquina mínima respecto de su padre y, ya colocado, en el mundo. */
+  /** `rx`, `ry`: esquina mínima respecto de su padre. `ax`, `ay`: la misma en coordenadas del mundo (`absolute`). */
   rx: number;
   ry: number;
   ax: number;
   ay: number;
-  /** Cuántas bandejas lo contienen: el piso donde se apoya sube 1,6 por cada una. */
+  /** Cuántas bandejas lo contienen: el piso donde se apoya sube `TRAY` (1,6) por cada una. */
   level: number;
 }
 
@@ -136,15 +136,15 @@ const stack = (sizes: number[], gap: number | ((i: number) => number)): { at: nu
 export const tallOf = (p: Placed): number => (p.leaf ? p.leaf.h : TRAY + Math.max(0, ...p.kids.map(tallOf)));
 
 /**
- * Lo que hay que dejar entre un nodo y el que tiene detrás para que el de adelante no le tape el rótulo: la distancia
- * a la que un rayo hacia el lector sube hasta la altura del de adelante. `k` es cos(azimut) / tan(elevación).
+ * Holgura para que el de adelante no tape el rótulo del de atrás: la distancia a la que un rayo hacia el lector llega a
+ * la altura del de adelante. `k` = cos(azimut) / tan(elevación).
  */
 const shadow = (front: number, k: number, extra = 0): number => Math.round(front * k * 1.1 + extra);
 
 /**
- * Coloca los hijos de un contenedor según su `layout` y devuelve el tamaño del contenido. `flow` pone los rangos de
- * izquierda a derecha (a lo largo de `y`) con los de un mismo rango apilados hacia el lector; `layers` los pone de
- * arriba abajo (a lo largo de `x`) con los hermanos uno al lado del otro; `grid` los pone en su celda.
+ * Coloca los hijos de un contenedor según su `layout` y devuelve su tamaño. `flow`: rangos de izquierda a derecha (eje
+ * `y`), con los de un mismo rango apilados hacia el lector. `layers`: niveles de arriba abajo (eje `x`), con los
+ * hermanos uno al lado del otro. `grid`: cada uno en su celda.
  */
 export function arrange(kids: Placed[], layout: MapLayout, edges: Edge[], k: number): { fx: number; fy: number } {
   if (!kids.length) return { fx: 0, fy: 0 };
@@ -177,7 +177,8 @@ export function arrange(kids: Placed[], layout: MapLayout, edges: Edge[], k: num
 }
 
 function arrangeGrid(kids: Placed[], k: number): { fx: number; fy: number } {
-  // Una celda es un par de enteros chicos; lo demás (un texto, un millón) se trata como si no la trajera.
+  // Una celda válida es un par de enteros entre 0 y 99; cualquier otra cosa (un texto, un número enorme) se trata como si
+  // el nodo no trajera celda.
   const cellOf = (k: Placed): [number, number] | undefined => {
     const c = k.node.cell;
     return Array.isArray(c) && c.length === 2 && c.every((v) => Number.isInteger(v) && v >= 0 && v < 100) ? c : undefined;
@@ -217,7 +218,7 @@ function arrangeGrid(kids: Placed[], k: number): { fx: number; fy: number } {
   return { fx: xs.total, fy: ys.total };
 }
 
-/** Pasa las posiciones relativas a absolutas, de arriba abajo. */
+/** Pasa las posiciones relativas a su padre a absolutas, bajando por el árbol. */
 export function absolute(p: Placed, ox = 0, oy = 0): void {
   p.ax = ox + p.rx;
   p.ay = oy + p.ry;

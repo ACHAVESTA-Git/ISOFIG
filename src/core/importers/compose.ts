@@ -30,9 +30,9 @@ function portOf(p: NonNullable<ComposeService["ports"]>[number]): string | undef
 
 /**
  * Un mapa a partir de un compose: cada servicio es el objeto que sugiere su imagen (Postgres, una base de datos; Redis,
- * un caché; nginx, un balanceador; lo demás, un servicio), una cinta va de cada servicio a lo que necesita
- * (`depends_on`), los puertos publicados entran desde un globo de Internet y cada volumen con nombre es un balde al
- * que apunta una cinta punteada. Las réplicas van en el rótulo («api ×3»). Es una spec normal: se edita a mano.
+ * un caché; nginx, un balanceador; si no, un servicio). `depends_on` son cintas, los puertos publicados entran desde un
+ * globo «Internet», cada volumen con nombre es un balde al que apunta una cinta punteada y las réplicas van en el
+ * rótulo («api ×3»). La spec resultante se edita a mano.
  */
 export function fromCompose(compose: ComposeFile, id = "compose"): FigureSpec {
   const services = compose.services ?? {};

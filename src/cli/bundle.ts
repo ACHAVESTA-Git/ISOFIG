@@ -23,7 +23,8 @@ const names = (list: string): string[] => list.split(",").map((s) => s.trim()).f
 
 /**
  * Junta el modelo y los archivos locales que importa en un solo script, para la página suelta: un navegador no
- * puede importar `./medidas.ts` desde `file://`. Los imports de paquetes (solo tipos) desaparecen al quitar tipos.
+ * puede importar `./medidas.ts` desde `file://`. Los imports de paquetes (los que no empiezan por `.`) se quitan sin más:
+ * se asume que solo traen tipos.
  * Reconoce `import x, { a as b }`, `import * as ns` y, al exportar, declaraciones (`export async function`),
  * listas, `export default`, `export * from`, `export * as ns from` y `export { a as b } from`.
  */

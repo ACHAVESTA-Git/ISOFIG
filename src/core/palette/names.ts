@@ -10,5 +10,5 @@ export type PaintName = (typeof ROLE_NAMES)[number] | (typeof MATERIAL_NAMES)[nu
 /** Los nombres de pintura conocidos. `sets.ts` define cada uno y una prueba comprueba que no falte ninguno. */
 export const PAINT_NAMES: ReadonlySet<string> = new Set<string>([...ROLE_NAMES, ...MATERIAL_NAMES]);
 
-/** Los colores de estado los pone el modelo en tiempo de ejecución: nunca son una pintura. */
+/** Colores de estado (`ok`, `warn`, `fail`): los fija el tema, no la spec, y nunca son una pintura. */
 export const RESERVED = ["ok", "warn", "fail"] as const;

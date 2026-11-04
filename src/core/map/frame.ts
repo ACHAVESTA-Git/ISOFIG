@@ -20,12 +20,12 @@ const SLAB = 3;
 const PLATE_D = 8;
 const GAP = 4;
 
-/** Lo que mide la placa de un rótulo grabado con `s`: su alto y dónde cae su línea base. */
+/** Alto de la placa de un rótulo grabado con `s`: la letra más márgenes, redondeado hacia arriba. */
 export const plateHeight = (s: number): number => Math.ceil(2.4 + s * 0.72 + 2.2);
 
 /**
  * Arma un nodo hoja: el objeto del catálogo sobre su zócalo, con la placa al frente donde va grabado el nombre. Los
- * objetos que traen su propio rótulo (las clases) van sin zócalo ni placa.
+ * objetos que traen su propio rótulo (las clases y las interfaces) van sin zócalo ni placa.
  */
 export function buildLeaf(node: MapNode, name: Text, s: number, az: number): Leaf {
   const def = CATALOG[node.is as keyof typeof CATALOG];

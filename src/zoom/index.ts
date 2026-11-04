@@ -22,7 +22,7 @@ export function openZoom(el: HTMLElement): void {
   };
   const box = make("dialog", "isofig-zoombox");
   box.setAttribute("aria-label", title);
-  // Alto de cada rótulo por px de ancho del dibujo (como lo mide la academia: tamaño × escala vertical del grabado).
+  // Alto de cada rótulo por px de ancho del dibujo: tamaño × escala vertical del grabado, entre el ancho del viewBox.
   const perPx = [...svg.querySelectorAll("text")]
     .map((t) => {
       const m = t.transform.baseVal.consolidate()?.matrix;

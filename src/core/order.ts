@@ -118,10 +118,6 @@ function range(pts: Vec3[], n: Vec3): [number, number] {
 }
 
 /**
- * Como `compare`, pero sobre los planos de las caras de dos sólidos orientados: un plano que los separa dice cuál
- * queda del lado del lector. Sirve cuando las cajas se cruzan aunque las piezas no (una culata en una bancada en V).
- */
-/**
  * Los ejes donde buscar un plano que separe dos sólidos: las normales de sus caras planas y la recta entre sus centros
  * (la que separa dos piezas redondas, como un tubo junto a una cámara).
  */
@@ -131,6 +127,10 @@ function candidates(a: Shape, b: Shape): Vec3[] {
   return between.some((v) => v !== 0) ? [...a.axes, ...b.axes, between] : [...a.axes, ...b.axes];
 }
 
+/**
+ * Como `compare`, pero sobre los planos de las caras de dos sólidos orientados: un plano que los separa dice cuál
+ * queda del lado del lector. Sirve cuando las cajas se cruzan aunque las piezas no (una culata en una bancada en V).
+ */
 export function compareShapes(c: Camera, a: Shape, b: Shape): number {
   let best = 0;
   let weight = 0;

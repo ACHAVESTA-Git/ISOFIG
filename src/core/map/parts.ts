@@ -42,7 +42,6 @@ export function shiftPart(p: Part, d: Vec3): Part {
   }
 }
 
-/** Cambia el marcador `ROLE` de las piezas por el rol de color del nodo. */
 export function withRole(parts: Part[], role: string): Part[] {
   return parts.map((p) => (p.paint === ROLE ? { ...p, paint: role } : p));
 }

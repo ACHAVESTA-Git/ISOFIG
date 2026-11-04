@@ -112,7 +112,7 @@ The audit measures at two widths: a phone of 390 px (the figure is then 326 px w
 Why 9 and not 11. Measured on the 114 figures of the academy with labels (807 labels), at 390 px the median is 3.3 px and
 **all 114 figures** have some label under 9 px: that can only be a note. Enlarged, the median becomes 11.7 px and the
 smallest 10 % stays under 8.2 px. With a threshold of 9 px, 34 figures warn (149 labels); with 11 px, 65 would (341
-labels), too many for a warning to stop a branch that already has them. The constants are `LABEL_MIN_PX` and
+labels), too many for a warning in an existing project. The constants are `LABEL_MIN_PX` and
 `LABEL_WIDTHS` (exported); `auditLabels(items, cam, width, lang, { min, widths })` takes other values. To require 11 px
 in a new project, pass `{ min: { zoomed: 11 } }`.
 

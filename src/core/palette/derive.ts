@@ -115,7 +115,7 @@ function score(roles: Record<Mode, Placed[]>, accent: Record<Mode, Linear>): [nu
     const acc = VISIONS.map((v) => labOf(simulate(accent[mode], v)));
     ps.forEach((p, i) => {
       p.own.forEach(take);
-      // Un rol de color que pierde croma al caber en sRGB se vuelve gris: la L alta va a tonos que la sostienen.
+      // Un rol de color que pierde más del 20 % de su croma al caber en sRGB acaba casi gris: se penaliza (`KEEP`).
       if (!NEUTRAL[i]) take(roles[mode][i].kept / KEEP);
       VISIONS.forEach((v, k) => {
         const lim = v === "normal" ? LIMITS.normal : LIMITS.cvd;
@@ -133,7 +133,7 @@ const better = (a: [number, number], b: [number, number]) => a[0] < b[0] - 1e-9 
 const SHIFTS = [-20, -10, -5, -2, 2, 5, 10, 20];
 const MAX_SHIFT = 45;
 const NUDGES = [-0.02, -0.01, 0.01, 0.02];
-/** El rol gris («external») no cambia de tono con otro: un rol de color no debe quedar gris, ni al revés. */
+/** Los roles grises (como «external») no intercambian tono con los de color: ni un rol de color se vuelve gris, ni al revés. */
 const NEUTRAL = ROLES.map((r) => MODES.every((m) => r.lch[m][1] < 0.03));
 const KEEP = 0.8;
 const MAX_NUDGE = 0.06;

@@ -35,7 +35,7 @@ const plateWidth = (n: MapNode, s: number): number => widthOf(trayLabel(n), s) +
 /** La huella de la placa de una bandeja (un estorbo para las cintas), en el mundo. */
 export const plateRect = (p: Placed, s: number): Rect => ({ x0: p.ax + p.fx - 24, y0: p.ay + PAD.side, x1: p.ax + p.fx - 16, y1: p.ay + PAD.side + plateWidth(p.node, s) });
 
-/** Qué tan alto queda el piso de un nodo: 1,6 por cada bandeja que lo contiene. */
+/** Altura del piso de un nodo: `TRAY` por cada bandeja que lo contiene. */
 export const floorOf = (p: Placed): number => p.level * TRAY;
 
 /** Mide y reparte todos los nodos. De adentro hacia afuera: un contenedor mide lo que miden sus hijos, más su margen. */

@@ -17,7 +17,7 @@ export interface Note {
   vars: V;
 }
 
-/** El padre se hereda por el frente y el todo lleva el rombo por el frente: ahí se ven el triángulo y el rombo. */
+/** Lados donde se pegan las puntas UML: la herencia entra por el frente del padre y el rombo sale por el frente del todo, que es donde se ven. */
 const sidesOf = (l: MapLink): Pick<RouteReq, "fromSides" | "toSides"> => {
   if (l.kind === "inherits" || l.kind === "implements") return { fromSides: ["B", "L", "R"], toSides: ["F"] };
   if (l.kind === "composes" || l.kind === "aggregates") return { fromSides: ["F"] };
@@ -141,7 +141,6 @@ export function buildWorld(map: MapSpec, s: number, camera: Camera2): World {
     flowParts.push(...out.parts);
     tracks.push(...out.tracks);
   });
-  // La leyenda: los colores que aparecen, los flujos y las puntas de los enlaces UML.
   const leaves = all.filter((p) => p.leaf);
   const used = new Set(leaves.map((p) => String(p.leaf!.role)));
   const kinds = [...new Set((map.links ?? []).map((l) => l.kind ?? "link"))];

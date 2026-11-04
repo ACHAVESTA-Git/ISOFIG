@@ -86,7 +86,6 @@ export function headPlan(kind: Exclude<End, "none">, tip: Pt, dir: Pt): Vec2[] {
   const { len, half } = HEAD[kind];
   const n: Pt = [-dir[1], dir[0]];
   const at = (back: number, side: number): Vec2 => [tip[0] - dir[0] * back + n[0] * side, tip[1] - dir[1] * back + n[1] * side];
-  // Un triángulo con la base a `len` de la punta, o un rombo con su ancho mayor a media distancia.
   const pts: Vec2[] = kind === "diamond" || kind === "diamond-filled" ? [at(0, 0), at(len / 2, half), at(len, 0), at(len / 2, -half)] : [at(0, 0), at(len, half), at(len, -half)];
   let area = 0;
   pts.forEach((p, i) => {

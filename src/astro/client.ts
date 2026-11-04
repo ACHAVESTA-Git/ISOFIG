@@ -16,17 +16,17 @@ export function models(table: Record<string, ModelLoader>): void {
   for (const [name, load] of Object.entries(table)) loaders.set(name, load);
 }
 
-/** Cada figura montada o a la espera de montarse; `stop` la deja como estaba. */
+/** Cada figura armada (montada o a la espera), con la función que la desarma. */
 const armed = new Map<HTMLElement, () => void>();
 let started = false;
 
-/** Lo que dura una figura: sobrevive a la navegación solo si Astro la conserva (`transition:persist`). */
+/** ¿Sobrevive la figura a la navegación? Solo si Astro la conserva (`transition:persist`). */
 function persists(host: HTMLElement, next: Document | undefined): boolean {
   const key = host.closest("[data-astro-transition-persist]")?.getAttribute("data-astro-transition-persist");
   return Boolean(key && next?.querySelector(`[data-astro-transition-persist="${CSS.escape(key)}"]`));
 }
 
-/** Llama a `go` una vez cuando el lector se acerca al elemento o lo toca (`rootMargin` en px). Devuelve su cancelación. */
+/** Llama a `go` una sola vez cuando el lector se acerca (a `margin` px) o toca el elemento. Devuelve la cancelación. */
 function whenNear(host: HTMLElement, go: () => void, margin = 600): () => void {
   const events = ["pointerenter", "focusin", "pointerdown"];
   const stop = () => {
@@ -55,7 +55,7 @@ function whenIdle(go: () => void): () => void {
 
 const unwrap = (m: ModelModule): Model<any, any> => ("default" in m ? m.default : m);
 
-/** Descarga el runtime (y el modelo y el giro, si los hay) y monta la figura. */
+/** Descarga el runtime y el modelo (si lo hay) y monta la figura; el giro se pide aparte, con `orbitOnDemand`. */
 async function mountFigure(host: HTMLElement, alive: () => boolean, keep: (stop: () => void) => void): Promise<void> {
   const el = host.querySelector<HTMLElement>("[data-isofig]");
   if (!el) return;

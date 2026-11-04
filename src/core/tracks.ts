@@ -14,7 +14,8 @@ export interface TrackData {
 
 export interface Tracks {
   data: TrackData[];
-  /** Segundos en que el reloj queda con movimiento reducido: todo recorrido a mitad de camino y a la vista. */
+  /** Instante en que se congela el reloj con movimiento reducido: ya arrancó el último recorrido y va medio
+   * periodo del más corto. */
   rest: number;
 }
 

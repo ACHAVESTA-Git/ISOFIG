@@ -110,10 +110,10 @@ chip «Ampliar» (unos 1150 px).
   `size` que llegaría a 9 px.
 - **Nota** (`label-small-mobile`): un rótulo bajo 9 px en el celular pero legible ampliado. Un resumen por figura.
 
-Por qué 9 y no 11. Medido en las 114 figuras de la academia con rótulos (807 rótulos), a 390 px la mediana es 3,3 px y
+Por qué 9 y no 11. Medido en las 114 figuras con rótulos de un curso real (807 rótulos), a 390 px la mediana es 3,3 px y
 **las 114 figuras** tienen algún rótulo bajo 9 px: eso solo puede ser una nota. Ampliada, la mediana pasa a 11,7 px y el
 10 % menor queda bajo 8,2 px. Con 9 px avisan 34 figuras (149 rótulos); con 11 px avisarían 65 (341 rótulos), demasiadas
-para que un aviso frene una rama que ya las tiene. Las constantes son `LABEL_MIN_PX` y `LABEL_WIDTHS` (exportadas);
+para un aviso en un proyecto que ya existe. Las constantes son `LABEL_MIN_PX` y `LABEL_WIDTHS` (exportadas);
 `auditLabels(items, cam, width, lang, { min, widths })` acepta otros valores. Para exigir 11 px en un proyecto nuevo,
 pasa `{ min: { zoomed: 11 } }`.
 
