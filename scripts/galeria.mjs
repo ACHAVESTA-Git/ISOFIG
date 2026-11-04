@@ -19,7 +19,8 @@ const { values } = parseArgs({ options: { lang: { type: "string", default: "es" 
 const lang = values.lang === "en" ? "en" : "es";
 const out = resolve(root, values.out ?? "examples/galeria/index.html");
 
-const { renderFigure, textOf } = await import(pathToFileURL(join(root, "src/core/index.ts")).href);
+const { assemble, renderFigure, textOf, usesCatalog } = await import(pathToFileURL(join(root, "src/core/index.ts")).href);
+const { catalog } = await import(pathToFileURL(join(root, "src/kit/index.ts")).href);
 
 const esbuild = (args, input) => execFileSync("npx", ["--no-install", "esbuild", ...args], { cwd: root, input, encoding: "utf8", maxBuffer: 64 << 20, stdio: ["pipe", "pipe", "pipe"] });
 const kb = (n) => `${(n / 1024).toFixed(1)} KB`;
@@ -36,6 +37,18 @@ const NOTES = {
   "token-bucket": {
     es: "Cómo un limitador de tasa deja pasar las ráfagas cortas pero rechaza el exceso sostenido: cada petición necesita una ficha y las fichas se reponen a ritmo fijo.",
     en: "How a rate limiter lets short bursts through but rejects sustained excess: every request needs a token, and tokens refill at a fixed rate.",
+  },
+  "motor-v8": {
+    es: "Cómo se arma un V8 de competición y en qué orden se desarma: dos bancadas de cuatro cilindros comparten un cigüeñal plano. Sale primero lo de fuera; el cárter y el tren alternativo, al final.",
+    en: "How a racing V8 goes together and in what order it comes apart: two banks of four cylinders share a flat-plane crankshaft. The outside comes off first; the oil pan and the rotating assembly, last.",
+    touchEs: "Desármalo paso a paso con «Desarmar», elige una pieza en «Pieza» para ver qué hace, gira el dibujo arrastrándolo y usa «Ampliar» para leer los rótulos.",
+    touchEn: "Take it apart step by step with “Take apart”, pick a part under “Part” to see what it does, drag the drawing to turn it and use “Enlarge” to read the labels.",
+  },
+  "motor-cohete": {
+    es: "Cómo un motor cohete convierte propelentes en empuje: la turbobomba los lleva a la cámara, los gases se aceleran en la garganta y la tobera los expande. El cardán orienta todo el motor.",
+    en: "How a rocket engine turns propellant into thrust: the turbopump feeds the chamber, the gas speeds up through the throat and the nozzle expands it. The gimbal steers the whole engine.",
+    touchEs: "Desármalo de arriba abajo con «Desarmar», elige una pieza en «Pieza» para leer qué hace, gira el dibujo arrastrándolo y usa «Ampliar» para leer los rótulos.",
+    touchEn: "Take it apart from the top with “Take apart”, pick a part under “Part” to read what it does, drag the drawing to turn it and use “Enlarge” to read the labels.",
   },
   compose: {
     title: { es: "Docker Compose", en: "Docker Compose" },
@@ -174,8 +187,6 @@ a{color:inherit}
 .g-bar .g-wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 20px;padding-block:10px}
 .g-bar .isofig-param{padding:3px 5px 3px 12px;gap:4px}
 .g-bar legend{margin-right:6px}
-.g-bar .isofig-choice label{position:relative}
-.g-bar .isofig-choice input{width:1px;min-height:1px}
 .g-brand{font:600 .78rem/1 var(--isofig-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--isofig-ink-soft)}
 .g-toggles{display:flex;flex-wrap:wrap;gap:8px}
 .g-hero{padding-block:clamp(36px,8vw,84px) clamp(20px,4vw,36px)}
@@ -218,11 +229,14 @@ if (!examples.length) throw new Error("no hay ejemplos en examples/*/spec.*");
 
 const figures = examples.map(({ name, spec }, i) => {
   const r = renderFigure(spec, { lang, n: i + 1, orbit: true });
+  // Una spec anidada trae sus controles (Desarmar, Pieza) al armarse; el giro la arma él mismo, salvo que use el kit.
+  const flat = spec.root ? assemble(spec, { catalog }) : spec;
+  const orbitSpec = spec.root && usesCatalog(spec) ? flat : spec;
   if (r.errors.length) throw new Error(`${name}: ${r.errors.join("; ")}`);
   for (const w of r.warnings) console.error(`aviso en ${name}: ${w}`);
   const title = NOTES[name]?.title?.[lang] ?? (textOf(spec.title, lang) || name);
   const note = NOTES[name]?.[lang] ?? firstSentence(textOf(spec.caption, lang)) ?? "";
-  return { name, spec, title, html: r.html, note, touch: touchOf(spec) };
+  return { name, spec: orbitSpec, title, html: r.html, note, touch: NOTES[name]?.[lang === "es" ? "touchEs" : "touchEn"] ?? touchOf(flat) };
 });
 
 const rtBytes = runtimeSize();

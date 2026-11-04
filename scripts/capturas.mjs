@@ -11,6 +11,9 @@
 // Nombres estables, uno por combinación:
 //   <ejemplo>-<tema>.png         estilo estándar  (los que ya enlaza el README: token-bucket-light.png…)
 //   <ejemplo>-luxe-<tema>.png    estilo de lujo   (token-bucket-luxe-dark.png…)
+// Los ejemplos que se desarman (el control «Desarmar» de una spec anidada) suman, en lujo y oscuro, dos más: la
+// mitad del despiece y el despiece completo (motor-v8-luxe-dark-half.png, motor-v8-luxe-dark-exploded.png). La imagen
+// sin sufijo es la figura armada.
 // Usa la galería (scripts/galeria.mjs) con ?bare y ?advance=5: las figuras con modelo salen siempre en el mismo
 // instante de la simulación y con el movimiento reducido, así que dos ejecuciones dan la misma imagen.
 import { execFileSync, spawnSync } from "node:child_process";
@@ -73,6 +76,23 @@ try {
         total += statSync(file).size;
         count++;
         console.error(`${file.replace(`${root}/`, "")}  ${kb(statSync(file).size)}`);
+        // El despiece: la figura ya está armada (la imagen de arriba); se mueve el control a la mitad y al final.
+        const apart = page.locator(`[data-isofig="${id}"] input[data-param="explode"]`);
+        if (style === "luxe" && theme === "dark" && (await apart.count())) {
+          const max = Number(await apart.getAttribute("max"));
+          for (const [suffix, value] of [["half", Math.round(max / 2)], ["exploded", max]]) {
+            await apart.fill(String(value));
+            // Sin el aro de foco que deja `fill` en el control.
+            await apart.evaluate((el) => el.blur());
+            const shot = join(out, `${id}-luxe-dark-${suffix}.png`);
+            await page.locator(`[data-isofig="${id}"]`).screenshot({ path: shot, animations: "disabled" });
+            if (hasFfmpeg) shrink(shot);
+            total += statSync(shot).size;
+            count++;
+            console.error(`${shot.replace(`${root}/`, "")}  ${kb(statSync(shot).size)}`);
+          }
+          await apart.fill("0");
+        }
       }
       await context.close();
     }
