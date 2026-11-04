@@ -70,6 +70,16 @@ test("dos nodos en la misma celda de una cuadrícula avisan", () => {
   assert.equal(found.severity, "warning");
 });
 
+test("una celda fuera de rango, una lista que no es lista o un mapa sin nodos avisan sin romper el dibujo", async () => {
+  const { renderFigure } = await import("../src/core/render.ts");
+  assert.deepEqual(codes({ layout: "grid", nodes: [node("a", "service", { cell: [1000, 0] })] }), ["map-cell-invalid@map.nodes[0].cell"]);
+  assert.deepEqual(codes({ nodes: [node("a", "class", { fields: "x", methods: [1] })] }), ["type-invalid@map.nodes[0].fields", "type-invalid@map.nodes[0].methods"]);
+  assert.deepEqual(codes({}), ["field-missing@map.nodes"]);
+  for (const map of [{}, { nodes: [] }, { layout: "grid", nodes: [node("a", "service", { cell: [1e9, 0] })] }, { nodes: [node("a", "class", { fields: "x", methods: [1, null] })] }, { labelSize: -3, nodes: [node("a")] }]) {
+    assert.doesNotThrow(() => renderFigure({ ...base, map } as never, { lang: "es" }));
+  }
+});
+
 test("un mapa que no es un objeto, o sin lista de nodos, no rompe el validador", () => {
   assert.equal(codes("hola")[0], "type-invalid@map");
   assert.deepEqual(codes({ nodes: "x" }), ["type-invalid@map.nodes"]);

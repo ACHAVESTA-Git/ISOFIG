@@ -70,7 +70,7 @@ returns its errors.
 | Controls | `param-id-missing` ↑, `param-id-duplicate` ↑, `param-number-invalid` ↑, `param-range-invalid` ↑, `param-step-invalid`, `param-value-out-of-range` ↑, `param-value-off-step` ↑, `param-label-missing`, `choice-options-missing` ↑, `choice-value-invalid` ↑, `toggle-value-invalid` |
 | `bind` | `bind-unknown-param` ↑, `bind-unknown-group` ↑, `bind-spin-no-pivot` ↑, `bind-no-effect`, `bind-window-invalid` |
 | Tree | `stage-without-explode`, `explode-on-root`, `root-repeat` |
-| Map and tracks | `map-flow-short`, `map-cell-collision`, `map-paint-unknown`, `track-delay-invalid`, `track-group-unknown`, and from the compiler `map-label-small`, `map-route-blocked` |
+| Map and tracks | `map-flow-short`, `map-cell-collision`, `map-cell-invalid`, `map-paint-unknown`, `track-delay-invalid`, `track-group-unknown`, and from the compiler `map-label-small`, `map-route-blocked` |
 | Presets and readout | `preset-unknown-param` ↑, `preset-value-invalid` ↑, `preset-value-out-of-range` ↑, `preset-value-off-step` ↑, `preset-press-invalid` ↑, `preset-no-effect`, `preset-label-missing`, `preset-note-missing`, `readout-unknown-param`, `readout-long` |
 | Audit | `part-floats`, `parts-overlap`, `paint-order-ambiguous`, `label-unreadable`, and `weight-over-budget`, which needs Node: `isofig check` and `budgetIssues(spec, measure(html), lang)` from `isofig/node` give it |
 | Color ([color.md](color.md)) | `paint-unknown` ↑, `paint-is-state`, `palette-base-invalid`, `palette-use-invalid`, and on the drawing `palette-roles-unmet`, `palette-too-many-colors`, `paint-indistinct`, `paint-text-contrast` |

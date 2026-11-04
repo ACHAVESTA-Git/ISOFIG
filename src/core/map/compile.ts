@@ -32,7 +32,7 @@ const MAX_SIZE = 26;
  * ajuste: se busca el menor con el que la letra mide ~10 px en la vista ampliada (a 1150 px de ancho).
  */
 export function compileMap(map: MapSpec, o: CompileOptions = {}): CompiledMap {
-  const layout = map.layout ?? "flow";
+  const layout = map.layout && map.layout in CAMERAS ? map.layout : "flow";
   const camera = { ...CAMERAS[layout], ...o.camera };
   const W = o.width ?? 1150;
   const pad = o.pad ?? 24;
@@ -50,9 +50,10 @@ export function compileMap(map: MapSpec, o: CompileOptions = {}): CompiledMap {
     }
     return { world, H, s, px: (s * cam.scale * cos * 1150) / W };
   };
-  let s = map.labelSize ?? START_SIZE;
+  const fixed = typeof map.labelSize === "number" && map.labelSize > 0 && Number.isFinite(map.labelSize) ? map.labelSize : undefined;
+  let s = fixed ?? START_SIZE;
   let cur = attempt(s);
-  if (map.labelSize === undefined) {
+  if (fixed === undefined) {
     // La letra y el tamaño de la escena dependen uno del otro: se acerca de punto fijo en punto fijo y se queda con la
     // menor que aún se lee.
     let best = cur.px >= MIN_PX ? cur : undefined;

@@ -21,6 +21,7 @@ export interface Built {
 
 const containerKind = (n: MapNode): string => (n.is && n.is !== "package" ? n.is.toUpperCase() : "");
 const TAB = 10;
+const LAYOUTS: MapLayout[] = ["flow", "layers", "grid"];
 
 /** Lo que va grabado en la placa de una bandeja: su clase en mayúsculas y su nombre. */
 export function trayLabel(n: MapNode) {
@@ -53,8 +54,8 @@ export function build(map: MapSpec, s: number, camera: Camera2): Built {
     return p;
   };
   const top: Placed = { node: { id: "map" }, id: "map", kids: [], fx: 0, fy: 0, rx: 0, ry: 0, ax: 0, ay: 0, level: -1 };
-  top.kids = map.nodes.map((n) => make(n, top, 0));
-  const layoutOf = (p: Placed): MapLayout => p.node.layout ?? map.layout ?? "flow";
+  top.kids = (Array.isArray(map.nodes) ? map.nodes : []).map((n) => make(n, top, 0));
+  const layoutOf = (p: Placed): MapLayout => (LAYOUTS.includes(p.node.layout as MapLayout) ? p.node.layout : LAYOUTS.includes(map.layout as MapLayout) ? map.layout : "flow") as MapLayout;
   const size = (p: Placed): void => {
     p.kids.forEach(size);
     if (!p.kids.length) return;

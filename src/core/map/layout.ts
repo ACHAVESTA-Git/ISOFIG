@@ -177,8 +177,13 @@ export function arrange(kids: Placed[], layout: MapLayout, edges: Edge[], k: num
 }
 
 function arrangeGrid(kids: Placed[], k: number): { fx: number; fy: number } {
-  const declared = kids.filter((k) => k.node.cell);
-  const cols = declared.length ? Math.max(...declared.map((k) => k.node.cell![0])) + 1 : Math.ceil(Math.sqrt(kids.length));
+  // Una celda es un par de enteros chicos; lo demás (un texto, un millón) se trata como si no la trajera.
+  const cellOf = (k: Placed): [number, number] | undefined => {
+    const c = k.node.cell;
+    return Array.isArray(c) && c.length === 2 && c.every((v) => Number.isInteger(v) && v >= 0 && v < 100) ? c : undefined;
+  };
+  const declared = kids.filter((k) => cellOf(k));
+  const cols = declared.length ? Math.max(...declared.map((k) => cellOf(k)![0])) + 1 : Math.ceil(Math.sqrt(kids.length));
   const taken = new Map<string, Placed>();
   const cells = new Map<Placed, [number, number]>();
   const claim = (k: Placed, c: number, r: number) => {
@@ -187,10 +192,10 @@ function arrangeGrid(kids: Placed[], k: number): { fx: number; fy: number } {
     taken.set(`${c},${r}`, k);
     cells.set(k, [c, r]);
   };
-  for (const k of declared) claim(k, k.node.cell![0], k.node.cell![1]);
+  for (const k of declared) claim(k, cellOf(k)![0], cellOf(k)![1]);
   let c = 0;
   let r = 0;
-  for (const k of kids.filter((q) => !q.node.cell)) {
+  for (const k of kids.filter((q) => !cellOf(q))) {
     while (taken.has(`${c},${r}`)) {
       c++;
       if (c >= cols) [c, r] = [0, r + 1];

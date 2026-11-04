@@ -1,6 +1,6 @@
 import { GLYPHS, type LinkKind } from "./map/types.ts";
 import { PAINT } from "./palette/sets.ts";
-import { checkKeys, checkVector, isNum, isObj, show, words, type Reporter } from "./validate-shared.ts";
+import { checkKeys, checkVector, hasText, isNum, isObj, show, words, type Reporter } from "./validate-shared.ts";
 
 const TRACK_KEYS = ["group", "path", "period", "delay", "loop", "hide"] as const;
 
@@ -64,11 +64,16 @@ function nodesOf(rep: Reporter, list: unknown, path: string, seen: Map<string, s
       rep.add("map-glyph-unknown", `${here}.is`, { id: id || here, got: show(n["is"]).replace(/^"|"$/g, ""), known: GLYPHS.join(", ") });
     }
     paintOf(rep, n["paint"], `${here}.paint`);
+    for (const key of ["fields", "methods"]) {
+      const list = n[key];
+      if (list !== undefined && !(Array.isArray(list) && list.every((t) => hasText(t)))) rep.add("type-invalid", `${here}.${key}`, { field: key, expected: "list", got: show(list) });
+    }
     const own = n["layout"] === undefined ? layout : String(n["layout"]);
     if (n["layout"] !== undefined && !LAYOUTS.includes(String(n["layout"]))) option(rep, `${here}.layout`, show(n["layout"]), LAYOUTS);
     const cell = n["cell"];
     if (cell !== undefined) {
       if (checkVector(rep, cell, `${here}.cell`, "cell", 2)) {
+        if ((cell as number[]).some((v) => !Number.isInteger(v) || v < 0 || v >= 100)) rep.add("map-cell-invalid", `${here}.cell`, { id: id || here, got: JSON.stringify(cell) });
         const key = (cell as number[]).join(",");
         if (layout === "grid" && cells.has(key)) rep.add("map-cell-collision", `${here}.cell`, { id: id || here, first: cells.get(key)! });
         else cells.set(key, id || here);
@@ -95,7 +100,8 @@ export function validateMap(rep: Reporter, map: unknown): void {
   if (map["legend"] !== undefined && typeof map["legend"] !== "boolean") rep.add("type-invalid", "map.legend", { field: "legend", expected: "boolean", got: show(map["legend"]) });
   if (map["labelSize"] !== undefined && !(isNum(map["labelSize"]) && map["labelSize"] > 0)) rep.add("number-invalid", "map.labelSize", { field: "labelSize", got: show(map["labelSize"]) });
   const seen = new Map<string, string>();
-  nodesOf(rep, map["nodes"] ?? [], "map.nodes", seen, layout);
+  if (map["nodes"] === undefined) rep.add("field-missing", "map.nodes", { id: "map", kind: "map", field: "nodes" });
+  else nodesOf(rep, map["nodes"], "map.nodes", seen, layout);
   const ids = new Set(seen.keys());
 
   const links = map["links"];

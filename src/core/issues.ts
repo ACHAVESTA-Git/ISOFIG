@@ -466,6 +466,11 @@ const CATALOG = {
     en: (v, q) => `${q(v.field)} names ${q(v.id)}, which is not a node of the map.`,
     es: (v, q) => `${q(v.field)} nombra ${q(v.id)}, que no es un nodo del mapa.`,
   },
+  "map-cell-invalid": {
+    severity: "warning",
+    en: (v, q) => `The cell of ${q(v.id)} must be [column, row], two whole numbers from 0 to 99, got ${v.got}: the node takes the first free cell.`,
+    es: (v, q) => `La celda de ${q(v.id)} debe ser [columna, fila], dos enteros de 0 a 99; llegó ${v.got}: el nodo toma la primera celda libre.`,
+  },
   "map-flow-short": {
     severity: "warning",
     en: () => "A flow needs at least two nodes in path to have somewhere to go.",

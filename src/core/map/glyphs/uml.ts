@@ -31,8 +31,9 @@ function cabinet(a: GlyphArgs, o: { stereotype?: Text; members: boolean; fields:
   const sm = s * 0.92;
   const lp = (size: number) => size * 1.32;
   const titles: Line[] = [...(o.stereotype !== undefined ? [{ text: o.stereotype, size: sm }] : []), { text: a.name, size: s }];
-  const fields: Line[] = o.fields ? (node.fields ?? []).map((t) => ({ text: t, size: sm })) : [];
-  const methods: Line[] = o.members ? (node.methods ?? []).map((t) => ({ text: t, size: sm })) : [];
+  const lines = (list: unknown): Line[] => (Array.isArray(list) ? list : []).filter((t) => typeof t === "string" || (t && typeof t === "object")).map((t) => ({ text: t as Text, size: sm }));
+  const fields: Line[] = o.fields ? lines(node.fields) : [];
+  const methods: Line[] = o.members ? lines(node.methods) : [];
   const groups: { id: string; lines: Line[] }[] = [{ id: "name", lines: titles }];
   if (fields.length) groups.push({ id: "fields", lines: fields });
   if (methods.length) groups.push({ id: "methods", lines: methods });
