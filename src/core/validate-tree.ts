@@ -32,6 +32,11 @@ function checkNode(rep: Reporter, node: unknown, path: string, def: boolean): vo
     if (node[f] !== undefined && !hasText(node[f])) rep.add("type-invalid", `${path}.${f}`, { field: f, expected: "text", got: show(node[f]) });
   }
   for (const f of ["at", "explode"]) if (node[f] !== undefined) checkVector(rep, node[f], `${path}.${f}`, f);
+  const turn = node["rotate"];
+  // Los ángulos van en grados: unos pocos y con muchos decimales (1.5708, 0.7854) son radianes.
+  if (turn !== undefined && checkVector(rep, turn, `${path}.rotate`, "rotate") && turn.every((a) => Math.abs(a) <= 6.3) && turn.some((a) => Math.abs(a * 100 - Math.round(a * 100)) > 1e-6)) {
+    rep.add("rotate-radians", `${path}.rotate`, { id: name, got: JSON.stringify(turn) });
+  }
   const stage = node["stage"];
   if (stage !== undefined && !isNum(stage)) rep.add("stage-invalid", `${path}.stage`, { got: show(stage) });
   else if (stage !== undefined && !def && !moves(node)) rep.add("stage-without-explode", `${path}.stage`, { id: name });
@@ -85,9 +90,19 @@ export function validateTree(rep: Reporter, spec: Record<string, unknown>, catal
   const root = spec["root"];
   const defs = spec["defs"];
   if (root === undefined && defs === undefined) return [];
+  // En `defs`, un valor puede ser `"{clave}"`: lo pone el `with` de cada `use` y se revisa abajo, ya armado.
+  const seen = new Set<string>();
+  const placeholders = (r: Reporter): Reporter => ({
+    ...r,
+    add: (code, path, vars, severity) => {
+      if (/^"\{[^}]+\}"$/.test(String(vars?.["got"] ?? ""))) return;
+      seen.add(path);
+      r.add(code, path, vars, severity);
+    },
+  });
   if (defs !== undefined) {
     if (!isObj(defs)) rep.add("type-invalid", "defs", { field: "defs", expected: "object", got: show(defs) });
-    else for (const [name, d] of Object.entries(defs)) checkNode(rep, d, `defs.${name}`, true);
+    else for (const [name, d] of Object.entries(defs)) checkNode(placeholders(rep), d, `defs.${name}`, true);
   }
   if (root === undefined) return [];
   if (!isObj(root)) {
@@ -109,8 +124,14 @@ export function validateTree(rep: Reporter, spec: Record<string, unknown>, catal
     rep.add(e.code, e.path, { ...e.vars, ...(e.code === "use-unknown" ? { suggest: closest(e.vars["use"] ?? "", names) ?? "" } : {}) });
   }
 
-  // Las referencias, ya resueltas por ámbitos: una que no se encontró se quedó tal como la escribió el autor.
   const flat = tree.spec.parts;
+  // Un `with` que llenó un número con otra cosa se ve en la pieza armada; se avisa donde está la plantilla.
+  for (const p of flat) {
+    const src = tree.sources.get(p);
+    if (!src?.startsWith("defs.")) continue;
+    checkPart({ ...rep, add: (code, path, vars, severity) => void (/invalid/.test(code) && !seen.has(path) && (seen.add(path), rep.add(code, path, vars, severity))) }, p as unknown as Record<string, unknown>, src);
+  }
+  // Las referencias, ya resueltas por ámbitos: una que no se encontró se quedó tal como la escribió el autor.
   const solids = new Set(flat.filter(isSolid).map((p) => p.id));
   const details = new Set(flat.filter((p) => !isSolid(p)).map((p) => p.id));
   for (const p of flat) {

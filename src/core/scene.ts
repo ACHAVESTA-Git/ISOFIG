@@ -1,9 +1,9 @@
-import { depthOf, fitCamera, project, screenBasis, type Camera, type CameraOptions } from "./camera.ts";
-import { add, centerOf, dot, mul, type Box3, type Vec3 } from "./math.ts";
-import { buildItems, linesOf, meshOf, type Item } from "./items.ts";
-import { axisOf } from "./mesh.ts";
-import { hullOf, paintOrder, shapesApart, type Ordered, type Shape } from "./order.ts";
-import { drawMesh, SHADES } from "./shade.ts";
+import { depthOf, facesViewer, fitCamera, makeCamera, project, screenBasis, type Camera, type CameraOptions } from "./camera.ts";
+import { add, centerOf, cross, dot, mul, sub, type Box3, type Vec2, type Vec3 } from "./math.ts";
+import { buildItems, endsOf, framedPoints, isRound, linesOf, meshOf, type Detail, type Item } from "./items.ts";
+import { axisOf, circle, type Mesh } from "./mesh.ts";
+import { hullOf, paintOrder, shapesApart, type Ordered, type Prior, type Shape } from "./order.ts";
+import { drawMesh, drawRound, SHADES, stadium } from "./shade.ts";
 import { customPaints, paintAttr } from "./palette/paint.ts";
 import { dotsOf, escapeHtml as esc, pathOf } from "./serialize.ts";
 import { textOf, type FigureSpec, type FlatSpec, type LabelPart } from "./spec.ts";
@@ -18,13 +18,23 @@ export const FACES: Record<NonNullable<LabelPart["face"]>, [Vec3, Vec3]> = {
   y: [[-1, 0, 0], [0, 0, -1]],
 };
 
-/** El texto se escribe en coordenadas de la cara: la matriz lleva su eje de lectura y su «abajo» a pantalla. */
+const ALIGNS = ["start", "middle", "end"];
+
+/**
+ * El texto se escribe en coordenadas de la cara: la matriz lleva su eje de lectura y su «abajo» a pantalla. Si la cara se ve
+ * de modo que el «abajo» del texto apunta hacia arriba (una tapa vista desde el otro lado), gira media vuelta sobre su base
+ * para leerse al derecho: el inicio pasa a ser el final y baja una altura de letra, y así cubre el mismo lugar.
+ */
 function labelSvg(c: Camera, l: LabelPart, lang: string, cls = `class="tx"`): string {
-  const [along, down] = FACES[l.face ?? "top"];
+  let [along, down] = l.axes ?? FACES[l.face ?? "top"];
   const k = c.scale;
-  const [e, f] = project(c, l.at);
+  const flip = dot(c.down, down) < 0;
+  if (flip) [along, down] = [mul(along, -1), mul(down, -1)];
+  const align = flip ? ALIGNS[2 - ALIGNS.indexOf(l.align ?? "start")] : l.align;
+  const size = l.size ?? 6;
+  const [e, f] = project(c, flip ? add(l.at, mul(down, size * 0.7)) : l.at);
   const m = [k * dot(c.right, along), k * dot(c.down, along), k * dot(c.right, down), k * dot(c.down, down), e, f];
-  return `<text ${cls} font-size="${l.size ?? 6}"${l.align && l.align !== "start" ? ` text-anchor="${l.align}"` : ""} transform="matrix(${m.map((v) => Math.round(v * 1000) / 1000).join(" ")})">${esc(textOf(l.text, lang))}</text>`;
+  return `<text ${cls} font-size="${size}"${align && align !== "start" ? ` text-anchor="${align}"` : ""} transform="matrix(${m.map((v) => Math.round(v * 1000) / 1000).join(" ")})">${esc(textOf(l.text, lang))}</text>`;
 }
 
 /** Dentro de <defs> los selectores no alcanzan las copias de un <use>: los trazos llevan su estilo en línea. */
@@ -42,10 +52,40 @@ const INLINE: Record<string, string> = {
   tx: "fill:var(--fx);font-family:var(--isofig-mono);font-weight:600",
 };
 
+/**
+ * Lo grabado en una cara que ya no mira al lector no se ve a través de la pieza ni sale en espejo. Un punto está en la
+ * cara de la malla que lo contiene (a menos de medio punto de su plano); si no cae en ninguna, o la pieza es redonda, se dibuja.
+ */
+function engraved(c: Camera, mesh: Mesh | undefined, details: Detail[]): Detail[] {
+  const front = (p: Vec3): boolean => {
+    let back = false;
+    for (const f of mesh?.faces ?? []) {
+      if (Math.abs(dot(f.n, sub(p, mesh!.v[f.idx[0]]))) >= 0.5) continue;
+      if (facesViewer(c, f.n)) return true;
+      back = true;
+    }
+    return !back;
+  };
+  return details.flatMap((d): Detail[] => {
+    if (d.kind === "label") {
+      const [along, down] = d.axes ?? FACES[d.face ?? "top"];
+      return facesViewer(c, cross(down, along)) ? [d] : [];
+    }
+    if (d.kind === "dots") {
+      const points = d.points.filter(front);
+      return points.length ? [{ ...d, points }] : [];
+    }
+    return (d.kind === "ticks" ? front(d.from) : d.points.some(front)) ? [d] : [];
+  });
+}
+
 function itemBody(c: Camera, item: Item, lang: string, inline = false): string {
   const cls = (k: string) => (inline ? `style="${INLINE[k]}"` : `class="${k}"`);
-  const drawn = drawMesh(c, meshOf(item.solid, c));
-  const lines = linesOf(item.details);
+  const solid = item.solid;
+  const mesh = isRound(solid) ? undefined : meshOf(solid, c);
+  const drawn = isRound(solid) ? drawRound(c, endsOf(solid), solid.r) : drawMesh(c, mesh!);
+  const shown = item.details.length ? engraved(c, mesh, item.details) : item.details;
+  const lines = linesOf(shown);
   const proj = (pts: Vec3[]) => pts.map((p) => project(c, p));
   let body = "";
   for (const s of SHADES) {
@@ -56,7 +96,7 @@ function itemBody(c: Camera, item: Item, lang: string, inline = false): string {
   if (lines.fine.length) body += `<path ${cls("l")} d="${pathOf(lines.fine.map(proj), false)}"/>`;
   if (lines.bold.length) body += `<path ${cls("lb")} d="${pathOf(lines.bold.map(proj), false)}"/>`;
   if (lines.dots.length) body += `<path ${cls("d")} d="${dotsOf(proj(lines.dots))}"/>`;
-  for (const d of item.details) if (d.kind === "label") body += labelSvg(c, d, lang, cls("tx"));
+  for (const d of shown) if (d.kind === "label") body += labelSvg(c, d, lang, cls("tx"));
   return body;
 }
 
@@ -72,7 +112,7 @@ function artOf(id: string, c: Camera, items: Item[], order: number[], lang: stri
     const [ax, ay] = project(c, item.box.min);
     const tone = TONES.includes(item.tone) ? item.tone : "mid";
     const local = { ...c, ox: c.ox - ax, oy: c.oy - ay };
-    return { item, ax: r2(ax), ay: r2(ay), tone, key: itemBody(local, item, lang, true), local };
+    return { item, ax: r2(ax), ay: r2(ay), tone, key: c.draft ? "" : itemBody(local, item, lang, true), local };
   });
   const count = new Map<string, number>();
   for (const p of placed) count.set(p.key, (count.get(p.key) ?? 0) + 1);
@@ -103,26 +143,36 @@ function artOf(id: string, c: Camera, items: Item[], order: number[], lang: stri
 function shadowSvg(c: Camera, items: Item[]): string {
   const polys = items
     .filter((i) => i.shadow)
-    .map(({ box: { min, max } }) => {
+    .map(({ box: { min, max }, solid }) => {
       const pad = 3;
       const z = min[2];
-      const ring: Vec3[] = [
-        [min[0] - pad, min[1] - pad, z],
-        [max[0] + pad, min[1] - pad, z],
-        [max[0] + pad, max[1] + pad, z],
-        [min[0] - pad, max[1] + pad, z],
-      ];
+      // Una pieza redonda lleva un halo redondo: el contorno de su huella (un círculo o un estadio) en el piso; una girada, el de su huella.
+      const foot = framedPoints(solid);
+      const ring: Vec3[] = isRound(solid)
+        ? stadium(...endsOf(solid), solid.r + pad).map(([x, y]): Vec3 => [x, y, z])
+        : foot
+          ? hullOf(foot.flatMap(([x, y]) => circle(pad, 8).map(([u, v]): Vec2 => [x + u, y + v]))).map(([x, y]): Vec3 => [x, y, z])
+          : [
+              [min[0] - pad, min[1] - pad, z],
+              [max[0] + pad, min[1] - pad, z],
+              [max[0] + pad, max[1] + pad, z],
+              [min[0] - pad, max[1] + pad, z],
+            ];
       return ring.map((p) => project(c, p));
     });
   return polys.length ? `<path class="h" d="${pathOf(polys, true)}"/>` : "";
 }
 
-function fitPoints(spec: FigureSpec, items: Item[]): Vec3[] {
+function fitPoints(spec: FigureSpec, items: Item[], view: Camera): Vec3[] {
   const pts: Vec3[] = [];
   const extentOf = (g?: string): Vec3[] => (g ? (spec.groups?.[g]?.extent ?? []) : []);
   for (const it of items) {
     const { min, max } = it.box;
-    const corners: Vec3[] = [min, max, [min[0], max[1], min[2]], [max[0], min[1], max[2]], [min[0], min[1], max[2]], [max[0], max[1], min[2]]];
+    // El círculo de una pieza redonda cabe exacto: su caja, vista de lado, sería hasta un 57 % más grande.
+    const s = it.solid;
+    const corners: Vec3[] = isRound(s)
+      ? endsOf(s).flatMap((p) => [view.right, view.down].flatMap((v) => [add(p, mul(v, s.r)), add(p, mul(v, -s.r))]))
+      : (framedPoints(s) ?? [min, max, [min[0], max[1], min[2]], [max[0], min[1], max[2]], [min[0], min[1], max[2]], [max[0], max[1], min[2]]]);
     const own = extentOf(it.group);
     const outer = extentOf(it.outer);
     const moves = [[0, 0, 0] as Vec3, ...own, ...outer, ...own.flatMap((a) => outer.map((b) => add(a, b)))];
@@ -133,17 +183,24 @@ function fitPoints(spec: FigureSpec, items: Item[]): Vec3[] {
 
 const isWorldAxis = (n: Vec3) => n.some((v) => Math.abs(v) > 1 - 1e-9);
 
-/** Lo que el orden de pintado necesita de una pieza inclinada o extruida de lado: vértices y normales de sus caras. */
+/** Lo que el orden de pintado necesita de una pieza inclinada, redonda o extruida de lado: vértices y normales de sus caras. */
 function shapeOf(c: Camera, item: Item): Omit<Shape, "hull"> {
-  const mesh = meshOf(item.solid, c);
-  const axes: Vec3[] = [];
   const s = item.solid;
-  const normals = s.kind === "prism" ? mesh.faces.map((f) => f.n) : s.kind === "box" ? [] : [axisOf(s.axis)];
+  const axes: Vec3[] = [];
+  let pts: Vec3[];
+  let normals: Vec3[];
+  if (isRound(s)) {
+    // Los centros de sus puntas (y el radio, aparte): solo el eje de una cápsula, si es oblicuo, separa a otras piezas.
+    [pts, normals] = [endsOf(s), s.kind === "capsule" ? [axisOf(s.axis)] : []];
+  } else {
+    const mesh = meshOf(s, c);
+    [pts, normals] = [mesh.v, s.kind === "prism" ? mesh.faces.map((f) => f.n) : s.kind === "box" ? (s.frame ? [s.frame.u, s.frame.v, s.frame.w] : []) : [axisOf(s.axis)]];
+  }
   for (const n of normals) {
     if (isWorldAxis(n) || axes.some((m) => Math.abs(dot(m, n)) > 1 - 1e-9)) continue;
     axes.push(n);
   }
-  return { pts: mesh.v, axes };
+  return isRound(s) ? { pts, axes, r: s.r } : { pts, axes };
 }
 
 /** Desplazamiento de cada grupo con el parámetro `param` en `value`, según los `bind` con `move`. */
@@ -192,8 +249,12 @@ export function movesBetween(from: number[], to: number[]): number[] {
 
 
 export interface View extends CameraOptions {
-  /** Escala fija: al girar, la figura no cambia de tamaño. */
+  /** Escala máxima: al girar, la figura no crece más que en la vista inicial, pero se achica lo justo para caber. */
   scale?: number;
+  /** Valor del parámetro de `reorder`: solo se calcula el orden de pintado de la pose que se ve (las demás salen sin movidas). */
+  pose?: number;
+  /** Dibujo de borrador para el arrastre: sin piezas idénticas compartidas y con menos capas en las piezas redondas. */
+  draft?: boolean;
   /** Prefijo de los ids de `<defs>`; por defecto, el id de la spec (ver `RenderOptions.instance`). */
   instance?: string;
 }
@@ -221,15 +282,17 @@ export function drawScene(spec: FlatSpec, lang: string, view: View = {}): Scene 
   const H = spec.height ?? 400;
   const { items } = buildItems(spec.parts);
   const options = { ...spec.camera, ...(view.azimuth !== undefined ? { azimuth: view.azimuth } : {}), ...(view.elevation !== undefined ? { elevation: view.elevation } : {}) };
-  const cam = fitCamera(options, fitPoints(spec, items), W, H, spec.pad ?? 24, view.scale);
+  const cam = fitCamera(options, fitPoints(spec, items, makeCamera(options)), W, H, spec.pad ?? 24, view.scale);
+  cam.draft = view.draft;
   const names = items.map((i) => i.id);
-  const oriented = items.some((i) => i.solid.kind === "prism" || ((i.solid.kind === "cylinder" || i.solid.kind === "cone") && !isWorldAxis(axisOf(i.solid.axis))));
+  const oriented = items.some((i) => isRound(i.solid) || i.solid.kind === "prism" || (i.solid.kind === "box" && i.solid.frame) || ((i.solid.kind === "cylinder" || i.solid.kind === "cone") && !isWorldAxis(axisOf(i.solid.axis))));
   // La forma de cada pieza se calcula una vez; en cada pose solo se traslada (y su silueta, en pantalla).
   const base: (Shape | undefined)[] = [];
   const shapeAt = (k: number): Shape => {
     if (!base[k]) {
       const s = shapeOf(cam, items[k]);
-      base[k] = { ...s, hull: hullOf(s.pts.map((p) => project(cam, p))) };
+      const p = s.pts.map((q) => project(cam, q));
+      base[k] = { ...s, hull: s.r === undefined ? hullOf(p) : stadium(p[0], p[1], s.r * cam.scale) };
     }
     return base[k];
   };
@@ -242,7 +305,7 @@ export function drawScene(spec: FlatSpec, lang: string, view: View = {}): Scene 
       if (!cache[k]) {
         const s = shapeAt(k);
         const [dx, dy] = [cam.scale * dot(d, cam.right), cam.scale * dot(d, cam.down)];
-        cache[k] = { pts: s.pts.map((p) => add(p, d)), axes: s.axes, hull: s.hull.map(([x, y]): [number, number] => [x + dx, y + dy]) };
+        cache[k] = { ...s, pts: s.pts.map((p) => add(p, d)), hull: s.hull.map(([x, y]): [number, number] => [x + dx, y + dy]) };
       }
       return cache[k];
     });
@@ -255,15 +318,16 @@ export function drawScene(spec: FlatSpec, lang: string, view: View = {}): Scene 
   const flies = idx.filter((k) => travels.has(items[k].group ?? ""));
   const floor = idx.filter((k) => !flies.includes(k) && items[k].solid.ground);
   const standing = idx.filter((k) => !flies.includes(k) && !items[k].solid.ground);
-  const ranked = (boxes: Box3[], shapes?: (() => Shape | undefined)[]): Ordered => {
-    const sub = paintOrder(cam, standing.map((k) => boxes[k]), standing.map((k) => names[k]), shapes && standing.map((k) => shapes[k]));
+  // `prior`: los pares de la pose en reposo, que una pose reutiliza para las piezas que se movieron juntas.
+  const ranked = (boxes: Box3[], shapes?: (() => Shape | undefined)[], prior?: Prior): Ordered => {
+    const sub = paintOrder(cam, standing.map((k) => boxes[k]), standing.map((k) => names[k]), shapes && standing.map((k) => shapes[k]), prior);
     const depth = (k: number) => depthOf(cam, centerOf(boxes[k]));
     const low = [...floor].sort((a, b) => boxes[a].min[2] - boxes[b].min[2] || depth(a) - depth(b) || a - b);
-    return { order: [...low, ...sub.order.map((i) => standing[i]), ...flies], cycles: sub.cycles };
+    return { order: [...low, ...sub.order.map((i) => standing[i]), ...flies], cycles: sub.cycles, pairs: sub.pairs };
   };
   const rest = items.map((): Vec3 => [0, 0, 0]);
   const atRest = shapesAt(rest);
-  const { order, cycles } = ranked(items.map((i) => i.box), atRest);
+  const { order, cycles, pairs } = ranked(items.map((i) => i.box), atRest);
   const index = new Map(items.map((it, k) => [it, k]));
   const apart = (a: Item, b: Item) => {
     const sa = atRest?.[index.get(a)!]();
@@ -273,11 +337,15 @@ export function drawScene(spec: FlatSpec, lang: string, view: View = {}): Scene 
   let reorder: Scene["reorder"];
   if (spec.reorder) {
     const { param, at } = spec.reorder;
-    const poses = at.map((value) => {
+    // Misma regla que el runtime: la última pose cuyo valor ya se alcanzó.
+    const shown = at.reduce((k, v, i) => (view.pose! >= v - 0.05 ? i : k), -1);
+    const poses = at.map((value, i) => {
+      if (view.pose !== undefined && i !== shown) return [value];
       const pose = poseOf(spec, param, value);
       const moves = items.map((it) => add(pose.get(it.group ?? "") ?? [0, 0, 0], pose.get(it.outer ?? "") ?? [0, 0, 0]));
       const boxes = items.map((it, k): Box3 => ({ min: add(it.box.min, moves[k]), max: add(it.box.max, moves[k]) }));
-      const moved = ranked(boxes, shapesAt(moves));
+      const key = standing.map((k) => moves[k].join());
+      const moved = ranked(boxes, shapesAt(moves), { pairs, same: (i, j) => key[i] === key[j] });
       cycles.push(...moved.cycles.map((c) => `${c} (${param} = ${value})`));
       return [value, ...movesBetween(order, moved.order)];
     });

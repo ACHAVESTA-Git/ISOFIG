@@ -14,6 +14,8 @@ export interface Camera {
   scale: number;
   ox: number;
   oy: number;
+  /** Dibujo de borrador (ver `View.draft`): menos segmentos y capas, sin piezas compartidas. */
+  draft?: boolean;
 }
 
 export function makeCamera(options: CameraOptions = {}, scale = 1, ox = 0, oy = 0): Camera {
@@ -49,7 +51,7 @@ export function fitCamera(
   width: number,
   height: number,
   pad: number,
-  fixedScale?: number,
+  maxScale = Infinity,
 ): Camera {
   const unitCam = makeCamera(options);
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
@@ -60,7 +62,7 @@ export function fitCamera(
     if (y < y0) y0 = y;
     if (y > y1) y1 = y;
   }
-  const scale = fixedScale ?? Math.min((width - 2 * pad) / Math.max(x1 - x0, 1e-6), (height - 2 * pad) / Math.max(y1 - y0, 1e-6));
+  const scale = Math.min(maxScale, (width - 2 * pad) / Math.max(x1 - x0, 1e-6), (height - 2 * pad) / Math.max(y1 - y0, 1e-6));
   const ox = width / 2 - scale * (x0 + x1) / 2;
   const oy = height / 2 - scale * (y0 + y1) / 2;
   return makeCamera(options, scale, ox, oy);

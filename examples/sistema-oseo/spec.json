@@ -1,0 +1,583 @@
+{
+  "id": "sistema-oseo",
+  "title": {"es": "Sistema óseo humano", "en": "Human skeletal system"},
+  "hint": {"es": "Ábrelo paso a paso o elige un hueso", "en": "Open it step by step, or pick a bone"},
+  "caption": {"es": "Esqueleto adulto en posición anatómica: de pie, de frente y con las palmas hacia delante. Un adulto tiene 206 huesos y más de la mitad (106) están en las manos y los pies. Al abrirlo sale primero lo de fuera, el cráneo y los brazos; después la caja torácica, la pelvis y las piernas, hasta dejar la columna sola en el centro.", "en": "An adult skeleton in anatomical position: standing, facing front, palms forward. An adult has 206 bones and more than half of them (106) are in the hands and feet. Opening it removes the outside first, the skull and arms, then the rib cage, the pelvis and the legs, until the spine stands alone in the middle."},
+  "alt": {"es": "Esqueleto humano adulto de pie sobre una peana, de frente, con el cráneo, la caja torácica, la columna, la pelvis, los brazos y las piernas; se desarma en siete pasos.", "en": "An adult human skeleton standing on a plinth, facing front, showing the skull, rib cage, spine, pelvis, arms and legs; it comes apart in seven steps."},
+  "width": 640,
+  "height": 720,
+  "pad": 22,
+  "camera": {"azimuth": 68, "elevation": 20},
+  "motion": {"tau": 0.3},
+  "parts": [
+    {"id": "peana", "kind": "box", "at": [-38, -26, 0], "size": [76, 66, 3], "radius": 8, "bevel": 0.6, "tone": "lo", "shadow": true},
+    {"id": "peana-alta", "kind": "box", "at": [-33, -21, 3], "size": [66, 56, 3], "radius": 6, "bevel": 0.8, "tone": "lo"},
+    {"id": "peana-regla", "kind": "ticks", "on": "peana-alta", "from": [-24, 34, 6], "along": [3, 0, 0], "count": 17, "toward": [0, -1, 0], "every": 4, "size": [1.2, 2.6]}
+  ],
+  "root": {
+    "id": "esqueleto",
+    "name": {"es": "Esqueleto humano", "en": "Human skeleton"},
+    "at": [0, 0, 6],
+    "paint": "aluminium",
+    "tone": "hi",
+    "children": [
+      {
+        "id": "craneo",
+        "name": {"es": "Cráneo", "en": "Skull"},
+        "note": {"es": "22 huesos: 8 del cráneo y 14 de la cara; la mandíbula es el único hueso móvil", "en": "22 bones: 8 cranial and 14 facial; the jaw is the only movable one"},
+        "step": {"es": "el cráneo y la mandíbula suben", "en": "the skull and the jaw rise"},
+        "explode": [0, 0, 24],
+        "stage": 1,
+        "parts": [
+          {"id": "bobeda", "kind": "sphere", "at": [0, -0.8, 170.6], "r": 7.6},
+          {"id": "occipucio", "kind": "sphere", "at": [0, -3.6, 168.2], "r": 6.4, "mount": ["bobeda"]},
+          {"id": "sutura-coronal", "kind": "line", "on": "bobeda", "points": [[-6.84, 1.3, 173.09], [-6.04, 1.3, 174.67], [-4.87, 1.3, 176.01], [-3.42, 1.3, 177.03], [-1.76, 1.3, 177.66], [0, 1.3, 177.88], [1.76, 1.3, 177.66], [3.42, 1.3, 177.03], [4.87, 1.3, 176.01], [6.04, 1.3, 174.67], [6.84, 1.3, 173.09]]},
+          {"id": "orbitas", "kind": "box", "at": [-5.4, 3.4, 165], "size": [10.8, 3.8, 4.6], "radius": 2, "mount": ["bobeda"]},
+          {"id": "maxilar", "kind": "box", "at": [-4, 3.4, 160.2], "size": [8, 3.4, 5.2], "radius": 1.4, "mount": ["orbitas", "bobeda"]},
+          {"id": "pomulo-d", "kind": "capsule", "at": [4.8, 6.2, 165], "r": 1, "h": 6.02, "axis": [0.3657, -0.9308, 0], "mount": ["orbitas", "bobeda", "maxilar", "craneo.mandibula.rama-d", "craneo.mandibula.condilo-d"]},
+          {"id": "pomulo-i", "kind": "capsule", "at": [-4.8, 6.2, 165], "r": 1, "h": 6.02, "axis": [-0.3657, -0.9308, 0], "mount": ["orbitas", "bobeda", "maxilar", "craneo.mandibula.rama-i", "craneo.mandibula.condilo-i"]},
+          {"id": "mastoides-d", "kind": "sphere", "at": [5.4, -2.8, 163.2], "r": 1.3, "mount": ["bobeda", "occipucio"]},
+          {"id": "mastoides-i", "kind": "sphere", "at": [-5.4, -2.8, 163.2], "r": 1.3, "mount": ["bobeda", "occipucio"]},
+          {"id": "temporal-d", "kind": "sphere", "at": [6.5, 0.2, 165.2], "r": 1.6, "mount": ["bobeda", "pomulo-d", "mastoides-d", "craneo.mandibula.rama-d", "craneo.mandibula.condilo-d"]},
+          {"id": "temporal-i", "kind": "sphere", "at": [-6.5, 0.2, 165.2], "r": 1.6, "mount": ["bobeda", "pomulo-i", "mastoides-i", "craneo.mandibula.rama-i", "craneo.mandibula.condilo-i"]},
+          {"id": "orbita-d", "kind": "cylinder", "at": [2.9, 7, 167.3], "r": 1.75, "h": 0.5, "axis": "y", "paint": "carbon", "tone": "lo", "mount": ["orbitas"]},
+          {"id": "orbita-i", "kind": "cylinder", "at": [-2.9, 7, 167.3], "r": 1.75, "h": 0.5, "axis": "y", "paint": "carbon", "tone": "lo", "mount": ["orbitas"]},
+          {"id": "nariz", "kind": "prism", "axis": "y", "plan": [[0, 166], [-1.5, 162.6], [1.5, 162.6]], "z": 6.6, "h": 0.5, "paint": "carbon", "tone": "lo", "mount": ["maxilar", "orbitas"]},
+          {"id": "dientes-sup", "kind": "box", "at": [-3.4, 4.6, 159.4], "size": [6.8, 2.2, 1.8], "radius": 0.7, "mount": ["maxilar"]},
+          {"id": "dientes-sup-marcas", "kind": "ticks", "on": "dientes-sup", "from": [-3.1, 6.82, 159.5], "along": [0.62, 0, 0], "count": 11, "toward": [0, 0, 1], "size": [1.5, 1.5]}
+        ],
+        "children": [
+          {
+            "id": "mandibula",
+            "name": {"es": "Cráneo", "en": "Skull"},
+            "explode": [0, 7, -5],
+            "stage": 1,
+            "parts": [
+              {"id": "menton", "kind": "capsule", "at": [-4, 6, 156.8], "r": 1.2, "h": 8, "axis": "x", "mount": ["craneo.mandibula.cuerpo-d", "craneo.mandibula.cuerpo-i"]},
+              {"id": "cuerpo-d", "kind": "capsule", "at": [4, 6, 156.8], "r": 1.1, "h": 4.98, "axis": [0.4016, -0.8835, 0.241], "mount": ["craneo.mandibula.rama-d"]},
+              {"id": "cuerpo-i", "kind": "capsule", "at": [-4, 6, 156.8], "r": 1.1, "h": 4.98, "axis": [-0.4016, -0.8835, 0.241], "mount": ["craneo.mandibula.rama-i"]},
+              {"id": "rama-d", "kind": "capsule", "at": [6, 1.6, 158], "r": 1, "h": 6.48, "axis": [0.0463, -0.1542, 0.987], "mount": ["craneo.mandibula.condilo-d"]},
+              {"id": "rama-i", "kind": "capsule", "at": [-6, 1.6, 158], "r": 1, "h": 6.48, "axis": [-0.0463, -0.1542, 0.987], "mount": ["craneo.mandibula.condilo-i"]},
+              {"id": "condilo-d", "kind": "sphere", "at": [6.3, 0.4, 165], "r": 1.05},
+              {"id": "condilo-i", "kind": "sphere", "at": [-6.3, 0.4, 165], "r": 1.05},
+              {"id": "dientes-inf", "kind": "box", "at": [-3, 4.6, 157.7], "size": [6, 2, 1.7], "radius": 0.6},
+              {"id": "dientes-inf-marcas", "kind": "ticks", "on": "dientes-inf", "from": [-2.7, 6.62, 157.8], "along": [0.54, 0, 0], "count": 11, "toward": [0, 0, 1], "size": [1.4, 1.4]}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "columna",
+        "name": {"es": "Columna vertebral", "en": "Vertebral column"},
+        "note": {"es": "7 cervicales, 12 torácicas y 5 lumbares, unidas por 23 discos; el sacro y el cóccix van con la pelvis", "en": "7 cervical, 12 thoracic and 5 lumbar vertebrae joined by 23 discs; the sacrum and coccyx go with the pelvis"},
+        "children": [
+          {
+            "id": "cervical",
+            "parts": [
+              {"id": "atlas", "kind": "cylinder", "at": [0, 0.5, 159.95], "r": 2.4, "h": 1.2},
+              {"id": "atlas-arco", "kind": "box", "at": [-2.3, -3.4, 160], "size": [4.6, 1.6, 1.1], "radius": 0.5, "mount": ["atlas"]},
+              {"id": "atlas-transversa-d", "kind": "capsule", "at": [1.8, -0.5, 160.55], "r": 0.5, "h": 2.53, "axis": [0.9874, -0.158, 0], "mount": ["atlas"]},
+              {"id": "atlas-transversa-i", "kind": "capsule", "at": [-1.8, -0.5, 160.55], "r": 0.5, "h": 2.53, "axis": [-0.9874, -0.158, 0], "mount": ["atlas"]},
+              {"id": "cuerpo-{i}", "kind": "cylinder", "at": [0, 0.5, 158.55], "r": 1.65, "h": 1.4, "repeat": {"count": 6, "step": [0, 0, -1.95], "from": 2}},
+              {"id": "disco-{i}", "kind": "cylinder", "at": [0, 0.5, 158], "r": 1.65, "h": 0.55, "paint": "glass", "tone": "mid", "repeat": {"count": 6, "step": [0, 0, -1.95], "from": 2}},
+              {"id": "arco-{i}", "kind": "box", "at": [-1.9, -3, 158.65], "size": [3.8, 1.6, 1.2], "radius": 0.5, "mount": ["cuerpo-{i}"], "repeat": {"count": 6, "step": [0, 0, -1.95], "from": 2}},
+              {"id": "espinosa-{i}", "kind": "capsule", "at": [0, -2.9, 159.25], "r": 0.45, "h": 2.04, "axis": [0, -0.9806, -0.1961], "mount": ["arco-{i}"], "repeat": {"count": 6, "step": [0, 0, -1.95], "from": 2}},
+              {"id": "transversa-d-{i}", "kind": "capsule", "at": [1.3, -0.8, 159.25], "r": 0.5, "h": 1.84, "axis": [0.9762, -0.2169, 0], "mount": ["cuerpo-{i}", "arco-{i}"], "repeat": {"count": 6, "step": [0, 0, -1.95], "from": 2}},
+              {"id": "transversa-i-{i}", "kind": "capsule", "at": [-1.3, -0.8, 159.25], "r": 0.5, "h": 1.84, "axis": [-0.9762, -0.2169, 0], "mount": ["cuerpo-{i}", "arco-{i}"], "repeat": {"count": 6, "step": [0, 0, -1.95], "from": 2}}
+            ]
+          },
+          {
+            "id": "toracica-alta",
+            "parts": [
+              {"id": "cuerpo-{i}", "kind": "cylinder", "at": [0, 0.2, 146.35], "r": 1.9, "h": 1.9, "repeat": {"count": 6, "step": [0, -0.32, -2.45], "from": 1}},
+              {"id": "disco-{i}", "kind": "cylinder", "at": [0, 0.2, 145.8], "r": 1.9, "h": 0.55, "paint": "glass", "tone": "mid", "repeat": {"count": 6, "step": [0, -0.32, -2.45], "from": 1}},
+              {"id": "arco-{i}", "kind": "box", "at": [-2.3, -2.7, 146.5], "size": [4.6, 1.5, 1.6], "radius": 0.5, "mount": ["cuerpo-{i}"], "repeat": {"count": 6, "step": [0, -0.32, -2.45], "from": 1}},
+              {"id": "espinosa-{i}", "kind": "capsule", "at": [0, -2.3, 147.65], "r": 0.5, "h": 2.86, "axis": [0, -0.892, -0.452], "mount": ["arco-{i}"], "repeat": {"count": 6, "step": [0, -0.32, -2.45], "from": 1}},
+              {"id": "transversa-d-{i}", "kind": "capsule", "at": [1.8, -1.5, 146.95], "r": 0.55, "h": 2.69, "axis": [0.9285, -0.3714, 0], "mount": ["cuerpo-{i}", "arco-{i}"], "repeat": {"count": 6, "step": [0, -0.32, -2.45], "from": 1}},
+              {"id": "transversa-i-{i}", "kind": "capsule", "at": [-1.8, -1.5, 146.95], "r": 0.55, "h": 2.69, "axis": [-0.9285, -0.3714, 0], "mount": ["cuerpo-{i}", "arco-{i}"], "repeat": {"count": 6, "step": [0, -0.32, -2.45], "from": 1}}
+            ]
+          },
+          {
+            "id": "toracica-baja",
+            "parts": [
+              {"id": "cuerpo-{i}", "kind": "cylinder", "at": [0, -1.8, 131.65], "r": 2.4, "h": 1.9, "repeat": {"count": 6, "step": [0, 0.3, -2.45], "from": 7}},
+              {"id": "disco-{i}", "kind": "cylinder", "at": [0, -1.8, 131.1], "r": 2.4, "h": 0.55, "paint": "glass", "tone": "mid", "repeat": {"count": 6, "step": [0, 0.3, -2.45], "from": 7}},
+              {"id": "arco-{i}", "kind": "box", "at": [-2.3, -5.2, 131.8], "size": [4.6, 1.5, 1.6], "radius": 0.5, "mount": ["cuerpo-{i}"], "repeat": {"count": 6, "step": [0, 0.3, -2.45], "from": 7}},
+              {"id": "espinosa-{i}", "kind": "capsule", "at": [0, -4.8, 132.95], "r": 0.5, "h": 2.69, "axis": [0, -0.892, -0.452], "mount": ["arco-{i}"], "repeat": {"count": 6, "step": [0, 0.3, -2.45], "from": 7}},
+              {"id": "transversa-d-{i}", "kind": "capsule", "at": [1.8, -4, 132.25], "r": 0.55, "h": 2.69, "axis": [0.9285, -0.3714, 0], "mount": ["cuerpo-{i}", "arco-{i}"], "repeat": {"count": 6, "step": [0, 0.3, -2.45], "from": 7}},
+              {"id": "transversa-i-{i}", "kind": "capsule", "at": [-1.8, -4, 132.25], "r": 0.55, "h": 2.69, "axis": [-0.9285, -0.3714, 0], "mount": ["cuerpo-{i}", "arco-{i}"], "repeat": {"count": 6, "step": [0, 0.3, -2.45], "from": 7}}
+            ]
+          },
+          {
+            "id": "lumbar",
+            "parts": [
+              {"id": "cuerpo-{i}", "kind": "cylinder", "at": [0, -0.1, 116.2], "r": 2.8, "h": 2.5, "repeat": {"count": 5, "step": [0, 0.35, -3.5], "from": 1}},
+              {"id": "disco-{i}", "kind": "cylinder", "at": [0, -0.1, 115.2], "r": 2.8, "h": 1, "paint": "glass", "tone": "mid", "repeat": {"count": 5, "step": [0, 0.35, -3.5], "from": 1}},
+              {"id": "arco-{i}", "kind": "box", "at": [-2.6, -4, 116.3], "size": [5.2, 1.6, 2.3], "radius": 0.6, "mount": ["cuerpo-{i}"], "repeat": {"count": 5, "step": [0, 0.35, -3.5], "from": 1}},
+              {"id": "espinosa-{i}", "kind": "box", "at": [-0.5, -7.4, 116.3], "size": [1, 3.4, 2.3], "radius": 0.4, "mount": ["arco-{i}"], "repeat": {"count": 5, "step": [0, 0.35, -3.5], "from": 1}},
+              {"id": "transversa-d-{i}", "kind": "capsule", "at": [2, -2.5, 117.45], "r": 0.6, "h": 3.64, "axis": [0.9615, -0.2747, 0], "mount": ["cuerpo-{i}", "arco-{i}"], "repeat": {"count": 5, "step": [0, 0.35, -3.5], "from": 1}},
+              {"id": "transversa-i-{i}", "kind": "capsule", "at": [-2, -2.5, 117.45], "r": 0.6, "h": 3.64, "axis": [-0.9615, -0.2747, 0], "mount": ["cuerpo-{i}", "arco-{i}"], "repeat": {"count": 5, "step": [0, 0.35, -3.5], "from": 1}}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "costillas",
+        "name": {"es": "Caja torácica", "en": "Rib cage"},
+        "note": {"es": "12 pares de costillas: 7 verdaderas, 3 falsas y 2 flotantes, más el esternón", "en": "12 pairs of ribs: 7 true, 3 false and 2 floating, plus the sternum"},
+        "step": {"es": "la caja torácica avanza", "en": "the rib cage moves forward"},
+        "explode": [0, 34, 4],
+        "stage": 4,
+        "tone": "hi",
+        "parts": [
+          {"id": "costilla-1d-0", "kind": "capsule", "at": [2.7, 0.4, 148.6], "r": 0.9, "h": 4.61, "axis": [0.0217, -0.9971, -0.0728]},
+          {"id": "costilla-1d-1", "kind": "capsule", "at": [2.8, -4.2, 148.26], "r": 0.9, "h": 6.31, "axis": [0.4438, 0.8736, -0.1997], "mount": ["costilla-1d-0", "columna.toracica-alta.transversa-d-1"]},
+          {"id": "costilla-1d-2", "kind": "capsule", "at": [5.6, 1.31, 147], "r": 0.9, "h": 4.13, "axis": [-0.2664, 0.8873, -0.3764], "mount": ["costilla-1d-1"]},
+          {"id": "costilla-1d-3", "kind": "capsule", "at": [4.5, 4.98, 145.45], "r": 0.9, "h": 1.99, "axis": [-0.4533, 0.7175, -0.5288], "mount": ["costilla-1d-2"]},
+          {"id": "costilla-2d-0", "kind": "capsule", "at": [2.7, 0.08, 146.15], "r": 0.72, "h": 4.57, "axis": [0.3284, -0.937, -0.1191]},
+          {"id": "costilla-2d-1", "kind": "capsule", "at": [4.2, -4.2, 145.61], "r": 0.72, "h": 7.79, "axis": [0.5389, 0.8007, -0.2618], "mount": ["costilla-2d-0"]},
+          {"id": "costilla-2d-2", "kind": "capsule", "at": [8.4, 2.04, 143.57], "r": 0.72, "h": 5.28, "axis": [-0.3957, 0.7852, -0.4764], "mount": ["costilla-2d-1"]},
+          {"id": "costilla-2d-3", "kind": "capsule", "at": [6.31, 6.19, 141.05], "r": 0.72, "h": 2.9, "axis": [-0.5895, 0.556, -0.586], "mount": ["costilla-2d-2"]},
+          {"id": "costilla-3d-0", "kind": "capsule", "at": [2.7, -0.24, 143.7], "r": 0.72, "h": 4.79, "axis": [0.5431, -0.8272, -0.1437]},
+          {"id": "costilla-3d-1", "kind": "capsule", "at": [5.3, -4.2, 143.01], "r": 0.72, "h": 9.05, "axis": [0.5858, 0.7586, -0.2852], "mount": ["costilla-3d-0"]},
+          {"id": "costilla-3d-2", "kind": "capsule", "at": [10.6, 2.66, 140.43], "r": 0.72, "h": 6.16, "axis": [-0.4288, 0.741, -0.5168], "mount": ["costilla-3d-1"]},
+          {"id": "costilla-3d-3", "kind": "capsule", "at": [7.96, 7.23, 137.25], "r": 0.72, "h": 3.53, "axis": [-0.6125, 0.5031, -0.6097], "mount": ["costilla-3d-2"]},
+          {"id": "costilla-4d-0", "kind": "capsule", "at": [2.7, -0.56, 141.25], "r": 0.72, "h": 5.05, "axis": [0.6736, -0.7212, -0.1617]},
+          {"id": "costilla-4d-1", "kind": "capsule", "at": [6.1, -4.2, 140.43], "r": 0.72, "h": 10.13, "axis": [0.6021, 0.7391, -0.302], "mount": ["costilla-4d-0"]},
+          {"id": "costilla-4d-2", "kind": "capsule", "at": [12.2, 3.29, 137.37], "r": 0.72, "h": 6.92, "axis": [-0.4294, 0.7196, -0.5457], "mount": ["costilla-4d-1"]},
+          {"id": "costilla-4d-3", "kind": "capsule", "at": [9.23, 8.26, 133.6], "r": 0.72, "h": 4.02, "axis": [-0.6046, 0.4815, -0.6345], "mount": ["costilla-4d-2"]},
+          {"id": "costilla-5d-0", "kind": "capsule", "at": [2.7, -0.88, 138.8], "r": 0.72, "h": 5.2, "axis": [0.7495, -0.638, -0.1768]},
+          {"id": "costilla-5d-1", "kind": "capsule", "at": [6.6, -4.2, 137.88], "r": 0.72, "h": 10.94, "axis": [0.6035, 0.7323, -0.3155], "mount": ["costilla-5d-0"]},
+          {"id": "costilla-5d-2", "kind": "capsule", "at": [13.2, 3.81, 134.43], "r": 0.72, "h": 7.43, "axis": [-0.3996, 0.716, -0.5724], "mount": ["costilla-5d-1"]},
+          {"id": "costilla-5d-3", "kind": "capsule", "at": [10.23, 9.13, 130.17], "r": 0.72, "h": 4.3, "axis": [-0.5657, 0.4818, -0.6692], "mount": ["costilla-5d-2"]},
+          {"id": "costilla-6d-0", "kind": "capsule", "at": [2.7, -1.2, 136.35], "r": 0.72, "h": 5.34, "axis": [0.8056, -0.5621, -0.1874]},
+          {"id": "costilla-6d-1", "kind": "capsule", "at": [7, -4.2, 135.35], "r": 0.72, "h": 11.58, "axis": [0.6046, 0.7277, -0.3239], "mount": ["costilla-6d-0"]},
+          {"id": "costilla-6d-2", "kind": "capsule", "at": [14, 4.22, 131.6], "r": 0.72, "h": 7.8, "axis": [-0.3664, 0.7173, -0.5926], "mount": ["costilla-6d-1", "costillas.costilla-7d-1"]},
+          {"id": "costilla-6d-3", "kind": "capsule", "at": [11.14, 9.82, 126.98], "r": 0.72, "h": 4.47, "axis": [-0.5235, 0.4871, -0.6991], "mount": ["costilla-6d-2"]},
+          {"id": "costilla-7d-0", "kind": "capsule", "at": [2.7, -1.6, 133.9], "r": 0.72, "h": 5.3, "axis": [0.8485, -0.4903, -0.1991]},
+          {"id": "costilla-7d-1", "kind": "capsule", "at": [7.2, -4.2, 132.84], "r": 0.72, "h": 11.99, "axis": [0.6003, 0.7284, -0.3302], "mount": ["costilla-7d-0"]},
+          {"id": "costilla-7d-2", "kind": "capsule", "at": [14.4, 4.54, 128.88], "r": 0.72, "h": 8.03, "axis": [-0.3286, 0.7228, -0.608], "mount": ["costilla-7d-1"]},
+          {"id": "costilla-7d-3", "kind": "capsule", "at": [11.76, 10.34, 124], "r": 0.72, "h": 4.54, "axis": [-0.4753, 0.4968, -0.7261], "mount": ["costilla-7d-2"]},
+          {"id": "costilla-8d-0", "kind": "capsule", "at": [2.7, -1.3, 131.45], "r": 0.72, "h": 5.51, "axis": [0.8264, -0.5267, -0.1991]},
+          {"id": "costilla-8d-1", "kind": "capsule", "at": [7.25, -4.2, 130.35], "r": 0.72, "h": 12.07, "axis": [0.6005, 0.7236, -0.3404], "mount": ["costilla-8d-0"]},
+          {"id": "costilla-8d-2", "kind": "capsule", "at": [14.5, 4.54, 126.24], "r": 0.72, "h": 8, "axis": [-0.2681, 0.7257, -0.6336], "mount": ["costilla-8d-1"]},
+          {"id": "costilla-8d-3", "kind": "capsule", "at": [12.36, 10.34, 121.17], "r": 0.72, "h": 4.46, "axis": [-0.3933, 0.506, -0.7676], "mount": ["costilla-8d-2"]},
+          {"id": "costilla-9d-0", "kind": "capsule", "at": [2.7, -1, 129], "r": 0.72, "h": 5.6, "axis": [0.795, -0.5717, -0.2029]},
+          {"id": "costilla-9d-1", "kind": "capsule", "at": [7.15, -4.2, 127.86], "r": 0.72, "h": 11.99, "axis": [0.5963, 0.7199, -0.3553], "mount": ["costilla-9d-0"]},
+          {"id": "costilla-9d-2", "kind": "capsule", "at": [14.3, 4.43, 123.6], "r": 0.72, "h": 7.94, "axis": [-0.2009, 0.7224, -0.6616], "mount": ["costilla-9d-1"]},
+          {"id": "costilla-9d-3", "kind": "capsule", "at": [12.71, 10.17, 118.35], "r": 0.72, "h": 4.39, "axis": [-0.2972, 0.5081, -0.8084], "mount": ["costilla-9d-2"]},
+          {"id": "costilla-10d-0", "kind": "capsule", "at": [2.7, -0.7, 126.55], "r": 0.72, "h": 5.52, "axis": [0.7431, -0.6343, -0.2131]},
+          {"id": "costilla-10d-1", "kind": "capsule", "at": [6.8, -4.2, 125.37], "r": 0.72, "h": 11.69, "axis": [0.5817, 0.7206, -0.3773], "mount": ["costilla-10d-0"]},
+          {"id": "costilla-10d-2", "kind": "capsule", "at": [13.6, 4.22, 120.96], "r": 0.72, "h": 7.92, "axis": [-0.1667, 0.7072, -0.687], "mount": ["costilla-10d-1"]},
+          {"id": "costilla-10d-3", "kind": "capsule", "at": [12.28, 9.82, 115.53], "r": 0.72, "h": 4.41, "axis": [-0.2451, 0.4942, -0.8341], "mount": ["costilla-10d-2"]},
+          {"id": "costilla-11d-0", "kind": "capsule", "at": [2.7, -0.4, 124.1], "r": 0.65, "h": 4.69, "axis": [0.6181, -0.7673, -0.1705]},
+          {"id": "costilla-11d-1", "kind": "capsule", "at": [5.6, -4, 123.3], "r": 0.65, "h": 8.73, "axis": [0.5725, 0.6641, -0.4809], "mount": ["costilla-11d-0"]},
+          {"id": "costilla-11d-2", "kind": "capsule", "at": [10.6, 1.8, 119.1], "r": 0.65, "h": 7.81, "axis": [0.2304, 0.5632, -0.7936], "mount": ["costilla-11d-1"]},
+          {"id": "costilla-12d-0", "kind": "capsule", "at": [2.7, -0.1, 121.65], "r": 0.65, "h": 4.75, "axis": [0.3998, -0.9047, -0.1473]},
+          {"id": "costilla-12d-1", "kind": "capsule", "at": [4.6, -4.4, 120.95], "r": 0.65, "h": 7.85, "axis": [0.5347, 0.4329, -0.7257], "mount": ["costilla-12d-0"]},
+          {"id": "costilla-1i-0", "kind": "capsule", "at": [-2.7, 0.4, 148.6], "r": 0.9, "h": 4.61, "axis": [-0.0217, -0.9971, -0.0728]},
+          {"id": "costilla-1i-1", "kind": "capsule", "at": [-2.8, -4.2, 148.26], "r": 0.9, "h": 6.31, "axis": [-0.4438, 0.8736, -0.1997], "mount": ["costilla-1i-0", "columna.toracica-alta.transversa-i-1"]},
+          {"id": "costilla-1i-2", "kind": "capsule", "at": [-5.6, 1.31, 147], "r": 0.9, "h": 4.13, "axis": [0.2664, 0.8873, -0.3764], "mount": ["costilla-1i-1"]},
+          {"id": "costilla-1i-3", "kind": "capsule", "at": [-4.5, 4.98, 145.45], "r": 0.9, "h": 1.99, "axis": [0.4533, 0.7175, -0.5288], "mount": ["costilla-1i-2"]},
+          {"id": "costilla-2i-0", "kind": "capsule", "at": [-2.7, 0.08, 146.15], "r": 0.72, "h": 4.57, "axis": [-0.3284, -0.937, -0.1191]},
+          {"id": "costilla-2i-1", "kind": "capsule", "at": [-4.2, -4.2, 145.61], "r": 0.72, "h": 7.79, "axis": [-0.5389, 0.8007, -0.2618], "mount": ["costilla-2i-0"]},
+          {"id": "costilla-2i-2", "kind": "capsule", "at": [-8.4, 2.04, 143.57], "r": 0.72, "h": 5.28, "axis": [0.3957, 0.7852, -0.4764], "mount": ["costilla-2i-1"]},
+          {"id": "costilla-2i-3", "kind": "capsule", "at": [-6.31, 6.19, 141.05], "r": 0.72, "h": 2.9, "axis": [0.5895, 0.556, -0.586], "mount": ["costilla-2i-2"]},
+          {"id": "costilla-3i-0", "kind": "capsule", "at": [-2.7, -0.24, 143.7], "r": 0.72, "h": 4.79, "axis": [-0.5431, -0.8272, -0.1437]},
+          {"id": "costilla-3i-1", "kind": "capsule", "at": [-5.3, -4.2, 143.01], "r": 0.72, "h": 9.05, "axis": [-0.5858, 0.7586, -0.2852], "mount": ["costilla-3i-0"]},
+          {"id": "costilla-3i-2", "kind": "capsule", "at": [-10.6, 2.66, 140.43], "r": 0.72, "h": 6.16, "axis": [0.4288, 0.741, -0.5168], "mount": ["costilla-3i-1"]},
+          {"id": "costilla-3i-3", "kind": "capsule", "at": [-7.96, 7.23, 137.25], "r": 0.72, "h": 3.53, "axis": [0.6125, 0.5031, -0.6097], "mount": ["costilla-3i-2"]},
+          {"id": "costilla-4i-0", "kind": "capsule", "at": [-2.7, -0.56, 141.25], "r": 0.72, "h": 5.05, "axis": [-0.6736, -0.7212, -0.1617]},
+          {"id": "costilla-4i-1", "kind": "capsule", "at": [-6.1, -4.2, 140.43], "r": 0.72, "h": 10.13, "axis": [-0.6021, 0.7391, -0.302], "mount": ["costilla-4i-0"]},
+          {"id": "costilla-4i-2", "kind": "capsule", "at": [-12.2, 3.29, 137.37], "r": 0.72, "h": 6.92, "axis": [0.4294, 0.7196, -0.5457], "mount": ["costilla-4i-1"]},
+          {"id": "costilla-4i-3", "kind": "capsule", "at": [-9.23, 8.26, 133.6], "r": 0.72, "h": 4.02, "axis": [0.6046, 0.4815, -0.6345], "mount": ["costilla-4i-2"]},
+          {"id": "costilla-5i-0", "kind": "capsule", "at": [-2.7, -0.88, 138.8], "r": 0.72, "h": 5.2, "axis": [-0.7495, -0.638, -0.1768]},
+          {"id": "costilla-5i-1", "kind": "capsule", "at": [-6.6, -4.2, 137.88], "r": 0.72, "h": 10.94, "axis": [-0.6035, 0.7323, -0.3155], "mount": ["costilla-5i-0"]},
+          {"id": "costilla-5i-2", "kind": "capsule", "at": [-13.2, 3.81, 134.43], "r": 0.72, "h": 7.43, "axis": [0.3996, 0.716, -0.5724], "mount": ["costilla-5i-1"]},
+          {"id": "costilla-5i-3", "kind": "capsule", "at": [-10.23, 9.13, 130.17], "r": 0.72, "h": 4.3, "axis": [0.5657, 0.4818, -0.6692], "mount": ["costilla-5i-2"]},
+          {"id": "costilla-6i-0", "kind": "capsule", "at": [-2.7, -1.2, 136.35], "r": 0.72, "h": 5.34, "axis": [-0.8056, -0.5621, -0.1874]},
+          {"id": "costilla-6i-1", "kind": "capsule", "at": [-7, -4.2, 135.35], "r": 0.72, "h": 11.58, "axis": [-0.6046, 0.7277, -0.3239], "mount": ["costilla-6i-0"]},
+          {"id": "costilla-6i-2", "kind": "capsule", "at": [-14, 4.22, 131.6], "r": 0.72, "h": 7.8, "axis": [0.3664, 0.7173, -0.5926], "mount": ["costilla-6i-1", "costillas.costilla-7i-1"]},
+          {"id": "costilla-6i-3", "kind": "capsule", "at": [-11.14, 9.82, 126.98], "r": 0.72, "h": 4.47, "axis": [0.5235, 0.4871, -0.6991], "mount": ["costilla-6i-2"]},
+          {"id": "costilla-7i-0", "kind": "capsule", "at": [-2.7, -1.6, 133.9], "r": 0.72, "h": 5.3, "axis": [-0.8485, -0.4903, -0.1991]},
+          {"id": "costilla-7i-1", "kind": "capsule", "at": [-7.2, -4.2, 132.84], "r": 0.72, "h": 11.99, "axis": [-0.6003, 0.7284, -0.3302], "mount": ["costilla-7i-0"]},
+          {"id": "costilla-7i-2", "kind": "capsule", "at": [-14.4, 4.54, 128.88], "r": 0.72, "h": 8.03, "axis": [0.3286, 0.7228, -0.608], "mount": ["costilla-7i-1"]},
+          {"id": "costilla-7i-3", "kind": "capsule", "at": [-11.76, 10.34, 124], "r": 0.72, "h": 4.54, "axis": [0.4753, 0.4968, -0.7261], "mount": ["costilla-7i-2"]},
+          {"id": "costilla-8i-0", "kind": "capsule", "at": [-2.7, -1.3, 131.45], "r": 0.72, "h": 5.51, "axis": [-0.8264, -0.5267, -0.1991]},
+          {"id": "costilla-8i-1", "kind": "capsule", "at": [-7.25, -4.2, 130.35], "r": 0.72, "h": 12.07, "axis": [-0.6005, 0.7236, -0.3404], "mount": ["costilla-8i-0"]},
+          {"id": "costilla-8i-2", "kind": "capsule", "at": [-14.5, 4.54, 126.24], "r": 0.72, "h": 8, "axis": [0.2681, 0.7257, -0.6336], "mount": ["costilla-8i-1"]},
+          {"id": "costilla-8i-3", "kind": "capsule", "at": [-12.35, 10.34, 121.17], "r": 0.72, "h": 4.46, "axis": [0.3933, 0.506, -0.7676], "mount": ["costilla-8i-2"]},
+          {"id": "costilla-9i-0", "kind": "capsule", "at": [-2.7, -1, 129], "r": 0.72, "h": 5.6, "axis": [-0.795, -0.5717, -0.2029]},
+          {"id": "costilla-9i-1", "kind": "capsule", "at": [-7.15, -4.2, 127.86], "r": 0.72, "h": 11.99, "axis": [-0.5963, 0.7199, -0.3553], "mount": ["costilla-9i-0"]},
+          {"id": "costilla-9i-2", "kind": "capsule", "at": [-14.3, 4.43, 123.6], "r": 0.72, "h": 7.94, "axis": [0.2009, 0.7224, -0.6616], "mount": ["costilla-9i-1"]},
+          {"id": "costilla-9i-3", "kind": "capsule", "at": [-12.7, 10.17, 118.35], "r": 0.72, "h": 4.39, "axis": [0.2972, 0.5081, -0.8084], "mount": ["costilla-9i-2"]},
+          {"id": "costilla-10i-0", "kind": "capsule", "at": [-2.7, -0.7, 126.55], "r": 0.72, "h": 5.52, "axis": [-0.7431, -0.6343, -0.2131]},
+          {"id": "costilla-10i-1", "kind": "capsule", "at": [-6.8, -4.2, 125.37], "r": 0.72, "h": 11.69, "axis": [-0.5817, 0.7206, -0.3773], "mount": ["costilla-10i-0"]},
+          {"id": "costilla-10i-2", "kind": "capsule", "at": [-13.6, 4.22, 120.96], "r": 0.72, "h": 7.92, "axis": [0.1667, 0.7072, -0.687], "mount": ["costilla-10i-1"]},
+          {"id": "costilla-10i-3", "kind": "capsule", "at": [-12.28, 9.82, 115.53], "r": 0.72, "h": 4.41, "axis": [0.2451, 0.4942, -0.8341], "mount": ["costilla-10i-2"]},
+          {"id": "costilla-11i-0", "kind": "capsule", "at": [-2.7, -0.4, 124.1], "r": 0.65, "h": 4.69, "axis": [-0.6181, -0.7673, -0.1705]},
+          {"id": "costilla-11i-1", "kind": "capsule", "at": [-5.6, -4, 123.3], "r": 0.65, "h": 8.73, "axis": [-0.5725, 0.6641, -0.4809], "mount": ["costilla-11i-0"]},
+          {"id": "costilla-11i-2", "kind": "capsule", "at": [-10.6, 1.8, 119.1], "r": 0.65, "h": 7.81, "axis": [-0.2304, 0.5632, -0.7936], "mount": ["costilla-11i-1"]},
+          {"id": "costilla-12i-0", "kind": "capsule", "at": [-2.7, -0.1, 121.65], "r": 0.65, "h": 4.75, "axis": [-0.3998, -0.9047, -0.1473]},
+          {"id": "costilla-12i-1", "kind": "capsule", "at": [-4.6, -4.4, 120.95], "r": 0.65, "h": 7.85, "axis": [-0.5347, 0.4329, -0.7257], "mount": ["costilla-12i-0"]},
+          {"id": "cartilago-1d", "kind": "capsule", "at": [3.6, 6.4, 144.4], "r": 0.7, "h": 2.84, "axis": [-0.5977, 0.6328, -0.4922], "paint": "glass", "tone": "mid", "mount": ["costilla-1d-3", "costillas.esternon.manubrio", "hombro-d.clav-esternal-d", "hombro-d.clavicula-a-d"]},
+          {"id": "cartilago-2d", "kind": "capsule", "at": [4.6, 7.8, 139.35], "r": 0.7, "h": 3.19, "axis": [-0.8475, 0.5116, -0.1413], "paint": "glass", "tone": "mid", "mount": ["costilla-2d-3"]},
+          {"id": "cartilago-3d", "kind": "capsule", "at": [5.8, 9, 135.1], "r": 0.7, "h": 4.21, "axis": [-0.9267, 0.3089, 0.2139], "paint": "glass", "tone": "mid", "mount": ["costilla-3d-3"]},
+          {"id": "cartilago-4d", "kind": "capsule", "at": [6.8, 10.2, 131.05], "r": 0.7, "h": 5.58, "axis": [-0.8775, 0.1468, 0.4566], "paint": "glass", "tone": "mid", "mount": ["costilla-4d-3"]},
+          {"id": "cartilago-5d", "kind": "capsule", "at": [7.8, 11.2, 127.3], "r": 0.7, "h": 7.2, "axis": [-0.8194, 0.0667, 0.5694], "paint": "glass", "tone": "mid", "mount": ["costilla-5d-3"]},
+          {"id": "cartilago-6d", "kind": "capsule", "at": [8.8, 12, 123.85], "r": 0.7, "h": 8.98, "axis": [-0.768, 0.0245, 0.64], "paint": "glass", "tone": "mid", "mount": ["costilla-6d-3"]},
+          {"id": "cartilago-7d", "kind": "capsule", "at": [9.6, 12.6, 120.7], "r": 0.7, "h": 10.61, "axis": [-0.7257, 0.0094, 0.688], "paint": "glass", "tone": "mid", "mount": ["costilla-7d-3"]},
+          {"id": "cartilago-8d", "kind": "capsule", "at": [10.6, 12.6, 117.75], "r": 0.7, "h": 6.34, "axis": [-0.6621, 0.0315, 0.7488], "paint": "glass", "tone": "mid", "mount": ["costilla-8d-3"]},
+          {"id": "cartilago-9d", "kind": "capsule", "at": [11.4, 12.4, 114.8], "r": 0.7, "h": 5.69, "axis": [-0.5624, 0.0352, 0.8261], "paint": "glass", "tone": "mid", "mount": ["costilla-9d-3", "costillas.cartilago-10d"]},
+          {"id": "cartilago-10d", "kind": "capsule", "at": [11.2, 12, 111.85], "r": 0.7, "h": 4.93, "axis": [-0.3243, 0.0811, 0.9425], "paint": "glass", "tone": "mid", "mount": ["costilla-10d-3"]},
+          {"id": "cartilago-1i", "kind": "capsule", "at": [-3.6, 6.4, 144.4], "r": 0.7, "h": 2.84, "axis": [0.5977, 0.6328, -0.4922], "paint": "glass", "tone": "mid", "mount": ["costilla-1i-3", "costillas.esternon.manubrio", "hombro-i.clav-esternal-i", "hombro-i.clavicula-a-i"]},
+          {"id": "cartilago-2i", "kind": "capsule", "at": [-4.6, 7.8, 139.35], "r": 0.7, "h": 3.19, "axis": [0.8475, 0.5116, -0.1413], "paint": "glass", "tone": "mid", "mount": ["costilla-2i-3"]},
+          {"id": "cartilago-3i", "kind": "capsule", "at": [-5.8, 9, 135.1], "r": 0.7, "h": 4.21, "axis": [0.9267, 0.3089, 0.2139], "paint": "glass", "tone": "mid", "mount": ["costilla-3i-3"]},
+          {"id": "cartilago-4i", "kind": "capsule", "at": [-6.8, 10.2, 131.05], "r": 0.7, "h": 5.58, "axis": [0.8775, 0.1468, 0.4566], "paint": "glass", "tone": "mid", "mount": ["costilla-4i-3"]},
+          {"id": "cartilago-5i", "kind": "capsule", "at": [-7.8, 11.2, 127.3], "r": 0.7, "h": 7.2, "axis": [0.8194, 0.0667, 0.5694], "paint": "glass", "tone": "mid", "mount": ["costilla-5i-3"]},
+          {"id": "cartilago-6i", "kind": "capsule", "at": [-8.8, 12, 123.85], "r": 0.7, "h": 8.98, "axis": [0.768, 0.0245, 0.64], "paint": "glass", "tone": "mid", "mount": ["costilla-6i-3"]},
+          {"id": "cartilago-7i", "kind": "capsule", "at": [-9.6, 12.6, 120.7], "r": 0.7, "h": 10.61, "axis": [0.7257, 0.0094, 0.688], "paint": "glass", "tone": "mid", "mount": ["costilla-7i-3"]},
+          {"id": "cartilago-8i", "kind": "capsule", "at": [-10.6, 12.6, 117.75], "r": 0.7, "h": 6.34, "axis": [0.6621, 0.0315, 0.7488], "paint": "glass", "tone": "mid", "mount": ["costilla-8i-3"]},
+          {"id": "cartilago-9i", "kind": "capsule", "at": [-11.4, 12.4, 114.8], "r": 0.7, "h": 5.69, "axis": [0.5624, 0.0352, 0.8261], "paint": "glass", "tone": "mid", "mount": ["costilla-9i-3", "costillas.cartilago-10i"]},
+          {"id": "cartilago-10i", "kind": "capsule", "at": [-11.2, 12, 111.85], "r": 0.7, "h": 4.93, "axis": [0.3243, 0.0811, 0.9425], "paint": "glass", "tone": "mid", "mount": ["costilla-10i-3"]}
+        ],
+        "children": [
+          {
+            "id": "esternon",
+            "parts": [
+              {"id": "manubrio", "kind": "box", "at": [-3, 7, 138.9], "size": [6, 1.5, 5.2], "radius": 1.2, "mount": ["hombro-d.clav-esternal-d", "hombro-d.clavicula-a-d", "hombro-i.clav-esternal-i", "hombro-i.clavicula-a-i"]},
+              {"id": "cuerpo-{i}", "kind": "box", "at": [-1.8, 8.6, 136.2], "size": [3.6, 1.3, 2.7], "radius": 0.5, "repeat": {"count": 4, "step": [0, 1.1, -2.65], "from": 1}},
+              {"id": "xifoides", "kind": "prism", "axis": "y", "plan": [[0, 124.4], [1, 128.4], [-1, 128.4]], "z": 12.4, "h": 1, "bevel": 0.2}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hombro-d",
+        "name": {"es": "Cintura escapular", "en": "Shoulder girdle"},
+        "note": {"es": "clavícula y escápula unen el brazo al tronco; solo la clavícula toca el esternón", "en": "clavicle and scapula join the arm to the trunk; only the clavicle meets the sternum"},
+        "step": {"es": "las cinturas escapulares se abren a los lados", "en": "the shoulder girdles open sideways"},
+        "explode": [26, 0, 0],
+        "stage": 2,
+        "parts": [
+          {"id": "clav-esternal-d", "kind": "sphere", "at": [2.9, 7.4, 143.3], "r": 1.1},
+          {"id": "clavicula-a-d", "kind": "capsule", "at": [2.9, 7.4, 143.3], "r": 0.8, "h": 6.82, "axis": [0.9532, 0.0733, 0.2933], "mount": ["clav-esternal-d"]},
+          {"id": "clavicula-b-d", "kind": "capsule", "at": [9.4, 7.9, 145.3], "r": 0.8, "h": 8.14, "axis": [0.8603, -0.4916, 0.1352], "mount": ["clavicula-a-d"]},
+          {"id": "omoplato-d", "kind": "prism", "axis": "y", "plan": [[6.8, 135], [7.8, 127], [10.2, 128.4], [15.2, 138], [14.6, 141.4], [6.4, 144]], "z": -6.7, "h": 1.6, "bevel": 0.3},
+          {"id": "espina-d", "kind": "capsule", "at": [7.6, -6.9, 141], "r": 0.75, "h": 6.48, "axis": [0.8639, 0.2314, 0.4474], "mount": ["omoplato-d"]},
+          {"id": "acromion-d", "kind": "capsule", "at": [13.2, -5.4, 143.9], "r": 0.8, "h": 9.23, "axis": [0.4117, 0.8667, 0.2817], "mount": ["espina-d", "clavicula-b-d"]},
+          {"id": "cuello-escapula-d", "kind": "capsule", "at": [12.8, -4.6, 138.8], "r": 1, "h": 8.51, "axis": [0.4936, 0.8227, 0.2821], "mount": ["omoplato-d", "espina-d", "hombro-d.brazo-d.cabeza-d"]},
+          {"id": "coracoides-d", "kind": "capsule", "at": [15.2, 0.6, 143.2], "r": 0.6, "h": 4.83, "axis": [-0.1035, 0.9938, -0.0414], "mount": ["cuello-escapula-d", "acromion-d"]}
+        ],
+        "children": [
+          {
+            "id": "brazo-d",
+            "name": {"es": "Brazo", "en": "Upper arm"},
+            "note": {"es": "el húmero es el hueso más largo del brazo; su cabeza redonda encaja en la escápula", "en": "the humerus is the longest bone of the arm; its round head fits into the scapula"},
+            "step": {"es": "los brazos se sueltan: húmero, antebrazo y mano", "en": "the arms come apart: humerus, forearm and hand"},
+            "at": [19.2, 3.4, 141.5],
+            "rotate": [0, -7, 0],
+            "explode": [8, 0, -6],
+            "stage": 3,
+            "parts": [
+              {"id": "cabeza-d", "kind": "sphere", "at": [0, 0, 0], "r": 2.4},
+              {"id": "diafisis-d", "kind": "capsule", "at": [0.39, -0.01, -0.8], "r": 1.3, "h": 26.67, "axis": [0.0683, -0.0068, -0.9976], "mount": ["cabeza-d"]},
+              {"id": "condilos-d", "kind": "capsule", "at": [0.7, -0.2, -28.9], "r": 1.35, "h": 3.4, "axis": "x", "mount": ["diafisis-d", "hombro-d.brazo-d.antebrazo-d.cubito-d", "hombro-d.brazo-d.antebrazo-d.olecranon-d"]}
+            ],
+            "children": [
+              {
+                "id": "antebrazo-d",
+                "name": {"es": "Antebrazo", "en": "Forearm"},
+                "note": {"es": "radio (lado del pulgar) y cúbito (lado del meñique): el radio gira sobre el cúbito", "en": "radius (thumb side) and ulna (little-finger side): the radius turns over the ulna"},
+                "at": [-19.2, -3.4, -141.5],
+                "explode": [2, 0, -9],
+                "stage": 3,
+                "parts": [
+                  {"id": "cubito-d", "kind": "capsule", "at": [20.55, 2.43, 111.95], "r": 0.95, "h": 23.45, "axis": [-0.0552, 0.0276, -0.9981]},
+                  {"id": "olecranon-d", "kind": "sphere", "at": [20.6, 1.4, 112.2], "r": 1.35, "mount": ["cubito-d"]},
+                  {"id": "cubito-cabeza-d", "kind": "sphere", "at": [19.3, 3.1, 88.3], "r": 1.1, "mount": ["cubito-d"]},
+                  {"id": "radio-cabeza-d", "kind": "cylinder", "at": [22.9, 3.9, 110.5], "r": 1.3, "h": 0.9},
+                  {"id": "radio-a-d", "kind": "capsule", "at": [23, 3.8, 109.9], "r": 0.95, "h": 10.95, "axis": [0.0914, -0.0091, -0.9958], "mount": ["radio-cabeza-d"]},
+                  {"id": "radio-b-d", "kind": "capsule", "at": [24, 3.7, 99], "r": 0.95, "h": 10.6, "axis": [0, -0.0094, -1], "mount": ["radio-a-d"]},
+                  {"id": "radio-distal-d", "kind": "sphere", "at": [24, 3.6, 88.6], "r": 1.5, "mount": ["radio-b-d"]}
+                ],
+                "children": [
+                  {
+                    "id": "mano-d",
+                    "name": {"es": "Mano", "en": "Hand"},
+                    "note": {"es": "27 huesos: 8 del carpo, 5 metacarpianos y 14 falanges", "en": "27 bones: 8 carpals, 5 metacarpals and 14 phalanges"},
+                    "at": [21.6, 3.5, 86.6],
+                    "explode": [2, 0, -8],
+                    "stage": 3,
+                    "parts": [
+                      {"id": "carpo-prox-{i}-d", "kind": "sphere", "at": [2.7, 0, -0.6], "r": 0.95, "repeat": {"count": 4, "step": [-1.8, 0, 0], "from": 1}},
+                      {"id": "carpo-dist-{i}-d", "kind": "sphere", "at": [2.7, 0.1, -2.5], "r": 0.95, "repeat": {"count": 4, "step": [-1.8, 0, 0], "from": 5}},
+                      {"id": "metacarpiano-{i}-d", "kind": "capsule", "at": [3, 0.2, -4.1], "r": 0.7, "h": 5.2, "axis": [0, 0, -1], "repeat": {"count": 4, "step": [-2, 0, 0], "from": 2}},
+                      {"id": "falange-prox-{i}-d", "kind": "capsule", "at": [3, 0.2, -10.68], "r": 0.58, "h": 2.84, "axis": [0, 0, -1], "repeat": {"count": 4, "step": [-2, 0, 0], "from": 2}},
+                      {"id": "falange-media-{i}-d", "kind": "capsule", "at": [3, 0.2, -14.72], "r": 0.52, "h": 1.36, "axis": [0, 0, -1], "repeat": {"count": 4, "step": [-2, 0, 0], "from": 2}},
+                      {"id": "falange-dist-{i}-d", "kind": "capsule", "at": [3, 0.2, -17.18], "r": 0.48, "h": 0.94, "axis": [0, 0, -1], "repeat": {"count": 4, "step": [-2, 0, 0], "from": 2}},
+                      {"id": "metacarpiano-1-d", "kind": "capsule", "at": [4.5, 0.71, -4.07], "r": 0.8, "h": 3.52, "axis": [0.254, 0.1368, -0.9575]},
+                      {"id": "falange-prox-1-d", "kind": "capsule", "at": [5.84, 1.44, -8.9], "r": 0.62, "h": 2.26, "axis": [0.2287, 0.0572, -0.9718]},
+                      {"id": "falange-dist-1-d", "kind": "capsule", "at": [6.68, 1.72, -12.34], "r": 0.55, "h": 1.53, "axis": [0.1519, 0.038, -0.9877]}
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hombro-i",
+        "name": {"es": "Cintura escapular", "en": "Shoulder girdle"},
+        "note": {"es": "clavícula y escápula unen el brazo al tronco; solo la clavícula toca el esternón", "en": "clavicle and scapula join the arm to the trunk; only the clavicle meets the sternum"},
+        "step": {"es": "las cinturas escapulares se abren a los lados", "en": "the shoulder girdles open sideways"},
+        "explode": [-26, 0, 0],
+        "stage": 2,
+        "parts": [
+          {"id": "clav-esternal-i", "kind": "sphere", "at": [-2.9, 7.4, 143.3], "r": 1.1},
+          {"id": "clavicula-a-i", "kind": "capsule", "at": [-2.9, 7.4, 143.3], "r": 0.8, "h": 6.82, "axis": [-0.9532, 0.0733, 0.2933], "mount": ["clav-esternal-i"]},
+          {"id": "clavicula-b-i", "kind": "capsule", "at": [-9.4, 7.9, 145.3], "r": 0.8, "h": 8.14, "axis": [-0.8603, -0.4916, 0.1352], "mount": ["clavicula-a-i"]},
+          {"id": "omoplato-i", "kind": "prism", "axis": "y", "plan": [[-6.4, 144], [-14.6, 141.4], [-15.2, 138], [-10.2, 128.4], [-7.8, 127], [-6.8, 135]], "z": -6.7, "h": 1.6, "bevel": 0.3},
+          {"id": "espina-i", "kind": "capsule", "at": [-7.6, -6.9, 141], "r": 0.75, "h": 6.48, "axis": [-0.8639, 0.2314, 0.4474], "mount": ["omoplato-i"]},
+          {"id": "acromion-i", "kind": "capsule", "at": [-13.2, -5.4, 143.9], "r": 0.8, "h": 9.23, "axis": [-0.4117, 0.8667, 0.2817], "mount": ["espina-i", "clavicula-b-i"]},
+          {"id": "cuello-escapula-i", "kind": "capsule", "at": [-12.8, -4.6, 138.8], "r": 1, "h": 8.51, "axis": [-0.4936, 0.8227, 0.2821], "mount": ["omoplato-i", "espina-i", "hombro-i.brazo-i.cabeza-i"]},
+          {"id": "coracoides-i", "kind": "capsule", "at": [-15.2, 0.6, 143.2], "r": 0.6, "h": 4.83, "axis": [0.1035, 0.9938, -0.0414], "mount": ["cuello-escapula-i", "acromion-i"]}
+        ],
+        "children": [
+          {
+            "id": "brazo-i",
+            "name": {"es": "Brazo", "en": "Upper arm"},
+            "note": {"es": "el húmero es el hueso más largo del brazo; su cabeza redonda encaja en la escápula", "en": "the humerus is the longest bone of the arm; its round head fits into the scapula"},
+            "step": {"es": "los brazos se sueltan: húmero, antebrazo y mano", "en": "the arms come apart: humerus, forearm and hand"},
+            "at": [-19.2, 3.4, 141.5],
+            "rotate": [0, 7, 0],
+            "explode": [-8, 0, -6],
+            "stage": 3,
+            "parts": [
+              {"id": "cabeza-i", "kind": "sphere", "at": [0, 0, 0], "r": 2.4},
+              {"id": "diafisis-i", "kind": "capsule", "at": [-0.39, -0.01, -0.8], "r": 1.3, "h": 26.67, "axis": [-0.0683, -0.0068, -0.9976], "mount": ["cabeza-i"]},
+              {"id": "condilos-i", "kind": "capsule", "at": [-0.7, -0.2, -28.9], "r": 1.35, "h": 3.4, "axis": [-1, 0, 0], "mount": ["diafisis-i", "hombro-i.brazo-i.antebrazo-i.cubito-i", "hombro-i.brazo-i.antebrazo-i.olecranon-i"]}
+            ],
+            "children": [
+              {
+                "id": "antebrazo-i",
+                "name": {"es": "Antebrazo", "en": "Forearm"},
+                "note": {"es": "radio (lado del pulgar) y cúbito (lado del meñique): el radio gira sobre el cúbito", "en": "radius (thumb side) and ulna (little-finger side): the radius turns over the ulna"},
+                "at": [19.2, -3.4, -141.5],
+                "explode": [-2, 0, -9],
+                "stage": 3,
+                "parts": [
+                  {"id": "cubito-i", "kind": "capsule", "at": [-20.55, 2.43, 111.95], "r": 0.95, "h": 23.45, "axis": [0.0552, 0.0276, -0.9981]},
+                  {"id": "olecranon-i", "kind": "sphere", "at": [-20.6, 1.4, 112.2], "r": 1.35, "mount": ["cubito-i"]},
+                  {"id": "cubito-cabeza-i", "kind": "sphere", "at": [-19.3, 3.1, 88.3], "r": 1.1, "mount": ["cubito-i"]},
+                  {"id": "radio-cabeza-i", "kind": "cylinder", "at": [-22.9, 3.9, 110.5], "r": 1.3, "h": 0.9},
+                  {"id": "radio-a-i", "kind": "capsule", "at": [-23, 3.8, 109.9], "r": 0.95, "h": 10.95, "axis": [-0.0914, -0.0091, -0.9958], "mount": ["radio-cabeza-i"]},
+                  {"id": "radio-b-i", "kind": "capsule", "at": [-24, 3.7, 99], "r": 0.95, "h": 10.6, "axis": [0, -0.0094, -1], "mount": ["radio-a-i"]},
+                  {"id": "radio-distal-i", "kind": "sphere", "at": [-24, 3.6, 88.6], "r": 1.5, "mount": ["radio-b-i"]}
+                ],
+                "children": [
+                  {
+                    "id": "mano-i",
+                    "name": {"es": "Mano", "en": "Hand"},
+                    "note": {"es": "27 huesos: 8 del carpo, 5 metacarpianos y 14 falanges", "en": "27 bones: 8 carpals, 5 metacarpals and 14 phalanges"},
+                    "at": [-21.6, 3.5, 86.6],
+                    "explode": [-2, 0, -8],
+                    "stage": 3,
+                    "parts": [
+                      {"id": "carpo-prox-{i}-i", "kind": "sphere", "at": [-2.7, 0, -0.6], "r": 0.95, "repeat": {"count": 4, "step": [1.8, 0, 0], "from": 1}},
+                      {"id": "carpo-dist-{i}-i", "kind": "sphere", "at": [-2.7, 0.1, -2.5], "r": 0.95, "repeat": {"count": 4, "step": [1.8, 0, 0], "from": 5}},
+                      {"id": "metacarpiano-{i}-i", "kind": "capsule", "at": [-3, 0.2, -4.1], "r": 0.7, "h": 5.2, "axis": [0, 0, -1], "repeat": {"count": 4, "step": [2, 0, 0], "from": 2}},
+                      {"id": "falange-prox-{i}-i", "kind": "capsule", "at": [-3, 0.2, -10.68], "r": 0.58, "h": 2.84, "axis": [0, 0, -1], "repeat": {"count": 4, "step": [2, 0, 0], "from": 2}},
+                      {"id": "falange-media-{i}-i", "kind": "capsule", "at": [-3, 0.2, -14.72], "r": 0.52, "h": 1.36, "axis": [0, 0, -1], "repeat": {"count": 4, "step": [2, 0, 0], "from": 2}},
+                      {"id": "falange-dist-{i}-i", "kind": "capsule", "at": [-3, 0.2, -17.18], "r": 0.48, "h": 0.94, "axis": [0, 0, -1], "repeat": {"count": 4, "step": [2, 0, 0], "from": 2}},
+                      {"id": "metacarpiano-1-i", "kind": "capsule", "at": [-4.5, 0.71, -4.07], "r": 0.8, "h": 3.52, "axis": [-0.254, 0.1368, -0.9575]},
+                      {"id": "falange-prox-1-i", "kind": "capsule", "at": [-5.84, 1.44, -8.9], "r": 0.62, "h": 2.26, "axis": [-0.2287, 0.0572, -0.9718]},
+                      {"id": "falange-dist-1-i", "kind": "capsule", "at": [-6.68, 1.72, -12.34], "r": 0.55, "h": 1.53, "axis": [-0.1519, 0.038, -0.9877]}
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pelvis",
+        "name": {"es": "Pelvis", "en": "Pelvis"},
+        "note": {"es": "dos coxales, sacro y cóccix; cada coxal une tres huesos: ilion, isquion y pubis", "en": "two hip bones, sacrum and coccyx; each hip bone fuses three: ilium, ischium and pubis"},
+        "step": {"es": "la pelvis avanza con el sacro y el cóccix", "en": "the pelvis moves forward with the sacrum and coccyx"},
+        "explode": [0, 32, 0],
+        "stage": 5,
+        "tone": "hi",
+        "parts": [
+          {"id": "sacro", "kind": "prism", "axis": "y", "plan": [[-1.9, 89.4], [1.9, 89.4], [5.3, 101.2], [-5.3, 101.2]], "z": -3.2, "h": 5.4, "bevel": 0.6},
+          {"id": "sacro-foramenes", "kind": "dots", "on": "sacro", "points": [[2.2, 2.25, 98.2], [-2.2, 2.25, 98.2], [1.8, 2.25, 95.6], [-1.8, 2.25, 95.6], [1.5, 2.25, 93.2], [-1.5, 2.25, 93.2], [1.2, 2.25, 91.2], [-1.2, 2.25, 91.2]]},
+          {"id": "coxis", "kind": "cone", "at": [0, -0.5, 89.5], "r": 1.4, "r2": 0.4, "h": 4.2, "axis": [0, 0, -1], "mount": ["sacro"]},
+          {"id": "ala-d", "kind": "prism", "axis": "y", "plan": [[6.6, 95.8], [9.6, 95.4], [12.8, 97.6], [15.8, 102.4], [16.8, 107], [14, 109.4], [8.8, 109], [5, 106.4], [5.4, 98]], "z": 3.2, "h": 1.8, "bevel": 0.4, "mount": ["pelvis.acetabulo-d"]},
+          {"id": "cresta-a-d", "kind": "capsule", "at": [5, -3.8, 107.6], "r": 0.85, "h": 7.12, "axis": [0.815, 0.534, 0.2248], "mount": ["pelvis.cresta-b-d", "pelvis.borde-posterior-d"]},
+          {"id": "cresta-b-d", "kind": "capsule", "at": [10.8, 0, 109.2], "r": 0.85, "h": 6.58, "axis": [0.8512, 0.5168, -0.0912], "mount": ["pelvis.cresta-c-d"]},
+          {"id": "cresta-c-d", "kind": "capsule", "at": [16.4, 3.4, 108.6], "r": 0.85, "h": 6.32, "axis": [-0.2216, 0.9496, -0.2216], "mount": ["pelvis.espina-anterior-d"]},
+          {"id": "espina-anterior-d", "kind": "capsule", "at": [15, 9.4, 107.2], "r": 0.9, "h": 9.26, "axis": [-0.3673, -0.0432, -0.9291]},
+          {"id": "borde-posterior-d", "kind": "capsule", "at": [5, -3.8, 107.6], "r": 0.9, "h": 8.39, "axis": [0.0953, 0.1906, -0.977], "mount": ["columna.lumbar.transversa-d-4", "columna.lumbar.transversa-d-5"]},
+          {"id": "acetabulo-d", "kind": "cylinder", "at": [5.8, 3.8, 93.2], "r": 3.5, "h": 2.4, "axis": [0.95, 0.3, -0.1], "mount": ["pelvis.isquion-d", "pelvis.pubis-sup-d", "muslo-d.cabeza-d", "muslo-d.cuello-d"]},
+          {"id": "isquion-d", "kind": "capsule", "at": [7.2, 2.6, 89.4], "r": 1.5, "h": 4.35, "axis": [-0.1839, -0.1839, -0.9656], "mount": ["pelvis.tuberosidad-d", "pelvis.isquion-rama-d"]},
+          {"id": "tuberosidad-d", "kind": "sphere", "at": [6.2, 1.8, 84], "r": 2, "mount": ["pelvis.isquion-rama-d"]},
+          {"id": "pubis-sup-d", "kind": "capsule", "at": [7, 4.4, 91.4], "r": 1.2, "h": 9.39, "axis": [-0.6387, 0.7452, -0.1916], "mount": ["muslo-d.cabeza-d", "muslo-d.cuello-d"]},
+          {"id": "pubis-inf-d", "kind": "capsule", "at": [1, 11.2, 88], "r": 1, "h": 6.92, "axis": [0.5205, -0.7518, -0.4048], "mount": ["pelvis.isquion-rama-d"]},
+          {"id": "isquion-rama-d", "kind": "capsule", "at": [4.6, 6, 85.2], "r": 1, "h": 3.73, "axis": [0.3758, -0.9126, -0.161]},
+          {"id": "ala-i", "kind": "prism", "axis": "y", "plan": [[-5.4, 98], [-5, 106.4], [-8.8, 109], [-14, 109.4], [-16.8, 107], [-15.8, 102.4], [-12.8, 97.6], [-9.6, 95.4], [-6.6, 95.8]], "z": 3.2, "h": 1.8, "bevel": 0.4, "mount": ["pelvis.acetabulo-i"]},
+          {"id": "cresta-a-i", "kind": "capsule", "at": [-5, -3.8, 107.6], "r": 0.85, "h": 7.12, "axis": [-0.815, 0.534, 0.2248], "mount": ["pelvis.cresta-b-i", "pelvis.borde-posterior-i"]},
+          {"id": "cresta-b-i", "kind": "capsule", "at": [-10.8, 0, 109.2], "r": 0.85, "h": 6.58, "axis": [-0.8512, 0.5168, -0.0912], "mount": ["pelvis.cresta-c-i"]},
+          {"id": "cresta-c-i", "kind": "capsule", "at": [-16.4, 3.4, 108.6], "r": 0.85, "h": 6.32, "axis": [0.2216, 0.9496, -0.2216], "mount": ["pelvis.espina-anterior-i"]},
+          {"id": "espina-anterior-i", "kind": "capsule", "at": [-15, 9.4, 107.2], "r": 0.9, "h": 9.26, "axis": [0.3673, -0.0432, -0.9291]},
+          {"id": "borde-posterior-i", "kind": "capsule", "at": [-5, -3.8, 107.6], "r": 0.9, "h": 8.39, "axis": [-0.0953, 0.1906, -0.977], "mount": ["columna.lumbar.transversa-i-4", "columna.lumbar.transversa-i-5"]},
+          {"id": "acetabulo-i", "kind": "cylinder", "at": [-5.8, 3.8, 93.2], "r": 3.5, "h": 2.4, "axis": [-0.95, 0.3, -0.1], "mount": ["pelvis.isquion-i", "pelvis.pubis-sup-i", "muslo-i.cabeza-i", "muslo-i.cuello-i"]},
+          {"id": "isquion-i", "kind": "capsule", "at": [-7.2, 2.6, 89.4], "r": 1.5, "h": 4.35, "axis": [0.1839, -0.1839, -0.9656], "mount": ["pelvis.tuberosidad-i", "pelvis.isquion-rama-i"]},
+          {"id": "tuberosidad-i", "kind": "sphere", "at": [-6.2, 1.8, 84], "r": 2, "mount": ["pelvis.isquion-rama-i"]},
+          {"id": "pubis-sup-i", "kind": "capsule", "at": [-7, 4.4, 91.4], "r": 1.2, "h": 9.39, "axis": [0.6387, 0.7452, -0.1916], "mount": ["muslo-i.cabeza-i", "muslo-i.cuello-i"]},
+          {"id": "pubis-inf-i", "kind": "capsule", "at": [-1, 11.2, 88], "r": 1, "h": 6.92, "axis": [-0.5205, -0.7518, -0.4048], "mount": ["pelvis.isquion-rama-i"]},
+          {"id": "isquion-rama-i", "kind": "capsule", "at": [-4.6, 6, 85.2], "r": 1, "h": 3.73, "axis": [-0.3758, -0.9126, -0.161]}
+        ]
+      },
+      {
+        "id": "muslo-d",
+        "name": {"es": "Muslo", "en": "Thigh"},
+        "note": {"es": "el fémur es el hueso más largo y fuerte: mide cerca de un cuarto de la estatura", "en": "the femur is the longest, strongest bone: about a quarter of body height"},
+        "step": {"es": "los fémures y las rótulas salen a los lados", "en": "the femurs and kneecaps move out sideways"},
+        "explode": [20, 0, 14],
+        "stage": 6,
+        "parts": [
+          {"id": "cabeza-d", "kind": "sphere", "at": [8.2, 4.2, 93], "r": 2.5},
+          {"id": "cuello-d", "kind": "capsule", "at": [8.2, 4.2, 93], "r": 1.45, "h": 5.6, "axis": [0.5711, 0, -0.8209], "mount": ["cabeza-d"]},
+          {"id": "trocanter-mayor-d", "kind": "sphere", "at": [13.3, 3.6, 89.2], "r": 2.2, "mount": ["cuello-d"]},
+          {"id": "diafisis-d", "kind": "capsule", "at": [12.14, 4.21, 86.77], "r": 1.65, "h": 32.13, "axis": [-0.1552, 0.0085, -0.9878], "mount": ["cuello-d", "trocanter-mayor-d"]},
+          {"id": "trocanter-menor-d", "kind": "sphere", "at": [10.6, 2.6, 82.8], "r": 0.95, "mount": ["diafisis-d"]},
+          {"id": "condilo-lat-d", "kind": "sphere", "at": [9.1, 4.4, 52.6], "r": 2.4, "mount": ["diafisis-d"]},
+          {"id": "condilo-med-d", "kind": "sphere", "at": [4.7, 4.4, 52.6], "r": 2.4, "mount": ["diafisis-d", "condilo-lat-d"]}
+        ],
+        "children": [
+          {
+            "id": "rotula-d",
+            "name": {"es": "Rótula", "en": "Kneecap"},
+            "note": {"es": "el hueso sesamoideo más grande: protege la rodilla y da palanca al cuádriceps", "en": "the body's largest sesamoid bone: it shields the knee and gives the quadriceps leverage"},
+            "explode": [0, 20, 2],
+            "stage": 6,
+            "parts": [
+              {"id": "patela-d", "kind": "prism", "axis": "y", "plan": [[5.5, 52.4], [6.9, 51.4], [8.3, 52.4], [9, 55.9], [4.8, 55.9]], "z": 7, "h": 1.6, "bevel": 0.45}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "muslo-i",
+        "name": {"es": "Muslo", "en": "Thigh"},
+        "note": {"es": "el fémur es el hueso más largo y fuerte: mide cerca de un cuarto de la estatura", "en": "the femur is the longest, strongest bone: about a quarter of body height"},
+        "step": {"es": "los fémures y las rótulas salen a los lados", "en": "the femurs and kneecaps move out sideways"},
+        "explode": [-20, 0, 14],
+        "stage": 6,
+        "parts": [
+          {"id": "cabeza-i", "kind": "sphere", "at": [-8.2, 4.2, 93], "r": 2.5},
+          {"id": "cuello-i", "kind": "capsule", "at": [-8.2, 4.2, 93], "r": 1.45, "h": 5.6, "axis": [-0.5711, 0, -0.8209], "mount": ["cabeza-i"]},
+          {"id": "trocanter-mayor-i", "kind": "sphere", "at": [-13.3, 3.6, 89.2], "r": 2.2, "mount": ["cuello-i"]},
+          {"id": "diafisis-i", "kind": "capsule", "at": [-12.14, 4.21, 86.77], "r": 1.65, "h": 32.13, "axis": [0.1552, 0.0085, -0.9878], "mount": ["cuello-i", "trocanter-mayor-i"]},
+          {"id": "trocanter-menor-i", "kind": "sphere", "at": [-10.6, 2.6, 82.8], "r": 0.95, "mount": ["diafisis-i"]},
+          {"id": "condilo-lat-i", "kind": "sphere", "at": [-9.1, 4.4, 52.6], "r": 2.4, "mount": ["diafisis-i"]},
+          {"id": "condilo-med-i", "kind": "sphere", "at": [-4.7, 4.4, 52.6], "r": 2.4, "mount": ["diafisis-i", "condilo-lat-i"]}
+        ],
+        "children": [
+          {
+            "id": "rotula-i",
+            "name": {"es": "Rótula", "en": "Kneecap"},
+            "note": {"es": "el hueso sesamoideo más grande: protege la rodilla y da palanca al cuádriceps", "en": "the body's largest sesamoid bone: it shields the knee and gives the quadriceps leverage"},
+            "explode": [0, 20, 2],
+            "stage": 6,
+            "parts": [
+              {"id": "patela-i", "kind": "prism", "axis": "y", "plan": [[-4.8, 55.9], [-9, 55.9], [-8.3, 52.4], [-6.9, 51.4], [-5.5, 52.4]], "z": 7, "h": 1.6, "bevel": 0.45}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pierna-d",
+        "name": {"es": "Pierna", "en": "Lower leg"},
+        "note": {"es": "la tibia soporta el peso; el peroné, delgado y lateral, casi no lo carga", "en": "the tibia bears the weight; the slender, lateral fibula carries almost none"},
+        "step": {"es": "las tibias y los peronés se elevan y se abren", "en": "the tibiae and fibulae lift and open"},
+        "explode": [10, 0, 8],
+        "stage": 7,
+        "parts": [
+          {"id": "meseta-d", "kind": "box", "at": [2.9, 1.9, 48.3], "size": [8, 5.2, 1.6], "radius": 2},
+          {"id": "menisco-medial-d", "kind": "cylinder", "at": [4.8, 3.9, 49.9], "r": 2, "h": 1, "paint": "glass", "tone": "mid"},
+          {"id": "menisco-lateral-d", "kind": "cylinder", "at": [9, 3.9, 49.9], "r": 2, "h": 1, "paint": "glass", "tone": "mid"},
+          {"id": "tuberosidad-d", "kind": "sphere", "at": [6.9, 6.8, 44.6], "r": 1, "mount": ["diafisis-d"]},
+          {"id": "diafisis-d", "kind": "capsule", "at": [6.93, 3.98, 46.55], "r": 1.45, "h": 36.11, "axis": [0.0179, -0.0154, -0.9997], "mount": ["meseta-d"]},
+          {"id": "distal-d", "kind": "sphere", "at": [7.6, 3.4, 10.4], "r": 1.9, "mount": ["diafisis-d"]},
+          {"id": "maleolo-medial-d", "kind": "sphere", "at": [5.3, 3.2, 8.6], "r": 1.3, "mount": ["distal-d"]},
+          {"id": "perone-cabeza-d", "kind": "sphere", "at": [11.6, 2.6, 46.6], "r": 1.3},
+          {"id": "perone-d", "kind": "capsule", "at": [11.59, 2.59, 45.25], "r": 0.75, "h": 36.11, "axis": [-0.0186, -0.0106, -0.9998], "mount": ["perone-cabeza-d"]},
+          {"id": "maleolo-lateral-d", "kind": "sphere", "at": [10.8, 2.2, 7.8], "r": 1.3, "mount": ["perone-d"]}
+        ]
+      },
+      {
+        "id": "pierna-i",
+        "name": {"es": "Pierna", "en": "Lower leg"},
+        "note": {"es": "la tibia soporta el peso; el peroné, delgado y lateral, casi no lo carga", "en": "the tibia bears the weight; the slender, lateral fibula carries almost none"},
+        "step": {"es": "las tibias y los peronés se elevan y se abren", "en": "the tibiae and fibulae lift and open"},
+        "explode": [-10, 0, 8],
+        "stage": 7,
+        "parts": [
+          {"id": "meseta-i", "kind": "box", "at": [-10.9, 1.9, 48.3], "size": [8, 5.2, 1.6], "radius": 2},
+          {"id": "menisco-medial-i", "kind": "cylinder", "at": [-4.8, 3.9, 49.9], "r": 2, "h": 1, "paint": "glass", "tone": "mid"},
+          {"id": "menisco-lateral-i", "kind": "cylinder", "at": [-9, 3.9, 49.9], "r": 2, "h": 1, "paint": "glass", "tone": "mid"},
+          {"id": "tuberosidad-i", "kind": "sphere", "at": [-6.9, 6.8, 44.6], "r": 1, "mount": ["diafisis-i"]},
+          {"id": "diafisis-i", "kind": "capsule", "at": [-6.93, 3.98, 46.55], "r": 1.45, "h": 36.11, "axis": [-0.0179, -0.0154, -0.9997], "mount": ["meseta-i"]},
+          {"id": "distal-i", "kind": "sphere", "at": [-7.6, 3.4, 10.4], "r": 1.9, "mount": ["diafisis-i"]},
+          {"id": "maleolo-medial-i", "kind": "sphere", "at": [-5.3, 3.2, 8.6], "r": 1.3, "mount": ["distal-i"]},
+          {"id": "perone-cabeza-i", "kind": "sphere", "at": [-11.6, 2.6, 46.6], "r": 1.3},
+          {"id": "perone-i", "kind": "capsule", "at": [-11.59, 2.59, 45.25], "r": 0.75, "h": 36.11, "axis": [0.0186, -0.0106, -0.9998], "mount": ["perone-cabeza-i"]},
+          {"id": "maleolo-lateral-i", "kind": "sphere", "at": [-10.8, 2.2, 7.8], "r": 1.3, "mount": ["perone-i"]}
+        ]
+      },
+      {
+        "id": "pie-d",
+        "name": {"es": "Pie", "en": "Foot"},
+        "note": {"es": "26 huesos por pie: 7 del tarso, 5 metatarsianos y 14 falanges; el calcáneo es el mayor", "en": "26 bones per foot: 7 tarsals, 5 metatarsals and 14 phalanges; the calcaneus is the largest"},
+        "at": [7.6, 3.2, 0],
+        "rotate": [0, 0, -10],
+        "parts": [
+          {"id": "calcaneo-d", "kind": "capsule", "at": [0.7, -3.9, 2.7], "r": 2.1, "h": 4.47, "axis": [0.0894, 0.9836, 0.1565]},
+          {"id": "astragalo-d", "kind": "sphere", "at": [0.2, 0.9, 6.3], "r": 2.2, "mount": ["calcaneo-d"]},
+          {"id": "navicular-d", "kind": "sphere", "at": [-1, 3.9, 5.2], "r": 1.4, "mount": ["astragalo-d"]},
+          {"id": "cuboides-d", "kind": "sphere", "at": [2.7, 3.8, 3.3], "r": 1.5, "mount": ["calcaneo-d"]},
+          {"id": "cuneiforme-{i}-d", "kind": "sphere", "at": [-2, 5.9, 3.7], "r": 1.05, "repeat": {"count": 3, "step": [1.5, 0, 0], "from": 1}},
+          {"id": "metatarsiano-{i}-d", "kind": "capsule", "at": [-2.3, 7.6, 3], "r": 0.85, "h": 6.48, "axis": [0, 0.9561, -0.293], "repeat": {"count": 5, "step": [1.6, 0, 0], "from": 1}},
+          {"id": "hallux-prox-d", "kind": "capsule", "at": [-2.3, 15, 1], "r": 0.9, "h": 2.4, "axis": "y", "mount": ["pie-d.hallux-dist-d"]},
+          {"id": "hallux-dist-d", "kind": "capsule", "at": [-2.3, 17.9, 1], "r": 0.8, "h": 1.6, "axis": "y"},
+          {"id": "dedo-prox-{i}-d", "kind": "capsule", "at": [-0.7, 15, 0.9], "r": 0.6, "h": 1.8, "axis": "y", "repeat": {"count": 4, "step": [1.6, 0, 0], "from": 2}},
+          {"id": "dedo-medio-{i}-d", "kind": "capsule", "at": [-0.7, 17.3, 0.9], "r": 0.52, "h": 1.1, "axis": "y", "repeat": {"count": 4, "step": [1.6, 0, 0], "from": 2}},
+          {"id": "dedo-dist-{i}-d", "kind": "capsule", "at": [-0.7, 18.8, 0.9], "r": 0.48, "h": 0.8, "axis": "y", "repeat": {"count": 4, "step": [1.6, 0, 0], "from": 2}}
+        ]
+      },
+      {
+        "id": "pie-i",
+        "name": {"es": "Pie", "en": "Foot"},
+        "note": {"es": "26 huesos por pie: 7 del tarso, 5 metatarsianos y 14 falanges; el calcáneo es el mayor", "en": "26 bones per foot: 7 tarsals, 5 metatarsals and 14 phalanges; the calcaneus is the largest"},
+        "at": [-7.6, 3.2, 0],
+        "rotate": [0, 0, 10],
+        "parts": [
+          {"id": "calcaneo-i", "kind": "capsule", "at": [-0.7, -3.9, 2.7], "r": 2.1, "h": 4.47, "axis": [-0.0894, 0.9836, 0.1565]},
+          {"id": "astragalo-i", "kind": "sphere", "at": [-0.2, 0.9, 6.3], "r": 2.2, "mount": ["calcaneo-i"]},
+          {"id": "navicular-i", "kind": "sphere", "at": [1, 3.9, 5.2], "r": 1.4, "mount": ["astragalo-i"]},
+          {"id": "cuboides-i", "kind": "sphere", "at": [-2.7, 3.8, 3.3], "r": 1.5, "mount": ["calcaneo-i"]},
+          {"id": "cuneiforme-{i}-i", "kind": "sphere", "at": [2, 5.9, 3.7], "r": 1.05, "repeat": {"count": 3, "step": [-1.5, 0, 0], "from": 1}},
+          {"id": "metatarsiano-{i}-i", "kind": "capsule", "at": [2.3, 7.6, 3], "r": 0.85, "h": 6.48, "axis": [0, 0.9561, -0.293], "repeat": {"count": 5, "step": [-1.6, 0, 0], "from": 1}},
+          {"id": "hallux-prox-i", "kind": "capsule", "at": [2.3, 15, 1], "r": 0.9, "h": 2.4, "axis": "y", "mount": ["pie-i.hallux-dist-i"]},
+          {"id": "hallux-dist-i", "kind": "capsule", "at": [2.3, 17.9, 1], "r": 0.8, "h": 1.6, "axis": "y"},
+          {"id": "dedo-prox-{i}-i", "kind": "capsule", "at": [0.7, 15, 0.9], "r": 0.6, "h": 1.8, "axis": "y", "repeat": {"count": 4, "step": [-1.6, 0, 0], "from": 2}},
+          {"id": "dedo-medio-{i}-i", "kind": "capsule", "at": [0.7, 17.3, 0.9], "r": 0.52, "h": 1.1, "axis": "y", "repeat": {"count": 4, "step": [-1.6, 0, 0], "from": 2}},
+          {"id": "dedo-dist-{i}-i", "kind": "capsule", "at": [0.7, 18.8, 0.9], "r": 0.48, "h": 0.8, "axis": "y", "repeat": {"count": 4, "step": [-1.6, 0, 0], "from": 2}}
+        ]
+      }
+    ]
+  }
+}

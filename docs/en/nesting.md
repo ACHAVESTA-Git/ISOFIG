@@ -37,9 +37,10 @@ world coordinates.
 |---|---|
 | `id` | Required. It names its parts and its group: the part `slab` of the node `lid` is called `lid.slab`. Two siblings cannot share it. |
 | `at` | The node's origin, relative to its parent. The coordinates of `parts` and children are **local** to it. |
+| `rotate` | `[x, y, z]` in degrees: turns the node around its own `at`, carrying its parts and children. See [Turning a node](#turning-a-node-rotate). |
 | `parts`, `children` | Its parts (the usual ones) and its sub-assemblies. |
 | `name`, `note` | The part's name and one line on what it does: they show in the parts list and in the readout when picked. |
-| `explode` | How far it moves away when taken apart, **relative to its parent**. Use diagonals when they say something (a V8's heads leave at 45°). |
+| `explode` | How far it moves away when taken apart, in its parent's space (like `at`: if the parent is turned, it turns with it). Use diagonals when they say something (a V8's heads leave at 45°). |
 | `stage`, `step` | Which stage it leaves in, and that step's text ("heads off"). |
 | `repeat` | `{ count, step, from? }`: copies the whole subtree. |
 | `use`, `with` | Takes the subtree from `defs` or from the catalog. |
@@ -79,6 +80,152 @@ The default catalog of `renderFigure`, `validateSpec` and the CLI is [`isofig/ki
 are added to the figure's. Pass another catalog as `renderFigure(spec, { catalog })` or `assemble(spec, { catalog })`. The orbit
 (`enableOrbit`) takes the spec already assembled with `assemble(spec, { catalog })`: it never needs the catalog.
 
+## Turning a node (`rotate`)
+
+A node already knows where it is (`at`). With `rotate` it also knows where it faces: its three axes, like the `Transform`
+of a Unity GameObject. Use it for what does not sit on a straight line: a tilted arm, a door ajar, a wheel with camber,
+a rib, a connecting rod at 30°.
+
+```json
+{ "id": "arm", "at": [10, 0, 140], "rotate": [0, 20, 0], "children": [ … ], "parts": [ … ] }
+```
+
+`rotate: [x, y, z]` is in **degrees** (default `[0, 0, 0]`) and turns the node **around its own `at`**, which is its local
+origin and does not move: put the `at` on the hinge, the shoulder or the elbow, and write the parts from there.
+
+| | Unity (`Transform`) | isofig (node) |
+|---|---|---|
+| Local position | `localPosition` | `at` |
+| Local rotation | `localEulerAngles`, in degrees | `rotate`, in degrees |
+| Children | follow the parent | the parts and children are local to the node already turned |
+| Vertical axis | `y` | **`z`** (`x` and `y` are the floor) |
+| Order of the turns | `z`, then `x`, then `y` | `x`, then `y`, then `z` |
+| Handedness | left-handed | right-handed: a positive angle turns counterclockwise, seen from the tip of the axis |
+| Scale | `localScale` | none: write it in `size`, `r` and `h` |
+
+Do not copy angles from Unity to isofig as they are: the vertical, the order and the handedness all change.
+
+### The order of the axes: x, then y, then z
+
+The turns are **extrinsic**: each one is around a fixed axis of the parent, not around the axis the previous turn left
+tilted. As matrices, `R = Rz · Ry · Rx`: `Rx` is applied first to what you wrote.
+
+To see it, stand a pencil upright (along `z`) and write `rotate: [90, 0, 90]`:
+
+1. **`x` first.** The pencil falls toward `−y` and lies on the floor, pointing at `−y`.
+2. **`y` next.** With 0° nothing happens.
+3. **`z` last.** The whole floor turns 90° counterclockwise seen from above, and the pencil, which pointed at `−y`, now
+   points at `+x`.
+
+Had `z` gone first, the pencil would still point at `−y`. With a single non-zero angle the order does not matter; with two
+or more, it does. When in doubt, **nest**: one node per turn. The child turns around the axes of its already-turned
+parent, so it reads as "starting from what is already there": a parent with `"rotate": [0, 0, 30]` and a child with
+`"rotate": [20, 0, 0]` tilts 20° around the x axis the parent already turned 30°.
+
+Signs, by the right-hand rule: positive `z` takes `x` toward `y`; positive `y` tilts what stands upright toward `+x`;
+positive `x` tilts it toward `−y`.
+
+### It composes downwards
+
+- The coordinates of `parts`, the `at` and `explode` of the children, and the axes of `cylinder`, `cone` and `capsule`
+  (also a `prism`'s `axis`) are **local to the node already turned**. A child with `rotate: [0, -70, 0]` inside a parent
+  with `rotate: [0, 35, 0]` ends up 35° the other way from vertical: the turns add up.
+- `explode` is a displacement **in the parent's space**, just like `at`. If the parent is turned, the part leaves along
+  its axis and not the world's: the forearm separates along the tilted arm. The node's own `rotate` does not change its
+  own `explode`. The teardown is still a translation: in the browser each node moves by the sum of its ancestors'
+  `explode`, already taken to the world.
+- `repeat` copies the subtree with its `rotate`; the `step` is in the parent's space.
+- The root can be turned too (it turns everything around its `at`); it cannot be taken apart, so `explode` on the root is
+  still ignored.
+
+### A door ajar
+
+The leaf turns 35° in `z` around the hinge, which is the node's `at` (the inner face of the left jamb); its panel is
+written from the hinge, toward `+x`.
+
+```json
+{
+  "id": "door",
+  "title": { "es": "Puerta entreabierta", "en": "Ajar door" },
+  "root": {
+    "id": "frame",
+    "parts": [
+      { "id": "jamb-l", "kind": "box", "at": [0, 0, 0], "size": [6, 8, 76] },
+      { "id": "jamb-r", "kind": "box", "at": [76, 0, 0], "size": [6, 8, 76] },
+      { "id": "lintel", "kind": "box", "at": [0, 0, 76], "size": [82, 8, 6] }
+    ],
+    "children": [{
+      "id": "leaf", "at": [6, 2, 0], "rotate": [0, 0, 35], "mount": ["jamb-l"],
+      "parts": [
+        { "id": "panel", "kind": "box", "at": [0, 0, 0], "size": [70, 4, 74], "radius": 1, "tone": "hi" },
+        { "id": "knob", "kind": "cylinder", "at": [60, 4, 36], "r": 3, "h": 5, "axis": "y", "tone": "lit" }
+      ]
+    }]
+  }
+}
+```
+
+The knob sticks out toward the panel's `+y` (`axis: "y"` is local) and, once turned, points where the leaf faces.
+
+### A tilted arm
+
+Two segments, one node each. The shoulder tilts 35° toward `+x`; the elbow, a child of the shoulder hung from its tip
+(`at: [0, 0, 54]`), turns another −70° in `y`, so the forearm ends up 35° the other way from vertical.
+
+```json
+{
+  "id": "arm",
+  "title": { "es": "Brazo inclinado", "en": "Tilted arm" },
+  "root": {
+    "id": "bench",
+    "parts": [{ "id": "base", "kind": "box", "at": [0, 0, 0], "size": [50, 40, 10], "radius": 4, "tone": "lo" }],
+    "children": [{
+      "id": "shoulder", "at": [25, 20, 10], "rotate": [0, 35, 0], "mount": ["base"],
+      "parts": [
+        { "id": "pivot", "kind": "sphere", "at": [0, 0, 0], "r": 6, "mount": ["shoulder.bone"] },
+        { "id": "bone", "kind": "capsule", "at": [0, 0, 4], "r": 4, "h": 46, "tone": "hi" }
+      ],
+      "children": [{
+        "id": "elbow", "at": [0, 0, 54], "rotate": [0, -70, 0], "mount": ["shoulder.bone"],
+        "parts": [
+          { "id": "ball", "kind": "sphere", "at": [0, 0, 0], "r": 5, "mount": ["elbow.bone"] },
+          { "id": "bone", "kind": "capsule", "at": [0, 0, 4], "r": 3.2, "h": 34, "tone": "hi" },
+          { "id": "grip", "kind": "sphere", "at": [0, 0, 44], "r": 5, "tone": "lit", "mount": ["elbow.bone"] }
+        ]
+      }]
+    }]
+  }
+}
+```
+
+`examples/sistema-oseo/spec.json` uses it on the skeleton: the arms stand 7° away from the trunk from the shoulder and the
+feet toe out 10° from the ankle; when taken apart, the forearm and hand leave along the tilted arm.
+
+### What changes when drawing
+
+- **Cylinders, cones and capsules** turn their center and their axis; a **sphere**, its center.
+- **Boxes and prisms** are drawn truly turned (with their rounded corners and bevel): the assembly gives them an internal
+  base, `frame`, which is not written by hand. Their bounding box, for the paint order and the audit, is that of their 8
+  turned vertices; the camera framing and the `shadow` halo follow their real footprint.
+- **`dots`, `line` and `ticks`** turn their points and directions.
+- **A `label`** stays glued to its face: it reads along the turned face, at the same slant. If the turned face ends up with
+  its back to the figure's camera, or almost edge-on, the text would read mirrored or not show, and `check` says so
+  (`label-faces-away`).
+- **From any camera.** The figure's orbit (`isofig/orbit`) and `drawScene` draw what is turned with its own paint order
+  from any azimuth; none of this needs configuring.
+- **Without `rotate`, nothing changes**: the SVG comes out identical, byte for byte, to before (also with `[0, 0, 0]` or
+  with whole turns).
+
+### Limits
+
+- A tilted segment is a different shape for each tilt: parts that used to be identical and shared one drawing (the
+  fingers of both hands, mirrored) no longer share it, and the figure weighs a little more (the skeleton, +1.4 KB gzip).
+- `groups.*.extent`, `spin.center` and `tracks.path` are in **world** coordinates and do not turn with the node; the ones
+  the teardown generates are already in the world. A catalog piece with its own `groups` (a `pool` with `extent`) is best
+  left unturned.
+- `rotate` is static: it is not animated (what animates are the `bind`s, as translations and in-plane spins of a group).
+- Angles are in degrees. `isofig check` warns (`rotate-radians`) when `rotate` looks like radians.
+
 ## The teardown
 
 If any node has `explode`, the figure gets, on its own:
@@ -87,9 +234,11 @@ If any node has `explode`, the figure gets, on its own:
   `explode` and its ancestors', each within its stage's window: moving to step 3 moves what belongs to stage 3, and
   whatever is inside it travels along.
 - **The parts list** ("Part"): one button per name, in tree order; two nodes with the same name (both heads) are a
-  single entry. Picking one fades the rest and the readout shows its `name` and `note`. Picking a node shows its parts
-  and the inner ones that don't come off on their own: what leaves separately is another part. With the figure
-  assembled, the rest turns see-through and the part shows inside (the pistons in their bank).
+  single entry. Picking one zooms the camera onto it with an animation, brings it to the front (it paints over
+  everything) and leaves the rest at 35 %, see-through but visible; the readout shows its `name` and `note`, and "All"
+  returns to the full frame. Picking a node shows its parts and the inner ones that don't come off on their own: what
+  leaves separately is another part. With the figure assembled the part shows inside (the pistons in their bank), and
+  the zoom follows the part when you move "Take apart" or turn the figure.
 - **The readout**: "Step 3 of 7: heads off", or "Cylinder head · closes the cylinders…" with a part picked. Screen
   readers hear the step when it moves (`aria-valuetext`), and the list is a radio group with its legend.
 
@@ -135,6 +284,8 @@ round parts). A part inside another part's box (a piston in its bank) goes first
   the profile of a V block, a leaning cylinder head or a beam. Clockwise or counterclockwise, either works.
 - `cylinder` with a vector axis (`"axis": [-0.71, 0, 0.71]`): a leaning rod or piston.
 - `cone`: a truncated cone, `r` at the starting face and `r2` at the other (0 is a point). A nozzle is built from several.
+- `sphere` (`at` is the center) and `capsule` (a cylinder with a half sphere at each end; `at`, `r`, `h` and `axis` as in
+  `cylinder`): joints, long bones, rounded rods. They explode, repeat and turn like any other part.
 
 ## Checking it
 

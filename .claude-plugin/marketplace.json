@@ -9,7 +9,7 @@
     {
       "name": "isofig",
       "source": "./",
-      "description": "Writes isofig figures for you: machines, nested assemblies you can take apart, and topology, flow and UML maps, then checks them and looks at screenshots."
+      "description": "Writes isofig figures for you: machines, assemblies you can take apart (engines, cars, anatomy), and topology, flow and UML maps, then checks them and looks at screenshots."
     }
   ]
 }

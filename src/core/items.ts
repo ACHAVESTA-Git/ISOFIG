@@ -1,9 +1,11 @@
 import type { Camera } from "./camera.ts";
 import { add, boxOf, mul, type Box3, type Vec2, type Vec3 } from "./math.ts";
-import { areaOf, axisOf, circle, cornerSteps, frameOf, prism, roundedRect, segmentsFor, type Mesh } from "./mesh.ts";
+import { areaOf, axisOf, circle, cornerSteps, frameOf, framePoint, prism, roundedRect, segmentsFor, type Mesh } from "./mesh.ts";
 import type { Part, PrismPart, Tone } from "./spec.ts";
 
-export type Solid = Extract<Part, { kind: "box" | "cylinder" | "cone" | "prism" }>;
+export type Solid = Extract<Part, { kind: "box" | "cylinder" | "cone" | "prism" | "sphere" | "capsule" }>;
+/** Las piezas redondas, que se dibujan como círculo o «estadio» y no como malla. */
+export type Round = Extract<Solid, { kind: "sphere" | "capsule" }>;
 export type Detail = Extract<Part, { kind: "ticks" | "dots" | "line" | "label" }>;
 
 /** Una pieza sólida con sus detalles: la unidad del orden de pintado. */
@@ -25,9 +27,11 @@ export interface Item {
   box: Box3;
 }
 
-export const isSolid = (p: Part): p is Solid => p.kind === "box" || p.kind === "cylinder" || p.kind === "cone" || p.kind === "prism";
+const SOLIDS = ["box", "cylinder", "cone", "prism", "sphere", "capsule"];
+export const isSolid = (p: Part): p is Solid => SOLIDS.includes(p.kind);
+export const isRound = (p: Solid): p is Round => p.kind === "sphere" || p.kind === "capsule";
 const DETAILS = new Set(["ticks", "dots", "line", "label"]);
-const KNOWN = new Set(["box", "cylinder", "cone", "prism", ...DETAILS]);
+const KNOWN = new Set([...SOLIDS, ...DETAILS]);
 
 /** Qué coordenadas del mundo son la planta (dos) y cuál el eje de la extrusión, según `axis`. */
 const PLAN_AXES = { z: [0, 1, 2], y: [0, 2, 1], x: [1, 2, 0] } as const;
@@ -47,6 +51,8 @@ export function shift(p: Part, d: Vec3): Part {
     case "box":
     case "cylinder":
     case "cone":
+    case "sphere":
+    case "capsule":
       return { ...p, at: add(p.at, d) };
     case "prism": {
       const [i, j, k] = PLAN_AXES[p.axis ?? "z"];
@@ -105,8 +111,27 @@ function discBox(c: Vec3, w: Vec3, r: number): Vec3[] {
   return [add(c, mul(e, -1)), add(c, e)];
 }
 
+/** Los centros de las dos medias esferas (el mismo en una esfera). */
+export const endsOf = (p: Round): [Vec3, Vec3] => [p.at, p.kind === "capsule" ? add(p.at, mul(axisOf(p.axis), Math.max(0, p.h))) : p.at];
+
+/** La planta de un prisma, antihoraria y en el orden (u, v) de su base (con `axis` y va como [z, x]). */
+function prismRing(p: PrismPart): Vec2[] {
+  const ring = p.axis === "y" ? p.plan.map(([x, z]): Vec2 => [z, x]) : p.plan;
+  return areaOf(ring) < 0 ? [...ring].reverse() : ring;
+}
+
+/** Las esquinas, en el mundo, de una caja o un prisma con `frame` (los pone un nodo con `rotate`); sin él, nada. */
+export function framedPoints(p: Solid): Vec3[] | undefined {
+  if ((p.kind !== "box" && p.kind !== "prism") || !p.frame) return undefined;
+  const [ring, h] = p.kind === "box" ? ([[[0, 0], [p.size[0], 0], [p.size[0], p.size[1]], [0, p.size[1]]], p.size[2]] as const) : ([prismRing(p), p.h] as const);
+  return ring.flatMap(([s, t]) => [framePoint(p.frame!, s, t, 0), framePoint(p.frame!, s, t, h)]);
+}
+
 export function solidBox(p: Solid): Box3 {
+  const corners = framedPoints(p);
+  if (corners) return boxOf(corners);
   if (p.kind === "box") return { min: [...p.at], max: add(p.at, p.size) };
+  if (isRound(p)) return boxOf(endsOf(p).flatMap((c) => [add(c, [-p.r, -p.r, -p.r]), add(c, [p.r, p.r, p.r])]));
   if (p.kind === "prism") return boxOf(p.plan.flatMap((q) => [prismPoint(p, q, p.z), prismPoint(p, q, p.z + p.h)]));
   const w = axisOf(p.axis);
   const end = add(p.at, mul(w, p.h));
@@ -152,24 +177,19 @@ export function buildItems(parts: Part[]): { items: Item[] } {
   return { items };
 }
 
-export function meshOf(p: Solid, c: Camera): Mesh {
+export function meshOf(p: Exclude<Solid, Round>, c: Camera): Mesh {
   if (p.kind === "box") {
     const [w, d, h] = p.size;
     const r = p.radius ?? 0;
-    return prism(roundedRect(w, d, r, cornerSteps(r * c.scale)), frameOf(p.at), h, p.bevel ?? 0);
+    return prism(roundedRect(w, d, r, cornerSteps(r * c.scale)), p.frame ?? frameOf(p.at), h, p.bevel ?? 0);
   }
-  if (p.kind === "prism") {
-    const axis = p.axis ?? "z";
-    // El marco de y lleva la planta en otro orden: se lee en su base y se orienta sola (horaria o antihoraria).
-    let ring = axis === "y" ? p.plan.map(([x, z]): Vec2 => [z, x]) : p.plan;
-    if (areaOf(ring) < 0) ring = [...ring].reverse();
-    return prism(ring, frameOf(prismPoint(p, [0, 0], p.z), axis), p.h, p.bevel ?? 0);
-  }
+  // El marco de y lleva la planta en otro orden: se lee en su base y se orienta sola (horaria o antihoraria).
+  if (p.kind === "prism") return prism(prismRing(p), p.frame ?? frameOf(prismPoint(p, [0, 0], p.z), p.axis ?? "z"), p.h, p.bevel ?? 0);
   if (p.kind === "cone") {
-    const n = segmentsFor(Math.max(p.r, p.r2) * c.scale);
+    const n = segmentsFor(Math.max(p.r, p.r2) * c.scale, c.draft);
     return prism(circle(p.r, n), frameOf(p.at, p.axis), p.h, 0, circle(p.r2, n));
   }
-  return prism(circle(p.r, segmentsFor(p.r * c.scale)), frameOf(p.at, p.axis), p.h, p.bevel ?? 0);
+  return prism(circle(p.r, segmentsFor(p.r * c.scale, c.draft)), frameOf(p.at, p.axis), p.h, p.bevel ?? 0);
 }
 
 export interface Lines {

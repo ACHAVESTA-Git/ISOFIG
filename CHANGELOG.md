@@ -1,5 +1,43 @@
 # Changelog
 
+## 0.10.0 · 2026-11-04
+
+Feedback from the first outside review: picking a part now flies the camera to it, figures turn a full 360°, nodes
+get Unity-style rotation, three teardown bugs are gone, and two demos show isofig beyond software.
+
+### Picking a part
+- Picking an entry in the parts list zooms the camera onto it with an animated `viewBox`, paints it in front of everything (even when it sits inside another part) and leaves the rest at 35 % instead of 20 %; "All" returns to the full frame. The frame follows the part when the teardown moves or the figure turns, and nothing outside it spills over the controls.
+- Fixed: dimmed parts never got their color back, so every pick left the figure more see-through.
+- Fixed: turning a taken-apart figure showed it assembled while dragging; the runtime now applies the current pose in the same frame the orbit redraws.
+- The runtime grows from 3.6 to 4.3 KB gzipped (with the arrow keys of the 360° turn); its budget moves from 4096 to 4608 B.
+
+### Three axes per node
+- Nodes take `rotate: [x, y, z]` in degrees, turning around their own `at` (extrinsic x, then y, then z; z is vertical) and carrying their parts and children, like a Unity `Transform`.
+- `explode` is in the parent's space, so a part leaves along its turned parent's axis.
+- Boxes and prisms are drawn truly turned, labels stay glued to their face, and figures without `rotate` render byte for byte as before. New findings `rotate-radians` and `label-faces-away`.
+
+### A full 360° turn
+- Orbit turns a full circle by default (`range` still limits it); arrow keys turn 15° and change elevation 5° with the drawing focused; releasing the drag keeps turning with inertia and brakes, with no inertia under reduced motion.
+- The camera scale shrinks just enough to fit the whole teardown from any angle and never exceeds the initial one.
+- Details engraved on faces that look away are no longer drawn; lid labels seen from behind turn to read upright.
+
+### New solids
+- `sphere` (`at` is the center, `r`) and `capsule` (a cylinder with a half sphere at each end: `at`, `r`, `h`, `axis`; `h: 0` is a sphere), drawn as a circle and a stadium with six tone layers, same light and edge as other solids.
+- `paint`, `tone`, states, `explode`, `repeat`, orbit and `reorder` work unchanged; `shadow` gives a round halo and the frame fits the exact circle.
+- Paint order and audit use the exact silhouette and a separating-plane test for round parts, so parallel tilted capsules no longer report false collisions.
+
+### Faster turning
+- Each teardown pose reuses the rest pose's paint-order decisions for parts that moved together, and the ready list is kept instead of rescanned: `drawScene` runs about twice as fast with byte-identical output (V8 36 → 19 ms, skeleton 76 → 37 ms in Node; in Chrome the V8 turns at ~40 fps instead of ~24).
+- While the camera moves the scene is drawn as a draft and only the shown pose's paint order is computed; it redraws in full when it stops. Chrome while dragging, from 0.9.1 to 0.10.0: V8 42 → 17 ms per frame (24 → 58 fps), skeleton 92 → 28 ms.
+- Budgets: orbit 10.5 KB, core 44 KB.
+
+### Validation
+- `check` accepts `"{key}"` placeholders in the numbers of `defs`, as the nesting guide already showed; a `with` that fills one with text is reported on the template.
+
+### Examples
+- `examples/muscle-car`: a Camaro-style muscle car (13 parts, 9-step teardown) made only of boxes, cylinders, cones and prisms, in plain JSON; a schematic, no logos.
+- `examples/sistema-oseo`: an adult human skeleton in anatomical position, arms hanging 7° from the shoulder and feet toeing out 10° with `rotate`, that comes apart bone by bone in seven steps, built from spheres, capsules and prisms (24 ribs, 24 vertebrae with 23 discs, 27-bone hands, 26-bone feet), with 12 pickable parts and short, checked notes in Spanish and English.
+
 ## 0.9.1 · 2026-11-04
 
 - `npm i github:ACHAVESTA-Git/ISOFIG` builds the package: a `prepare` script compiles `dist/` when npm installs it from git (npm does not run `prepack` there).
