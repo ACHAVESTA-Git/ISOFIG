@@ -85,8 +85,14 @@ Craft rules for machines (tones, detail, volume, composition, motion, paint-orde
   flows between them and what decides the flow; ask one question only if the mechanism is ambiguous. Then invent the
   object from that list. Never trace the picture: its boxes and arrows are the *concept*, not the object.
 - **A docker compose file.** `docker compose config --format json | npx isofig import compose - -o spec.json` gives a
-  first figure (a rack per service, replicas as units, ports, volumes, networks). Enrich it: it still has to tell
-  the story the user cares about.
+  first map (each service the object its image suggests, ribbons for `depends_on`, published ports entering from an
+  Internet globe, volumes as buckets). Edit the JSON: change an object with `is`, group services in a container, add
+  a `flow`.
+- **A topology, an order flow or a UML diagram** (or a Mermaid `flowchart` / `classDiagram`). Write a `map` instead of
+  parts: nodes with `is` (a real object from the catalog: `phone`, `server`, `database`, `queue`, `class`…),
+  containers with `children`, `links`, and `flows` for the packets. `npx isofig import mermaid diagram.mmd -o map.json`
+  gives a first one. Every node is still an object, never a labelled box; keep a map to about 6 colours and under 20
+  nodes. Guide: `node_modules/isofig/docs/en/maps.md`.
 - **A real system (Kubernetes, a queue, an API).** Collect the true numbers first, then follow the workflow.
 
 ## The kit

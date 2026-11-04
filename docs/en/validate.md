@@ -54,6 +54,8 @@ returns its errors.
 | `id-duplicate` | Two solid parts with the same id after `repeat` |
 | `on-unknown`, `on-not-solid` | A detail on a part that does not exist, or that is itself a detail |
 | `node-id-missing`, `node-id-duplicate`, `use-unknown`, `use-cycle`, `use-failed`, `stage-invalid`, `axis-zero` | In a tree ([nesting.md](nesting.md)): a node without an id or with a sibling's, a `use` that is neither in `defs` nor in the catalog, that uses itself or whose options the kit rejects, a `stage` that is not a number, an axis `[0, 0, 0]` |
+| `map-node-id-duplicate`, `map-glyph-unknown`, `map-node-unknown` | In a `map` ([maps.md](maps.md)): a node id used twice, an `is` that is not in the catalog (a container may be anything), a link or flow that names a node that does not exist |
+| `track-path-short`, `track-period-invalid` | A `tracks` entry whose `path` has fewer than 2 distinct points, or whose `period` is not a number greater than 0 |
 | `dimension-invalid`, `camera-invalid`, `spin-plane-invalid` | `width`, `height`, `pad`, the camera angles or a spin plane that cannot be used |
 | `draw-failed`, `model-invalid`, `model-throws`, `presets-need-model` | The drawing or the model failed; `--presets` without `--model` |
 | `cli-unknown-command`, `cli-unknown-format`, `cli-missing-argument`, `set-value-invalid` | Wrong use of the command line: an unknown command or `--format`, a missing argument, a `--set` that is not `param=number`. They are reported before the spec is read, with the help and exit code 1 |
@@ -68,6 +70,7 @@ returns its errors.
 | Controls | `param-id-missing` ↑, `param-id-duplicate` ↑, `param-number-invalid` ↑, `param-range-invalid` ↑, `param-step-invalid`, `param-value-out-of-range` ↑, `param-value-off-step` ↑, `param-label-missing`, `choice-options-missing` ↑, `choice-value-invalid` ↑, `toggle-value-invalid` |
 | `bind` | `bind-unknown-param` ↑, `bind-unknown-group` ↑, `bind-spin-no-pivot` ↑, `bind-no-effect`, `bind-window-invalid` |
 | Tree | `stage-without-explode`, `explode-on-root`, `root-repeat` |
+| Map and tracks | `map-flow-short`, `map-cell-collision`, `map-paint-unknown`, `track-delay-invalid`, `track-group-unknown`, and from the compiler `map-label-small`, `map-route-blocked` |
 | Presets and readout | `preset-unknown-param` ↑, `preset-value-invalid` ↑, `preset-value-out-of-range` ↑, `preset-value-off-step` ↑, `preset-press-invalid` ↑, `preset-no-effect`, `preset-label-missing`, `preset-note-missing`, `readout-unknown-param`, `readout-long` |
 | Audit | `part-floats`, `parts-overlap`, `paint-order-ambiguous`, `label-unreadable`, and `weight-over-budget`, which needs Node: `isofig check` and `budgetIssues(spec, measure(html), lang)` from `isofig/node` give it |
 | Color ([color.md](color.md)) | `paint-unknown` ↑, `paint-is-state`, `palette-base-invalid`, `palette-use-invalid`, and on the drawing `palette-roles-unmet`, `palette-too-many-colors`, `paint-indistinct`, `paint-text-contrast` |

@@ -22,9 +22,11 @@ Una `FigureSpec` es un objeto plano: se puede escribir en TypeScript (con autoco
 | `groups` | `Record<string, GroupSpec>` | Qué se mueve y cuánto, para que quepa en cualquier pose. |
 | `params` | `ParamSpec[]` | Controles deslizantes. |
 | `bind` | `BindSpec[]` | Enlaces parámetro → grupo sin escribir modelo. |
+| `tracks` | `TrackSpec[]` | Grupos que recorren una polilínea sin modelo (los paquetes de un mapa). Ver [Recorridos](#recorridos). |
+| `map` | `MapSpec` | Una topología, un mapa de flujo o un diagrama UML, compilado a un árbol `root` y a `tracks`. Ver [mapas.md](mapas.md). |
 | `readout` | `Text` | Plantilla de la lectura, con `{param}`. El modelo puede reemplazarla. |
 | `model` | `string` | Nombre con el que se registra el modelo en el runtime. |
-| `autoplay` | `boolean` | Por defecto, `true` si hay modelo. Con movimiento reducido siempre arranca en pausa. |
+| `autoplay` | `boolean` | Por defecto, `true` si hay modelo o recorridos. Con movimiento reducido siempre arranca en pausa. |
 | `motion.tau` | `number` | Constante de tiempo de la interpolación (s), por defecto 0,18. |
 | `motion.settle` | `number` | Con movimiento reducido, segundos que se simulan de golpe al montar y tras cada control o desvío (los desvíos simulan 8 si no se indica). |
 | `budget` | `number` | KB gzip que no debe pasar (por defecto 40). |
@@ -35,7 +37,9 @@ Una `FigureSpec` es un objeto plano: se puede escribir en TypeScript (con autoco
 ## Piezas sólidas
 
 Todas aceptan: `id`, `tone` (`lo` base, `mid` estructura, `hi` sujeto, `lit` el único acento), `group`, `hidden`,
-`repeat`, `float`, `mount`, `shadow` y `paint` (un rol o un material: `"data"`, `"steel"`…; ver [color.md](color.md)).
+`repeat`, `float`, `mount`, `shadow`, `paint` (un rol o un material: `"data"`, `"steel"`…; ver [color.md](color.md)) y
+`ground` (una pieza del piso, como una bandeja o una cinta pegada al suelo: se pinta antes que todo lo que se alza o
+pasa sobre ella y no entra en las dudas del orden de pintado; los mapas la usan).
 
 | `kind` | Campos | Notas |
 |---|---|---|
@@ -193,10 +197,37 @@ mountAll();
 
 `renderFigure(spec, { zoom: false })` quita el chip. `--isofig-zoom-width` cambia el ancho mínimo del diálogo.
 
+## Recorridos
+
+`tracks` mueve un grupo por una polilínea sin modelo: los paquetes de un mapa, un carrito sobre un riel.
+
+```json
+"tracks": [
+  { "group": "paquete", "path": [[0, 0, 0], [0, 120, 0], [60, 120, 0]], "period": 6, "delay": 1, "hide": [[0.4, 0.5]] }
+]
+```
+
+| Campo | Para qué |
+|---|---|
+| `group` | El grupo (el `group` de sus piezas) que viaja. Sus piezas se dibujan donde empieza `path`. |
+| `path` | Puntos del recorrido en el mundo; al menos dos distintos. |
+| `period` | Segundos que tarda en recorrer `path` entera, a velocidad constante según el arco. Mayor que 0. |
+| `delay` | Segundos que espera antes de salir la primera vez. |
+| `loop` | `false`: lo recorre una vez y se queda al final. Por defecto vuelve a empezar. |
+| `hide` | Tramos del recorrido, como fracciones del arco (`[0.4, 0.5]`), en que el grupo no se ve: pasa por dentro de un objeto. |
+
+El grupo aparece y se apaga en los extremos. El build calcula el arco una vez; el runtime solo interpola, con o sin un
+modelo propio (los grupos del modelo y los recorridos se dibujan juntos). El botón de pausa los detiene (una figura con
+recorridos arranca andando: `autoplay` es `true` por defecto) y con movimiento reducido cada grupo queda a mitad de
+camino y a la vista. Un grupo que ninguna pieza tiene es un aviso (`track-group-unknown`); un `period` que no es mayor
+que 0, o un `path` con menos de dos puntos distintos, es un error. Lo que viaja se pinta al final, así que siempre se
+ve. Costo en el runtime: 207 B gzip.
+
 ## Importar y previsualizar
 
-- `isofig import compose <archivo.json|->` arma una spec desde `docker compose config --format json` (ver
-  [importar.md](importar.md)). Es un punto de partida: enriquécela a mano.
+- `isofig import compose <archivo.json|->` arma un mapa desde `docker compose config --format json`, y `isofig import
+  mermaid <archivo.mmd|->` uno desde un flowchart o un diagrama de clases de Mermaid (ver [importar.md](importar.md)
+  y [mapas.md](mapas.md)). Son un punto de partida: edítalos a mano.
 - `isofig build <spec> --format page --model <modelo> --advance 3` arma una página suelta que empaqueta el modelo
   y los archivos locales que importa, y arranca con 3 s ya simulados para poder capturarla en Chrome headless.
 - Si un aviso dice «orden de pintado ambiguo cerca de A ↔ B, C», esas son las piezas que forman el ciclo: separa
