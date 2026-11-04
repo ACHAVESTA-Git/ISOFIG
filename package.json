@@ -4,6 +4,20 @@
   "description": "Explain technical ideas as small, crafted isometric machines: build-time SVG, a tiny animation runtime, Astro and Angular adapters, and a Claude Code skill.",
   "type": "module",
   "license": "MIT",
+  "keywords": [
+    "isometric",
+    "svg",
+    "diagram",
+    "illustration",
+    "figure",
+    "animation",
+    "technical-diagrams",
+    "documentation",
+    "astro",
+    "angular",
+    "claude-code",
+    "skill"
+  ],
   "bin": {
     "isofig": "./dist/cli/index.js"
   },
@@ -16,14 +30,23 @@
       "types": "./dist/runtime/index.d.ts",
       "default": "./dist/runtime/index.js"
     },
-    "./astro": "./src/astro/Figure.astro",
-    "./theme.css": "./src/theme/theme.css",
-    "./angular": "./src/angular/isofig-figure.ts",
     "./orbit": {
       "types": "./dist/orbit/index.d.ts",
       "default": "./dist/orbit/index.js"
-    }
+    },
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "default": "./dist/node/index.js"
+    },
+    "./astro": "./src/astro/Figure.astro",
+    "./theme.css": "./src/theme/theme.css",
+    "./package.json": "./package.json"
   },
+  "sideEffects": [
+    "./src/theme/theme.css",
+    "./src/astro/Figure.astro",
+    "./src/angular/isofig-figure.ts"
+  ],
   "files": [
     "dist",
     "src/astro",
@@ -34,15 +57,18 @@
     "docs/en",
     "examples/token-bucket/spec.ts",
     "examples/token-bucket/model.ts",
-    "NOTICE.md"
+    "NOTICE.md",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=22.18"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "check": "tsc -p tsconfig.check.json",
+    "check": "tsc -p tsconfig.check.json && tsc -p tsconfig.browser.json",
     "test": "node --no-warnings --test \"test/**/*.test.ts\"",
+    "prepack": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\" && npm run build",
+    "prepublishOnly": "npm run check && npm test",
     "example": "node src/cli/index.ts build examples/token-bucket/spec.ts --format page -o examples/token-bucket/preview.html --model examples/token-bucket/model.ts"
   },
   "peerDependencies": {

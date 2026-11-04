@@ -1,4 +1,3 @@
-import { gzipSync } from "node:zlib";
 import { audit } from "./audit.ts";
 import { drawScene } from "./scene.ts";
 import { escapeHtml as esc } from "./serialize.ts";
@@ -30,8 +29,8 @@ export interface Rendered {
   html: string;
   svg: string;
   data: RuntimeData;
+  /** Tamaño del HTML en bytes UTF-8. El gzip y el presupuesto de peso los mide `measure()` de `isofig/node`. */
   bytes: number;
-  gzip: number;
   warnings: string[];
   errors: string[];
 }
@@ -155,13 +154,10 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
     (caption ? `<figcaption>${esc(caption)}</figcaption>` : "") +
     `<script type="application/json" class="isofig-data">${JSON.stringify(data).replace(/</g, "\\u003c")}</script></figure>`;
 
-  const bytes = Buffer.byteLength(html);
-  const gzip = gzipSync(html, { level: 9 }).length;
+  const bytes = new TextEncoder().encode(html).length;
   const warnings = [
     ...cycles.map((name) => `orden de pintado ambiguo cerca de «${name}»`),
     ...audit(items),
   ];
-  const budget = (spec.budget ?? 40) * 1024;
-  if (gzip > budget) warnings.push(`pesa ${(gzip / 1024).toFixed(1)} KB gzip, más que el presupuesto de ${spec.budget ?? 40} KB`);
-  return { html, svg, data, bytes, gzip, warnings, errors };
+  return { html, svg, data, bytes, warnings, errors };
 }

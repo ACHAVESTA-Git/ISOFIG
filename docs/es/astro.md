@@ -55,7 +55,7 @@ import balde from "../figuras/balde";
 | `n` | Número que se muestra como «Fig. n». |
 | `class` | Clase extra para el contenedor. |
 
-El componente importa `isofig/theme.css`, así el CSS solo llega a las páginas que tienen una figura. Si la spec
+El componente importa `isofig/theme.css` (la única ruta pública del tema), así el CSS solo llega a las páginas que tienen una figura. Si la spec
 tiene un error (un `on` que apunta a una pieza que no existe, un id repetido), el build falla. Los avisos de la
 auditoría (piezas que flotan, piezas que se atraviesan, peso de más) salen en la consola del build.
 
@@ -128,6 +128,18 @@ npx isofig build src/figuras/balde.ts --format page --model src/figuras/balde.mo
 
 `check` imprime el peso y los avisos (falla con `--strict` si hay alguno). `page` arma una página suelta para
 mirarla en el navegador o capturarla en headless.
+
+Para medir el peso desde tu propio código de build, usa `isofig/node`. Es la única entrada que necesita Node
+(`node:zlib`); `isofig` e `isofig/runtime` corren también en el navegador.
+
+```ts
+import { renderFigure } from "isofig";
+import { checkBudget, measure } from "isofig/node";
+
+const figure = renderFigure(spec);
+const size = measure(figure.html); // { bytes, gzip }
+for (const warning of checkBudget(spec, size)) console.warn(warning); // más que `spec.budget` (40 KB por defecto)
+```
 
 ## Problemas frecuentes
 

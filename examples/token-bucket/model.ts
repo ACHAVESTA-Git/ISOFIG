@@ -1,4 +1,4 @@
-import type { GroupView, Model } from "../../src/runtime/index.ts";
+import type { GroupView, Model } from "isofig/runtime";
 
 const CAP = 8;
 const COIN_STEP = 3.4;

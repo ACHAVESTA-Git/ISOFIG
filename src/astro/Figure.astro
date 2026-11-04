@@ -1,5 +1,6 @@
 ---
 import { renderFigure, type FigureSpec } from "isofig";
+import { checkBudget, measure } from "isofig/node";
 import "isofig/theme.css";
 
 interface Props {
@@ -12,7 +13,7 @@ interface Props {
 const { spec, lang = "en", n, class: className } = Astro.props;
 const figure = renderFigure(spec, { lang, n });
 if (figure.errors.length) throw new Error(`isofig «${spec.id}»: ${figure.errors.join("; ")}`);
-for (const w of figure.warnings) console.warn(`isofig «${spec.id}»: ${w}`);
+for (const w of [...figure.warnings, ...checkBudget(spec, measure(figure.html), lang)]) console.warn(`isofig «${spec.id}»: ${w}`);
 ---
 
 <div class:list={["isofig-host", className]} set:html={figure.html} />

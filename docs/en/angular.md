@@ -13,13 +13,19 @@ npm i isofig
 npx isofig add angular src/app/isofig
 ```
 
-`add angular` copies `isofig-figure.ts` into your project. It's yours: you can change its selector or styles.
+`add angular` copies `isofig-figure.ts` into your project; that is the only way to install the component. The
+package does not export it as a module (there is no `isofig/angular`), because Angular only compiles the
+TypeScript that belongs to your project, not `.ts` files inside `node_modules`. The copy is yours: you can change
+its selector or styles. It imports `isofig/runtime`, which does come from the package.
 
 Add the theme in `angular.json`, under `architect.build.options.styles`:
 
 ```json
-"styles": ["node_modules/isofig/src/theme/theme.css", "src/styles.css"]
+"styles": ["isofig/theme.css", "src/styles.css"]
 ```
+
+`isofig/theme.css` is the theme's only public path. Don't point to `node_modules/isofig/src/theme/theme.css`: it
+is an internal path and may change.
 
 ## 2. Write the spec
 
@@ -100,7 +106,7 @@ escaped when the module is generated.
 
 ## 7. Theme
 
-Same as in Astro: override the `--isofig-*` variables in your `styles.css`. Dark mode follows
+Same as in Astro (the theme is `isofig/theme.css`): override the `--isofig-*` variables in your `styles.css`. Dark mode follows
 `prefers-color-scheme` or `data-theme="dark"` on `<html>`.
 
 ## Common problems
@@ -109,5 +115,5 @@ Same as in Astro: override the `--isofig-*` variables in your `styles.css`. Dark
 |---|---|
 | `TS2322 … readonly … not assignable` | You generated the module with an old version of the CLI. Generate it again. |
 | `TS4111 Property 'x' comes from an index signature` in the model | Declare the parameters: `Model<State, { x: number }>`. |
-| The figure has no colors | `theme.css` is missing from `styles` in `angular.json`. |
+| The figure has no colors | `isofig/theme.css` is missing from `styles` in `angular.json`. |
 | It doesn't animate | Check the `model` input and the system's reduced motion setting (it starts paused). |

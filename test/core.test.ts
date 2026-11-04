@@ -7,6 +7,7 @@ import { drawMesh } from "../src/core/shade.ts";
 import { compare } from "../src/core/order.ts";
 import { expand } from "../src/core/items.ts";
 import { renderFigure } from "../src/core/render.ts";
+import { measure } from "../src/node/index.ts";
 import tokenBucket from "../examples/token-bucket/spec.ts";
 
 test("la cámara pone más cerca lo que está hacia el lector y arriba lo que sube", () => {
@@ -49,7 +50,8 @@ test("la figura de ejemplo entra en el presupuesto y pasa la auditoría", () => 
   const r = renderFigure(tokenBucket, { lang: "es", n: 1 });
   assert.deepEqual(r.errors, []);
   assert.deepEqual(r.warnings, []);
-  assert.ok(r.gzip < 40 * 1024, `pesa ${r.gzip} bytes gzip`);
+  const { gzip } = measure(r.html);
+  assert.ok(gzip < 40 * 1024, `pesa ${gzip} bytes gzip`);
   assert.match(r.html, /data-isofig="token-bucket"/);
   assert.match(r.html, /Balde de fichas/);
   assert.match(r.html, /<title id="token-bucket-t">/);
