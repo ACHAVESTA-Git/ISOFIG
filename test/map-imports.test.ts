@@ -8,7 +8,6 @@ import { fromMermaid, fromMermaidDetailed } from "../src/core/importers/mermaid.
 import { inferGlyph } from "../src/core/map/infer.ts";
 import { renderFigure } from "../src/core/render.ts";
 import type { MapNode, MapSpec } from "../src/core/map/types.ts";
-import { flatMap } from "./flatten-map.ts";
 
 const mapOf = (spec: { map?: MapSpec }): MapSpec => spec.map!;
 const find = (nodes: MapNode[], id: string): MapNode | undefined => nodes.flatMap((n) => [n, ...(n.children ?? [])]).find((n) => n.id === id);
@@ -61,7 +60,7 @@ test("un flowchart de Mermaid pasa a un mapa: formas, flechas con texto, & y sub
 test("flowchart TD reparte en niveles y se dibuja", () => {
   const spec = fromMermaid("graph TD\n  A[Inicio] --> B{¿Listo?}\n  B -->|sí| C[Fin]\n  B -->|no| A\n");
   assert.equal(mapOf(spec).layout, "layers");
-  const r = renderFigure(flatMap(spec), { lang: "es" });
+  const r = renderFigure(spec, { lang: "es" });
   assert.deepEqual(r.errors, []);
 });
 
@@ -106,7 +105,7 @@ test("un classDiagram pasa a clases con sus cajones, estereotipos y enlaces UML"
   assert.equal(link("PagoConTarjeta", "Notificador")?.kind, "implements");
   const has = link("Cliente", "Pedido")!;
   assert.deepEqual([has.kind, has.arrow, has.mult, has.label], ["associates", "end", ["1", "*"], "hace"]);
-  const r2 = renderFigure(flatMap(r.spec), { lang: "es" });
+  const r2 = renderFigure(r.spec, { lang: "es" });
   assert.deepEqual(r2.errors, []);
 });
 
@@ -133,7 +132,7 @@ test("un compose pasa a un mapa: objeto por imagen, cintas por depends_on, puert
   const volume = m.links!.find((l) => l.to === "vol-0")!;
   assert.deepEqual([volume.from, volume.dashed, volume.arrow], ["db", true, "none"]);
   assert.equal(find(m.nodes, "vol-0")?.name, "pgdata");
-  const r = renderFigure(flatMap(spec), { lang: "es" });
+  const r = renderFigure(spec, { lang: "es" });
   assert.deepEqual(r.errors, []);
   assert.deepEqual(r.warnings, []);
   assert.deepEqual(JSON.parse(readFileSync(new URL("../examples/compose/spec.json", import.meta.url), "utf8")), JSON.parse(JSON.stringify(spec)), "el ejemplo publicado es lo que importa la CLI");

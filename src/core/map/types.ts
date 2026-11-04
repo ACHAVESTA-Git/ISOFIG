@@ -1,4 +1,4 @@
-import type { Part, Text, TrackSpec, Vec3 } from "../spec.ts";
+import type { Node, Text, TrackSpec } from "../spec.ts";
 
 /** Los objetos del catálogo: cada nodo hoja de un mapa es uno de estos. */
 export const GLYPHS = [
@@ -87,17 +87,7 @@ export interface MapSpec {
 }
 
 /** Lo que el compilador entrega como árbol: un `Node` de la especificación anidada. */
-export interface TreeNode {
-  id: string;
-  name?: Text;
-  note?: Text;
-  step?: Text;
-  at?: Vec3;
-  explode?: Vec3;
-  stage?: number;
-  parts?: Part[];
-  children?: TreeNode[];
-}
+export type TreeNode = Node;
 
 export interface CompiledMap {
   root: TreeNode;

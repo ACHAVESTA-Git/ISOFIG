@@ -8,9 +8,13 @@ import { buildFlow } from "../src/core/map/flows.ts";
 import { styleOf } from "../src/core/map/links.ts";
 import { CATALOG } from "../src/core/map/glyphs/index.ts";
 import { renderFigure } from "../src/core/render.ts";
+import { assemble } from "../src/core/tree.ts";
+import type { TreeNode } from "../src/core/map/types.ts";
 import { measure } from "../src/node/index.ts";
 import type { FigureSpec, Part } from "../src/core/spec.ts";
-import { flatMap, flatten } from "./flatten-map.ts";
+
+/** Las piezas de un árbol de nodos, ya aplanadas por el ensamblado. */
+const partsOf = (root: TreeNode): Part[] => assemble({ id: "t", title: "t", root }).parts;
 
 const example = (name: string): FigureSpec => JSON.parse(readFileSync(new URL(`../examples/${name}/spec.json`, import.meta.url), "utf8"));
 const node = (id: string, is = "service", extra: object = {}) => ({ id, is, name: id, ...extra });
@@ -20,7 +24,7 @@ test("cada objeto del catálogo es un nodo con piezas pintadas con un rol, y nin
   assert.equal(GLYPHS.length, 17);
   for (const is of GLYPHS) {
     const c = compileMap({ nodes: [node("x", is, { fields: ["a: b"], methods: ["m()"] })] });
-    const parts = flatten(c.root);
+    const parts = partsOf(c.root);
     assert.ok(parts.length >= 6, `${is} tiene solo ${parts.length} piezas`);
     assert.equal(parts.some((p) => (p as { paint?: string }).paint === "$role"), false, is);
     assert.ok(parts.some((p) => (p as { paint?: string }).paint === CATALOG[is].role), `${is} no usa su rol ${CATALOG[is].role}`);
@@ -202,7 +206,7 @@ test("los paquetes de un mapa salen de sus flujos y siguen la cinta entre los no
   });
   assert.ok(c.tracks.some((t) => t.group.startsWith("pkt-f-")));
   assert.ok(c.tracks.some((t) => t.group.startsWith("pkt-g-")), "un flujo sobre un par sin enlace crea la cinta que le falta");
-  const parts = flatten(c.root).filter((p) => "group" in p && p.group);
+  const parts = partsOf(c.root).filter((p) => "group" in p && p.group);
   for (const t of c.tracks) assert.ok(parts.some((p) => (p as { group?: string }).group === t.group), `${t.group} tiene piezas`);
   for (const t of c.tracks) assert.ok(t.path.length >= 2 && t.period > 0);
 });
@@ -210,7 +214,7 @@ test("los paquetes de un mapa salen de sus flujos y siguen la cinta entre los no
 test("compilar dos veces da lo mismo, byte a byte", () => {
   const spec = example("mapa-tienda");
   assert.equal(JSON.stringify(compileMap(spec.map!)), JSON.stringify(compileMap(spec.map!)));
-  const html = (s: FigureSpec) => renderFigure(flatMap(s), { lang: "es" }).html;
+  const html = (s: FigureSpec) => renderFigure(s, { lang: "es" }).html;
   assert.equal(html(spec), html(spec));
 });
 
@@ -233,7 +237,7 @@ test("los rótulos de un mapa miden al menos 10 px en la vista ampliada y, si no
     return { nodes, links: nodes.slice(1).map((x, i) => ({ from: nodes[i].id, to: x.id })) };
   };
   for (const map of [{ nodes: [node("a")] }, chain(6, (i) => `nodo-${i}`)]) {
-    const r = renderFigure(flatMap({ id: "t", title: "t", map }), { lang: "es" });
+    const r = renderFigure({ id: "t", title: "t", map }, { lang: "es" });
     assert.deepEqual(r.errors, []);
     assert.equal(r.issues.some((i) => i.code === "label-unreadable"), false, r.issues.map((i) => i.message).join("\n"));
   }
@@ -245,12 +249,12 @@ for (const name of ["mapa-tienda", "mapa-pedido", "mapa-uml"]) {
   test(`el ejemplo ${name} se dibuja sin errores ni avisos, con sus paquetes y dentro del peso`, () => {
     const spec = example(name);
     for (const lang of ["es", "en"]) {
-      const r = renderFigure(flatMap(spec), { lang });
+      const r = renderFigure(spec, { lang });
       assert.deepEqual(r.errors, [], `${name} ${lang}`);
       assert.deepEqual(r.warnings, [], `${name} ${lang}`);
       assert.ok(measure(r.html).gzip < 40 * 1024, `${name} pesa ${measure(r.html).gzip} B gzip`);
     }
-    const r = renderFigure(flatMap(spec), { lang: "es" });
+    const r = renderFigure(spec, { lang: "es" });
     assert.equal(Boolean(r.data.tracks?.length), name !== "mapa-uml");
     assert.match(r.html, /role="img"/);
   });

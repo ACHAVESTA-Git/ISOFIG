@@ -117,11 +117,12 @@ export function renderFigure(spec: FigureSpec, options: RenderOptions = {}): Ren
     // Una spec anidada se aplana aquí; los problemas del árbol ya los dijo la validación.
     const tree = assembleTree(spec, { catalog });
     const flat = tree.spec;
+    for (const n of tree.notes) issues.push(makeIssue(lang, n.code, n.path, n.vars));
     const start = options.values ?? {};
     if (flat.params) flat.params = flat.params.map((p) => (p.id in start ? { ...p, value: start[p.id] } : p));
     const r = draw(flat, options, lang, issues);
     // La auditoría habla de la spec aplanada: sus `parts[k]` se traducen al lugar del árbol de donde sale cada pieza.
-    if (spec.root) {
+    if (spec.root || spec.map) {
       for (const i of r.issues) {
         const m = /^parts\[(\d+)\]/.exec(i.path);
         const src = m ? tree.sources.get(flat.parts[Number(m[1])]) : undefined;

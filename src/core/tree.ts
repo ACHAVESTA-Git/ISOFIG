@@ -1,5 +1,6 @@
 import { add, boxOf, centerOf, dot, length, mul, unit, type Vec3 } from "./math.ts";
 import { expandIndexed, isSolid, shift, solidBox } from "./items.ts";
+import { resolveMap, type Note } from "./map/index.ts";
 import type { BindSpec, FigureSpec, FlatSpec, GroupSpec, Node, NodeDef, ParamSpec, Part, Text, Tone } from "./spec.ts";
 
 /** Lo que devuelve una entrada del catálogo: un subárbol y, si hace falta, sus grupos (un depósito con `extent`). */
@@ -42,6 +43,8 @@ export interface Assembled {
   stages: number;
   /** De qué lugar de la spec sale cada pieza aplanada (`root.children[1].parts[3]`): para decir dónde falla algo. */
   sources: Map<Part, string>;
+  /** Lo que avisó el compilador de un `map` (un rótulo que no se lee, una cinta sin camino); vacío si no hay mapa. */
+  notes: Note[];
 }
 
 const WORDS: Record<string, { apart: string; pick: string; all: string; whole: string; of: string; step: string }> = {
@@ -102,7 +105,13 @@ const lower = (s: string, lang: string) => (/^\p{Lu}\p{Ll}/u.test(s) ? s[0].toLo
  * piezas, los enlaces de cada etapa, el encuadre de cada pose y las poses en las que recalcular el orden de pintado.
  * Es pura, no lanza con una spec rota (lo dice en `errors`) y corre en el navegador.
  */
-export function assembleTree(spec: FigureSpec, options: AssembleOptions = {}): Assembled {
+export function assembleTree(input: FigureSpec, options: AssembleOptions = {}): Assembled {
+  // Un `map` se compila primero a su árbol `root` y a sus recorridos; el resto es igual que para una spec anidada.
+  const { spec, notes } = resolveMap(input);
+  return { ...assembleResolved(spec, options), notes };
+}
+
+function assembleResolved(spec: FigureSpec, options: AssembleOptions): Omit<Assembled, "notes"> {
   const errors: TreeProblem[] = [];
   const sources = new Map<Part, string>();
   const scenery = Array.isArray(spec.parts) ? spec.parts : [];
