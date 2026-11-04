@@ -227,7 +227,6 @@ Con un mapa, `renderFigure` suma `map-label-small` y `map-route-blocked`, y todo
 
 - Los `id` de nodo son libres, pero `_links`, `_flows` y `_legend` son de las piezas que genera el compilador.
 - Las cintas que tienen que cruzarse se cruzan, sin puente; un mapa con más de unos veinte nodos pide partirse.
-- El compilador corre en el navegador (el giro lo necesita para volver a dibujar): `isofig/map` exporta `compileMap` y
-  `resolveMap`. El giro no lo trae por defecto, para no pesar en las figuras sin mapa: si usas `enableOrbit` con un
-  mapa, pásale `resolveMap` (el adaptador de Astro lo hace solo).
-- La vista previa del CLI con `--orbit` necesita la spec en un `.ts`.
+- El compilador es una función pura y corre también en el navegador (`compileMap` y `resolveMap` salen de `isofig`),
+  pero el giro no lo trae: recibe la spec ya armada, como con un árbol. `<Figure orbit>` y la CLI la arman al compilar
+  con `assemble(spec, { resolveMap })`; si llamas a `enableOrbit` tú, pásale eso y no el `map`.

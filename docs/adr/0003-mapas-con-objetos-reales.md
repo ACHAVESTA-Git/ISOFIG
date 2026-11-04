@@ -64,9 +64,10 @@ un nombre.
 - Un mapa de 14 objetos, 21 enlaces y 2 flujos cabe en 1,6 KB de JSON y compila a 154 KB de SVG (31 KB gzip); el del
   pedido (7 objetos) pesa 20 KB y el UML (8 clases) 22 KB. Un mapa pesa más que una máquina por lo mismo que se lee mejor:
   cada objeto son 8–15 piezas.
-- El compilador entra en el núcleo (`isofig`) y en `isofig/map`, **no** en el giro: `assembleTree` compila el mapa solo
-  si recibe `resolveMap`. `renderFigure` lo pone; el adaptador de Astro lo importa en el navegador solo para las figuras
-  con `map` y activadas con giro. Sin esto el giro crecía de 12,2 a 27,7 KB gzip para todas las figuras.
+- El compilador entra en el núcleo (`isofig`), **no** en el giro: `assembleTree` compila el mapa solo si recibe
+  `resolveMap` (lo ponen `renderFigure`, `<Figure>` y la CLI), y el giro recibe la spec ya armada, como con cualquier
+  árbol (ADR 0002). Con el compilador dentro del giro, este crecía de 12,2 a 27,7 KB gzip para todas las figuras. Lo
+  que viaja con `<Figure orbit>` es el árbol armado: 7,6 KB gzip la tienda, 4,5 el pedido y 5,6 el UML.
 - La vista de un mapa denso a 390 px no se lee (los rótulos miden ~3 px): se leen con el chip «Ampliar», y por eso la
   medida es la de la vista ampliada.
 - Lo que no resuelve: más de ~20 nodos en una figura (la letra o el tamaño ceden: conviene partir el mapa), cintas que

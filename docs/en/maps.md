@@ -224,7 +224,6 @@ tree that comes out of the map: its paths point at `root.children[…]`.
 
 - Node `id`s are free, but `_links`, `_flows` and `_legend` belong to the pieces the compiler generates.
 - Ribbons that have to cross do cross, without a bridge; a map with more than about twenty nodes asks to be split.
-- The compiler runs in the browser (orbit needs it to redraw): `isofig/map` exports `compileMap` and `resolveMap`. Orbit
-  does not bring it by default, so figures without a map do not pay for it: if you call `enableOrbit` with a map, pass it
-  `resolveMap` (the Astro adapter does it for you).
-- The CLI preview with `--orbit` needs the spec in a `.ts` file.
+- The compiler is a pure function and also runs in the browser (`compileMap` and `resolveMap` come from `isofig`), but
+  orbit does not bring it: it takes the already assembled spec, as with a tree. `<Figure orbit>` and the CLI assemble it
+  at build time with `assemble(spec, { resolveMap })`; if you call `enableOrbit` yourself, pass it that, not the `map`.
